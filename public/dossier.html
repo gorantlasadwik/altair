@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>ALTAIR | Commander Dossier</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                  "void-black": "#05070A",
+                  "neon-cyan": "#00F0FF",
+                  "surface-container-high": "#282a2e",
+                  "hazard-orange": "#FF8A00",
+                  "outline-variant": "#3b494b",
+                  "electric-blue": "#0070FF",
+                  "cyber-purple": "#BC00FF",
+                  "surface-dim": "#111417"
+              },
+              fontFamily: {
+                  "label-caps": ["JetBrains Mono"],
+                  "headline-xl": ["Sora"],
+                  "headline-lg": ["Sora"],
+                  "data-readout": ["JetBrains Mono"],
+                  "body-md": ["Hanken Grotesk"],
+                  "arcade": ["VT323", "monospace"],
+                  "display": ["Syncopate", "sans-serif"]
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #05070A;
+            color: #e1e2e7;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+        }
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .scanline-overlay {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .holo-panel {
+            background-color: rgba(5, 7, 10, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 73, 75, 0.4);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .corner-brackets::before, .corner-brackets::after {
+            content: '';
+            position: absolute;
+            width: 10px; height: 10px;
+            border-color: #3b494b;
+            border-style: solid;
+        }
+        .corner-brackets::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+        .corner-brackets::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+        
+        .progress-bar-bg { background-color: #111417; border: 1px solid #3b494b; }
+        .progress-bar-fill { height: 100%; transition: width 1s ease-in-out; }
+        
+        .timeline-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            border: 2px solid #00F0FF;
+            background-color: #05070A;
+            box-shadow: 0 0 10px rgba(0,240,255,0.6);
+            position: relative;
+            z-index: 2;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 5px;
+            top: 12px;
+            bottom: -30px;
+            width: 2px;
+            background: linear-gradient(to bottom, #00F0FF, rgba(0,240,255,0.1));
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen relative font-body-md">
+    <div class="fixed inset-0 w-full h-full scanline-overlay"></div>
+
+    <!-- Standard Navbar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-void-black/80 backdrop-blur-md border-b border-outline-variant/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 flex items-center justify-center drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]">
+                <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
+            </div>
+            <span class="font-arcade text-4xl font-extrabold text-neon-cyan tracking-tighter drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]">ALTAIR</span>
+        </div>
+        <nav class="hidden md:flex items-center gap-8">
+            <a class="font-label-caps text-[12px] tracking-[0.15em] font-bold text-gray-400 hover:text-neon-cyan transition-colors" href="/home.html">HOME</a>
+            <a class="font-label-caps text-[12px] tracking-[0.15em] font-bold text-gray-400 hover:text-neon-cyan transition-colors" href="#">RADAR</a>
+            <a class="font-label-caps text-[12px] tracking-[0.15em] font-bold text-gray-400 hover:text-neon-cyan transition-colors" href="/sky.html">SKY VIEW</a>
+            <a class="font-label-caps text-[12px] tracking-[0.15em] font-bold text-gray-400 hover:text-neon-cyan transition-colors" href="/game.html">GAMES</a>
+            <a class="font-label-caps text-[12px] tracking-[0.15em] font-bold text-gray-400 hover:text-neon-cyan transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
+        </nav>
+        <div class="flex items-center gap-6">
+            <button class="material-symbols-outlined text-gray-400 hover:text-neon-cyan transition-all active:scale-95">notifications</button>
+            <a href="/profile.html" class="flex items-center gap-3 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/30 hover:bg-surface-variant transition-colors cursor-pointer">
+                <span id="user-profile-name" class="font-label-caps font-bold tracking-[0.15em] text-[10px] text-neon-cyan"></span>
+                <button class="material-symbols-outlined text-neon-cyan" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+            </a>
+            <button id="logout-btn" class="font-label-caps font-bold tracking-[0.15em] text-[10px] text-hazard-orange hover:text-white transition-colors border border-hazard-orange/30 px-3 py-1 rounded">LOGOUT</button>
+        </div>
+    </header>
+
+    <main class="pt-[120px] pb-10 px-10 w-full max-w-[1920px] mx-auto min-h-screen relative z-10">
+        <!-- Header -->
+        <div class="flex items-end justify-between border-b border-outline-variant/50 pb-6 mb-10">
+            <div>
+                <span class="text-hazard-orange font-label-caps tracking-widest text-[10px] uppercase block mb-2 animate-pulse">*** TOP SECRET / CLASSIFIED ***</span>
+                <h1 class="text-4xl md:text-5xl font-display tracking-[0.2em] text-white">DOSSIER <span class="text-neon-cyan">//</span> <span id="dossier-name" class="text-electric-blue drop-shadow-[0_0_10px_rgba(0,112,255,0.8)]"></span></h1>
+            </div>
+            <a href="/profile.html" class="hidden md:flex items-center gap-2 text-zinc-400 hover:text-white font-label-caps text-[10px] tracking-widest border border-zinc-700 hover:border-white px-4 py-2 transition-all">
+                <span class="material-symbols-outlined text-[16px]">arrow_back</span> RETURN TO PROFILE
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left Column: Identity -->
+            <section class="lg:col-span-4 flex flex-col gap-8">
+                <div class="holo-panel corner-brackets p-6 flex flex-col items-center">
+                    <div class="w-full aspect-square relative mb-6 border border-outline-variant bg-surface-dim overflow-hidden group">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD83oOtbmZ37DTbbfbyGKQY4hyamqvsqJh8iI7IZewsg6nrti8mBh-iTXjjhJUJBKv98ICyvj8GygKioH8yYkwDSPN6LLY1wN8JQqjYcZHAw0RbI63Ej6mYnFs74t3uTb-w_Z0iXHon9siPuZVCT3SXeo5h6NJCw1TE4j-XY4aeFO5CdAV4c7G9iwqq3WgVyFz4h2jp-LTYEK_Xj059oxjTKXX-gStltWgaXZw9dgYQEOygN_PWXDXF3SiPL3lg6dmI38VDyc0ocWs" alt="Avatar" class="absolute inset-0 w-full h-full object-cover mix-blend-screen opacity-80 group-hover:scale-105 transition-transform duration-1000">
+                        <div class="absolute inset-0 bg-gradient-to-t from-void-black to-transparent opacity-50 pointer-events-none"></div>
+                        <div class="absolute top-4 right-4 bg-hazard-orange/20 border border-hazard-orange text-hazard-orange font-data-readout text-[10px] px-2 py-1 rotate-12 drop-shadow-[0_0_5px_rgba(255,138,0,0.8)]">
+                            RESTRICTED ACCESS
+                        </div>
+                        <div class="absolute bottom-4 left-4 font-data-readout text-neon-cyan text-xs">
+                            BIO-SCAN: OK
+                        </div>
+                    </div>
+                    
+                    <div class="w-full space-y-4 font-label-caps text-[11px] tracking-widest text-zinc-400">
+                        <div class="flex justify-between border-b border-zinc-800 pb-2">
+                            <span>CLEARANCE</span> <span class="text-electric-blue">LEVEL 5 - DEEP SPACE</span>
+                        </div>
+                        <div class="flex justify-between border-b border-zinc-800 pb-2">
+                            <span>AFFILIATION</span> <span class="text-white">ALTAIR COMMAND</span>
+                        </div>
+                        <div class="flex justify-between border-b border-zinc-800 pb-2">
+                            <span>STATUS</span> <span class="text-neon-cyan animate-pulse">ACTIVE FIELD AGENT</span>
+                        </div>
+                        <div class="flex justify-between border-b border-zinc-800 pb-2">
+                            <span>NOTABLE TRAIT</span> <span class="text-cyber-purple">EXOPLANET SPECIALIST</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Service Record -->
+            <section class="lg:col-span-8 flex flex-col gap-8">
+                <!-- Skills Panel -->
+                <div class="holo-panel corner-brackets p-6 border-t-2 border-t-neon-cyan">
+                    <h2 class="font-headline-lg text-2xl mb-6 text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-neon-cyan">psychology</span> COMMAND SKILLS
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Skill -->
+                        <div>
+                            <div class="flex justify-between font-label-caps text-[10px] text-zinc-400 mb-2">
+                                <span>Astro-Navigation</span> <span class="text-neon-cyan">LVL 82</span>
+                            </div>
+                            <div class="h-2 progress-bar-bg relative overflow-hidden">
+                                <div class="progress-bar-fill bg-neon-cyan w-[82%] shadow-[0_0_10px_#00F0FF]"></div>
+                            </div>
+                        </div>
+                        <!-- Skill -->
+                        <div>
+                            <div class="flex justify-between font-label-caps text-[10px] text-zinc-400 mb-2">
+                                <span>Xenobiology</span> <span class="text-cyber-purple">LVL 45</span>
+                            </div>
+                            <div class="h-2 progress-bar-bg relative overflow-hidden">
+                                <div class="progress-bar-fill bg-cyber-purple w-[45%] shadow-[0_0_10px_#BC00FF]"></div>
+                            </div>
+                        </div>
+                        <!-- Skill -->
+                        <div>
+                            <div class="flex justify-between font-label-caps text-[10px] text-zinc-400 mb-2">
+                                <span>Gravitational Anomaly Analysis</span> <span class="text-hazard-orange">LVL 95</span>
+                            </div>
+                            <div class="h-2 progress-bar-bg relative overflow-hidden">
+                                <div class="progress-bar-fill bg-hazard-orange w-[95%] shadow-[0_0_10px_#FF8A00]"></div>
+                            </div>
+                        </div>
+                        <!-- Skill -->
+                        <div>
+                            <div class="flex justify-between font-label-caps text-[10px] text-zinc-400 mb-2">
+                                <span>Planetary Geology</span> <span class="text-electric-blue">LVL 60</span>
+                            </div>
+                            <div class="h-2 progress-bar-bg relative overflow-hidden">
+                                <div class="progress-bar-fill bg-electric-blue w-[60%] shadow-[0_0_10px_#0070FF]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Panel -->
+                <div class="holo-panel corner-brackets p-6 border-t-2 border-t-cyber-purple flex-grow">
+                    <h2 class="font-headline-lg text-2xl mb-8 text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-cyber-purple">history_edu</span> SERVICE RECORD
+                    </h2>
+                    
+                    <div class="space-y-8 pl-4">
+                        <!-- Event 1 -->
+                        <div class="relative pl-6">
+                            <div class="timeline-dot absolute left-[-6px] top-1"></div>
+                            <div class="timeline-line"></div>
+                            <span class="font-label-caps text-[10px] text-neon-cyan mb-1 block">STAR DATE 23.01.2024</span>
+                            <h3 class="font-bold text-white text-lg font-display tracking-wider">INITIATED AT ALTAIR COMMAND</h3>
+                            <p class="text-zinc-400 text-sm mt-2 leading-relaxed">
+                                Completed basic orbital mechanics and deep space survival training. Assigned to the outer rim scouting division.
+                            </p>
+                        </div>
+                        
+                        <!-- Event 2 -->
+                        <div class="relative pl-6">
+                            <div class="timeline-dot absolute left-[-6px] top-1 border-electric-blue shadow-[0_0_10px_#0070FF]"></div>
+                            <div class="timeline-line"></div>
+                            <span class="font-label-caps text-[10px] text-electric-blue mb-1 block">STAR DATE 14.04.2024</span>
+                            <h3 class="font-bold text-white text-lg font-display tracking-wider">FIRST EXOPLANET CONTACT</h3>
+                            <p class="text-zinc-400 text-sm mt-2 leading-relaxed">
+                                Successfully cataloged TRAPPIST-1f and transmitted atmospheric data back to Command. Awarded the Constellation Explorer badge.
+                            </p>
+                        </div>
+
+                        <!-- Event 3 -->
+                        <div class="relative pl-6">
+                            <div class="timeline-dot absolute left-[-6px] top-1 border-cyber-purple shadow-[0_0_10px_#BC00FF]"></div>
+                            <div class="timeline-line"></div>
+                            <span class="font-label-caps text-[10px] text-cyber-purple mb-1 block">STAR DATE 09.06.2024</span>
+                            <h3 class="font-bold text-white text-lg font-display tracking-wider">ANOMALY ENCOUNTER: ABELL 1201</h3>
+                            <p class="text-zinc-400 text-sm mt-2 leading-relaxed">
+                                Navigated near the event horizon of an ultramassive black hole candidate. Gathered crucial dark matter telemetry before retreating to safe distance. 
+                            </p>
+                        </div>
+
+                        <!-- Event 4 (Current) -->
+                        <div class="relative pl-6">
+                            <div class="timeline-dot absolute left-[-6px] top-1 border-hazard-orange shadow-[0_0_10px_#FF8A00] animate-pulse"></div>
+                            <span class="font-label-caps text-[10px] text-hazard-orange mb-1 block">CURRENT ASSIGNMENT</span>
+                            <h3 class="font-bold text-white text-lg font-display tracking-wider">DEEP KNOWLEDGE HUB EXPANSION</h3>
+                            <p class="text-zinc-400 text-sm mt-2 leading-relaxed">
+                                Currently tasked with decrypting classified archives regarding distant exoplanets and cosmic anomalies. Expanding the Altair database.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('altair_username');
+            if (username) {
+                const navName = document.getElementById('user-profile-name');
+                if (navName) navName.textContent = username.toUpperCase();
+                
+                const dossierName = document.getElementById('dossier-name');
+                if (dossierName) dossierName.textContent = username.toUpperCase();
+            } else {
+                window.location.href = '/landing.html';
+            }
+            
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('altair_token');
+                    localStorage.removeItem('altair_username');
+                    window.location.href = '/landing.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
