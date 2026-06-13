@@ -169,7 +169,7 @@
 <span class="text-2xl font-black tracking-tighter text-primary neon-glow">ALTAIR</span>
 </div>
 <div class="hidden md:flex space-x-10 text-[11px] font-arcade tracking-widest text-zinc-400"></div>
-<div class="flex items-center space-x-6"><button class="text-[10px] font-arcade text-primary/60 hover:text-primary uppercase tracking-widest transition-colors">Login</button><button class="bg-primary/10 border border-primary text-primary px-6 py-2 text-xs font-bold uppercase hover:bg-primary hover:text-black transition-all shadow-[0_0_10px_rgba(0,245,255,0.2)]">Sign Up</button></div>
+<div class="flex items-center space-x-6"><button id="nav-login-btn" class="text-[10px] font-arcade text-primary/60 hover:text-primary uppercase tracking-widest transition-colors">Login</button><button id="nav-signup-btn" class="bg-primary/10 border border-primary text-primary px-6 py-2 text-xs font-bold uppercase hover:bg-primary hover:text-black transition-all shadow-[0_0_10px_rgba(0,245,255,0.2)]">Sign Up</button></div>
 </nav>
 <!-- Hero Section -->
 <section class="relative h-screen w-full flex items-center justify-center overflow-hidden grid-bg">
@@ -375,5 +375,118 @@
             }
         });
     }, 500);
+</script>
+
+<!-- Auth Modals -->
+<div id="auth-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div class="bg-void-black border-2 border-primary/50 p-8 max-w-md w-full shadow-[0_0_30px_rgba(0,245,255,0.2)] relative">
+        <button id="close-modal" class="absolute top-4 right-4 text-zinc-400 hover:text-primary material-symbols-outlined">close</button>
+        <h2 id="modal-title" class="font-arcade text-2xl text-primary mb-6 text-center neon-glow">LOGIN</h2>
+        
+        <form id="auth-form" class="space-y-4">
+            <div>
+                <label class="block text-xs font-mono text-zinc-400 mb-1">USERNAME</label>
+                <input type="text" id="username" required class="w-full bg-black/50 border border-primary/30 p-2 text-primary font-mono focus:outline-none focus:border-primary focus:shadow-[0_0_10px_rgba(0,245,255,0.3)]">
+            </div>
+            <div id="email-group" class="hidden">
+                <label class="block text-xs font-mono text-zinc-400 mb-1">EMAIL</label>
+                <input type="email" id="email" class="w-full bg-black/50 border border-primary/30 p-2 text-primary font-mono focus:outline-none focus:border-primary focus:shadow-[0_0_10px_rgba(0,245,255,0.3)]">
+            </div>
+            <div>
+                <label class="block text-xs font-mono text-zinc-400 mb-1">PASSWORD</label>
+                <input type="password" id="password" required class="w-full bg-black/50 border border-primary/30 p-2 text-primary font-mono focus:outline-none focus:border-primary focus:shadow-[0_0_10px_rgba(0,245,255,0.3)]">
+            </div>
+            <div id="auth-error" class="text-hazard-orange text-xs font-mono hidden">Error message here</div>
+            <button type="submit" id="submit-btn" class="w-full bg-primary/20 border border-primary text-primary py-3 font-bold uppercase hover:bg-primary hover:text-black transition-all mt-4 font-arcade tracking-widest text-xs">LOGIN</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Auth Modal Logic
+    const loginBtn = document.getElementById('nav-login-btn');
+    const signupBtn = document.getElementById('nav-signup-btn');
+    const modal = document.getElementById('auth-modal');
+    const closeModal = document.getElementById('close-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const emailGroup = document.getElementById('email-group');
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submit-btn');
+    const authForm = document.getElementById('auth-form');
+    const authError = document.getElementById('auth-error');
+    
+    let isLoginMode = true;
+
+    function openModal(mode) {
+        isLoginMode = mode === 'login';
+        modalTitle.textContent = isLoginMode ? 'LOGIN' : 'SIGN UP';
+        submitBtn.textContent = isLoginMode ? 'LOGIN' : 'CREATE ACCOUNT';
+        if (isLoginMode) {
+            emailGroup.classList.add('hidden');
+            emailInput.removeAttribute('required');
+        } else {
+            emailGroup.classList.remove('hidden');
+            emailInput.setAttribute('required', 'true');
+        }
+        authError.classList.add('hidden');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    if (loginBtn) loginBtn.addEventListener('click', () => openModal('login'));
+    if (signupBtn) signupBtn.addEventListener('click', () => openModal('signup'));
+    
+    if (closeModal) {
+        closeModal.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+    }
+
+    if (authForm) {
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const email = emailInput.value;
+            
+            const endpoint = isLoginMode ? '/api/auth/login' : '/api/auth/register';
+            const body = isLoginMode 
+                ? new URLSearchParams({ username, password })
+                : JSON.stringify({ username, email, password });
+                
+            const headers = isLoginMode 
+                ? { 'Content-Type': 'application/x-www-form-urlencoded' }
+                : { 'Content-Type': 'application/json' };
+
+            submitBtn.textContent = 'PROCESSING...';
+            submitBtn.disabled = true;
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers,
+                    body
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    // Store token and redirect
+                    localStorage.setItem('altair_token', data.access_token);
+                    localStorage.setItem('altair_username', username);
+                    window.location.href = '/home.html';
+                } else {
+                    authError.textContent = data.detail || 'Authentication failed';
+                    authError.classList.remove('hidden');
+                }
+            } catch (err) {
+                authError.textContent = 'Server connection failed';
+                authError.classList.remove('hidden');
+            } finally {
+                submitBtn.textContent = isLoginMode ? 'LOGIN' : 'CREATE ACCOUNT';
+                submitBtn.disabled = false;
+            }
+        });
+    }
 </script>
 </body></html>
