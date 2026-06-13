@@ -98,8 +98,37 @@
 </header>
 
     <!-- INTERACTIVE GAME CONTAINER -->
-    <main class="flex-1 w-full max-w-[1200px] my-4 px-4 flex flex-col justify-center items-center relative overflow-hidden">
+    <main class="flex-1 w-full max-w-[1200px] my-4 px-4 flex flex-col justify-center items-center relative overflow-hidden pt-24 pb-8">
         <div class="w-full h-full relative rounded-lg border border-zinc-800/80 bg-[#05070A] overflow-hidden flex justify-center items-center">
+
+            <!-- GAME HUD -->
+            <div class="absolute top-0 left-0 w-full h-14 px-6 flex justify-between items-center bg-[#05070A]/80 backdrop-blur-md border-b border-[#00F0FF]/30 z-30">
+                <div class="flex items-center gap-3">
+                    <span class="font-extrabold text-lg tracking-widest text-[#00F0FF] neon-glow-cyan font-['Sora']">PLANET HOPPER</span>
+                    <span class="text-xs px-2 py-0.5 border border-[#00F0FF]/30 bg-[#00F0FF]/10 text-[#00F0FF] font-mono rounded" id="header-level">SECTOR 1</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-['JetBrains_Mono']">
+                    <div class="flex items-center gap-2">
+                        <span class="text-zinc-500">FUEL:</span>
+                        <div class="w-24 h-3 bg-zinc-800 rounded overflow-hidden border border-zinc-700 relative">
+                            <div id="header-fuel-bar" class="h-full bg-[#00F0FF] transition-all duration-100" style="width: 100%;"></div>
+                        </div>
+                        <span id="header-fuel-text" class="text-[#00F0FF] font-bold">100%</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-zinc-500">JUMPS:</span>
+                        <span id="header-jumps" class="text-white font-bold">0</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-zinc-500">SCORE:</span>
+                        <span id="header-score" class="text-[#FF8A00] font-bold">0</span>
+                    </div>
+                    <button id="sound-btn" onclick="toggleSound()" class="w-8 h-8 flex items-center justify-center bg-zinc-900 border border-[#00F0FF]/30 hover:border-[#00F0FF] text-[#00F0FF] hover:text-white hover:bg-[#00F0FF]/20 rounded transition-all">
+                        <span id="sound-icon" class="material-symbols-outlined text-sm">volume_up</span>
+                    </button>
+                </div>
+            </div>
+
             
             <!-- Canvas -->
             <canvas id="game-canvas" class="w-full h-full block bg-[#05070A] cursor-pointer"></canvas>
