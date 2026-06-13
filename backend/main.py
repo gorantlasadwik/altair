@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
@@ -9,6 +9,7 @@ import urllib.request
 import json
 import time
 from datetime import datetime
+from jose import JWTError, jwt
 
 import sys
 import os
@@ -68,6 +69,49 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         
     access_token = auth.create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, auth.SECRET_KEY, algorithms=[auth.ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    return username
+
+class QuizScoreSubmit(BaseModel):
+    score: int
+    questions_count: int
+    difficulty: str
+    time_limit: int
+
+@app.post("/api/quiz/score")
+def submit_quiz_score(score_data: QuizScoreSubmit, db: Session = Depends(get_db), username: str = Depends(get_current_user)):
+    db_score = models.QuizScore(
+        username=username,
+        score=score_data.score,
+        questions_count=score_data.questions_count,
+        difficulty=score_data.difficulty,
+        time_limit=score_data.time_limit,
+        created_at=datetime.utcnow().isoformat()
+    )
+    db.add(db_score)
+    db.commit()
+    db.refresh(db_score)
+    return {"status": "success", "score_id": db_score.id}
+
+@app.get("/api/quiz/leaderboard")
+def get_quiz_leaderboard(db: Session = Depends(get_db)):
+    scores = db.query(models.QuizScore).order_by(models.QuizScore.score.desc()).limit(10).all()
+    return scores
 
 # Simple memory cache for external APIs
 cache = {

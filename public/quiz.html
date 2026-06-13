@@ -319,8 +319,76 @@ void main() {
 </div>
 <!-- Scanline Overlay -->
 <div class="fixed inset-0 z-50 scanline pointer-events-none"></div>
+
+<!-- Setup Screen -->
+<div id="setup-screen" class="relative z-20 min-h-screen flex flex-col items-center justify-center px-margin-edge py-8 pt-28 max-w-screen-md mx-auto">
+    <div class="holo-panel w-full p-8 z-10 text-center border-t-2 border-b-2 border-neon-cyan shadow-[0_0_30px_rgba(0,240,255,0.15)] relative">
+        <h2 class="font-headline-xl text-headline-xl text-neon-cyan glitch-text uppercase tracking-tighter mb-8">SIMULATION SETUP</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left mb-8">
+            <!-- Questions Count -->
+            <div class="flex flex-col gap-2">
+                <label class="font-label-caps text-label-caps text-on-surface-variant">NUMBER OF QUESTIONS</label>
+                <select id="config-questions" class="bg-surface-container-highest border border-outline-variant text-on-surface font-data-readout p-2 outline-none focus:border-neon-cyan">
+                    <option value="10">10 QUESTIONS</option>
+                    <option value="20" selected>20 QUESTIONS</option>
+                    <option value="50">50 QUESTIONS</option>
+                </select>
+            </div>
+            
+            <!-- Difficulty -->
+            <div class="flex flex-col gap-2">
+                <label class="font-label-caps text-label-caps text-on-surface-variant">DIFFICULTY LEVEL</label>
+                <select id="config-difficulty" class="bg-surface-container-highest border border-outline-variant text-on-surface font-data-readout p-2 outline-none focus:border-neon-cyan">
+                    <option value="easy">EASY</option>
+                    <option value="medium" selected>MEDIUM</option>
+                    <option value="hard">ELITE (HARD)</option>
+                </select>
+            </div>
+
+            <!-- Time Limit -->
+            <div class="flex flex-col gap-2">
+                <label class="font-label-caps text-label-caps text-on-surface-variant">TIME LIMIT</label>
+                <select id="config-time" class="bg-surface-container-highest border border-outline-variant text-on-surface font-data-readout p-2 outline-none focus:border-neon-cyan">
+                    <option value="0">NO LIMIT</option>
+                    <option value="180">3 MINUTES</option>
+                    <option value="300" selected>5 MINUTES</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="commenceSimulation()" class="w-full py-4 bg-neon-cyan text-void-black font-label-caps text-label-caps font-extrabold arcade-btn-glow glitch-hover transition-all duration-300 tracking-[0.2em] uppercase text-lg">
+            COMMENCE SIMULATION
+        </button>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="holo-panel w-full p-8 mt-12 z-10 border border-outline-variant/30">
+        <div class="flex items-center gap-2 mb-6 border-b border-outline-variant/30 pb-4">
+            <span class="material-symbols-outlined text-hazard-orange">leaderboard</span>
+            <h3 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white tracking-widest">GLOBAL RANKINGS</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left font-data-readout text-on-surface">
+                <thead>
+                    <tr class="text-on-surface-variant border-b border-outline-variant/30">
+                        <th class="py-2">RANK</th>
+                        <th class="py-2">COMMANDER</th>
+                        <th class="py-2">SCORE</th>
+                        <th class="py-2">QUESTIONS</th>
+                        <th class="py-2">DIFFICULTY</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr><td colspan="5" class="py-4 text-center text-on-surface-variant">Accessing ALTAIR Databanks...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <!-- HUD Layout -->
-<div class="relative z-10 min-h-screen flex flex-col px-margin-edge py-8 pt-28 max-w-screen-2xl mx-auto">
+<div id="game-hud" style="display: none;" class="relative z-10 min-h-screen flex flex-col px-margin-edge py-8 pt-28 max-w-screen-2xl mx-auto">
 <!-- Outer Frame Brackets -->
 <div class="fixed top-margin-edge left-margin-edge w-16 h-16 corner-bracket-tl pointer-events-none z-40 opacity-70"></div>
 <div class="fixed top-margin-edge right-margin-edge w-16 h-16 corner-bracket-tr pointer-events-none z-40 opacity-70"></div>
@@ -598,16 +666,71 @@ animate();
                 window.location.href = '/';
             });
         }
+
+        // Fetch Leaderboard
+        fetchLeaderboard();
     });
+
+    async function fetchLeaderboard() {
+        try {
+            const res = await fetch('/api/quiz/leaderboard');
+            if (res.ok) {
+                const data = await res.json();
+                const tbody = document.getElementById('leaderboard-body');
+                tbody.innerHTML = '';
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-on-surface-variant">No records found. Be the first!</td></tr>';
+                    return;
+                }
+                data.forEach((entry, index) => {
+                    let rankClass = 'text-on-surface';
+                    if(index === 0) rankClass = 'text-hazard-orange font-bold drop-shadow-[0_0_5px_rgba(255,138,0,0.8)]';
+                    if(index === 1) rankClass = 'text-starlight-white font-bold';
+                    if(index === 2) rankClass = 'text-electric-blue font-bold';
+
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-outline-variant/10 hover:bg-surface-variant/30 transition-colors";
+                    tr.innerHTML = `
+                        <td class="py-3 ${rankClass}">#${index + 1}</td>
+                        <td class="py-3 text-neon-cyan">${entry.username.toUpperCase()}</td>
+                        <td class="py-3 font-bold text-cyber-purple drop-shadow-[0_0_5px_rgba(188,0,255,0.4)]">${entry.score}</td>
+                        <td class="py-3 text-on-surface-variant">${entry.questions_count} Qs</td>
+                        <td class="py-3 text-on-surface-variant uppercase">${entry.difficulty}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        } catch(e) {
+            console.error('Leaderboard fetch error', e);
+            document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="5" class="py-4 text-center text-error">Databank connection failed</td></tr>';
+        }
+    }
 
     // Space Quiz Game Engine
     let questions = [];
     let currentQuestionIndex = 0;
     let score = 0;
     let correctCount = 0;
-    const MAX_QUESTIONS = 20;
-    let timerSeconds = 300; // 5 minutes
+    
+    let configQuestions = 20;
+    let configDifficulty = 'medium';
+    let configTime = 300;
+    
+    let timerSeconds = 300;
     let timerInterval = null;
+
+    function commenceSimulation() {
+        configQuestions = parseInt(document.getElementById('config-questions').value);
+        configDifficulty = document.getElementById('config-difficulty').value;
+        configTime = parseInt(document.getElementById('config-time').value);
+        
+        timerSeconds = configTime;
+
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('game-hud').style.display = 'flex';
+
+        initQuiz();
+    }
 
     async function initQuiz() {
         try {
@@ -619,40 +742,48 @@ animate();
             }
 
             // Fetch remote questions from OpenTDB
-            const remoteRes = await fetch('https://opentdb.com/api.php?amount=5&category=17&type=multiple');
+            let apiDiff = configDifficulty === 'hard' ? 'hard' : (configDifficulty === 'medium' ? 'medium' : 'easy');
+            const remoteRes = await fetch(`https://opentdb.com/api.php?amount=5&category=17&difficulty=${apiDiff}&type=multiple`);
             let remoteData = [];
             if (remoteRes.ok) {
                 const data = await remoteRes.json();
-                remoteData = data.results.map((q, idx) => {
-                    const allOptions = [...q.incorrect_answers, q.correct_answer];
-                    allOptions.sort(() => Math.random() - 0.5);
-                    const answerIndex = allOptions.indexOf(q.correct_answer);
-                    const answerLetter = ['A', 'B', 'C', 'D'][answerIndex];
-                    return {
-                        ID: 'R' + idx,
-                        Question: decodeHTMLEntities(q.question),
-                        'Option A': decodeHTMLEntities(allOptions[0]),
-                        'Option B': decodeHTMLEntities(allOptions[1]),
-                        'Option C': decodeHTMLEntities(allOptions[2]),
-                        'Option D': decodeHTMLEntities(allOptions[3] || 'N/A'),
-                        Answer: answerLetter,
-                        Difficulty: q.difficulty,
-                        Category: 'Science Trivia'
-                    };
-                });
+                if(data.results) {
+                    remoteData = data.results.map((q, idx) => {
+                        const allOptions = [...q.incorrect_answers, q.correct_answer];
+                        allOptions.sort(() => Math.random() - 0.5);
+                        const answerIndex = allOptions.indexOf(q.correct_answer);
+                        const answerLetter = ['A', 'B', 'C', 'D'][answerIndex];
+                        return {
+                            ID: 'R' + idx,
+                            Question: decodeHTMLEntities(q.question),
+                            'Option A': decodeHTMLEntities(allOptions[0]),
+                            'Option B': decodeHTMLEntities(allOptions[1]),
+                            'Option C': decodeHTMLEntities(allOptions[2]),
+                            'Option D': decodeHTMLEntities(allOptions[3] || 'N/A'),
+                            Answer: answerLetter,
+                            Difficulty: q.difficulty,
+                            Category: 'Science Trivia'
+                        };
+                    });
+                }
             }
 
             questions = [...localData, ...remoteData];
-            // Shuffle
+            // Filter by difficulty if needed, but for now just shuffle
             questions.sort(() => Math.random() - 0.5);
-            questions = questions.slice(0, MAX_QUESTIONS);
+            questions = questions.slice(0, configQuestions);
 
             if (questions.length === 0) {
                 document.getElementById('quiz-question-text').innerText = "ERROR: Failed to load questions.";
                 return;
             }
 
-            startTimer();
+            if(configTime > 0) {
+                startTimer();
+            } else {
+                document.getElementById('quiz-timer').innerText = "∞";
+            }
+            
             loadQuestion();
 
         } catch (e) {
@@ -668,7 +799,7 @@ animate();
     }
 
     function loadQuestion() {
-        if (currentQuestionIndex >= MAX_QUESTIONS || currentQuestionIndex >= questions.length) {
+        if (currentQuestionIndex >= configQuestions || currentQuestionIndex >= questions.length) {
             endQuiz();
             return;
         }
@@ -680,7 +811,7 @@ animate();
         document.getElementById('text-C').innerText = "C. " + q['Option C'];
         document.getElementById('text-D').innerText = "D. " + q['Option D'];
 
-        document.getElementById('quiz-progress-text').innerText = `${String(currentQuestionIndex + 1).padStart(2, '0')} / ${MAX_QUESTIONS}`;
+        document.getElementById('quiz-progress-text').innerText = `${String(currentQuestionIndex + 1).padStart(2, '0')} / ${configQuestions}`;
         
         ['A', 'B', 'C', 'D'].forEach(letter => {
             const btn = document.getElementById('btn-' + letter);
@@ -736,18 +867,38 @@ animate();
         }, 1000);
     }
 
-    function endQuiz() {
-        clearInterval(timerInterval);
+    async function endQuiz() {
+        if(timerInterval) clearInterval(timerInterval);
         document.getElementById('quiz-question-text').innerText = "SIMULATION COMPLETE";
         document.getElementById('quiz-answers-container').innerHTML = `
             <div class="col-span-1 md:col-span-2 text-center text-neon-cyan font-headline-lg mt-8">
                 FINAL SCORE: ${score} PTS
                 <br>
-                <a href="/game.html" class="inline-block mt-8 bg-neon-cyan/20 border border-neon-cyan text-neon-cyan px-8 py-3 text-lg font-bold uppercase hover:bg-neon-cyan hover:text-void-black transition-all shadow-[0_0_15px_rgba(0,240,255,0.8)]">RETURN TO HUB</a>
+                <button onclick="window.location.reload()" class="inline-block mt-8 bg-neon-cyan/20 border border-neon-cyan text-neon-cyan px-8 py-3 text-lg font-bold uppercase hover:bg-neon-cyan hover:text-void-black transition-all shadow-[0_0_15px_rgba(0,240,255,0.8)]">RETURN TO HUB</button>
             </div>
         `;
-    }
 
-    document.addEventListener('DOMContentLoaded', initQuiz);
+        // POST Score to API
+        const token = localStorage.getItem('altair_token');
+        if(token) {
+            try {
+                await fetch('/api/quiz/score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        score: score,
+                        questions_count: configQuestions,
+                        difficulty: configDifficulty,
+                        time_limit: configTime
+                    })
+                });
+            } catch(e) {
+                console.error("Failed to post score", e);
+            }
+        }
+    }
 </script>
 </body></html>
