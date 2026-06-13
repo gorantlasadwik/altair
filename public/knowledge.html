@@ -159,37 +159,132 @@
             border-radius: 50%;
             position: absolute;
         }
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+        
+        .arcade-font {
+            font-family: 'VT323', monospace;
+        }
     </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface": "#e1e2e7",
+                      "on-secondary-container": "#002661",
+                      "inverse-surface": "#e1e2e7",
+                      "tertiary-container": "#f4ccff",
+                      "error-container": "#93000a",
+                      "surface-container-highest": "#323539",
+                      "tertiary-fixed": "#f8d8ff",
+                      "on-primary-container": "#006970",
+                      "tertiary": "#fff2fd",
+                      "secondary": "#b0c6ff",
+                      "on-surface-variant": "#b9cacb",
+                      "surface-dim": "#111417",
+                      "surface-bright": "#37393d",
+                      "primary": "#dbfcff",
+                      "on-tertiary": "#520071",
+                      "void-black": "#05070A",
+                      "tertiary-fixed-dim": "#ebb2ff",
+                      "primary-container": "#00f0ff",
+                      "surface-container": "#1d2023",
+                      "starlight-white": "#E1F5FE",
+                      "primary-fixed": "#7df4ff",
+                      "inverse-primary": "#006970",
+                      "secondary-container": "#568dff",
+                      "on-primary": "#00363a",
+                      "secondary-fixed": "#d9e2ff",
+                      "primary-fixed-dim": "#00dbe9",
+                      "on-primary-fixed-variant": "#004f54",
+                      "on-tertiary-container": "#9900d0",
+                      "on-error-container": "#ffdad6",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#2e3134",
+                      "surface-container-low": "#191c1f",
+                      "on-primary-fixed": "#002022",
+                      "on-secondary-fixed": "#001945",
+                      "on-error": "#690005",
+                      "surface-container-lowest": "#0c0e12",
+                      "surface-tint": "#00dbe9",
+                      "outline": "#849495",
+                      "electric-blue": "#0070FF",
+                      "surface": "#111417",
+                      "on-tertiary-fixed-variant": "#74009f",
+                      "on-tertiary-fixed": "#320047",
+                      "on-background": "#e1e2e7",
+                      "surface-container-high": "#282a2e",
+                      "neon-cyan": "#00F0FF",
+                      "background": "#111417",
+                      "secondary-fixed-dim": "#b0c6ff",
+                      "on-secondary-fixed-variant": "#00429c",
+                      "surface-variant": "#323539",
+                      "on-secondary": "#002d6f",
+                      "cyber-purple": "#BC00FF",
+                      "outline-variant": "#3b494b",
+                      "hazard-orange": "#FF8A00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "panel-padding": "20px",
+                      "margin-edge": "40px",
+                      "gutter": "24px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "body-md": ["hankenGrotesk"],
+                      "headline-lg": ["VT323", "monospace"],
+                      "data-readout": ["jetbrainsMono"],
+                      "headline-xl": ["VT323", "monospace"],
+                      "headline-lg-mobile": ["VT323", "monospace"],
+                      "label-caps": ["jetbrainsMono"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["40px", {"lineHeight": "1.1", "fontWeight": "700"}],
+                      "data-readout": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "headline-xl": ["64px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "800"}],
+                      "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
 </head>
 <body class="flex flex-col min-h-screen">
 
     <!-- Navbar -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-20 bg-[#050505]/80 backdrop-blur-md border-b border-[#00f5ff]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-        <div class="flex items-center gap-4">
-            <div class="w-10 h-10 flex items-center justify-center neon-text">
-                <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
-            </div>
-            <span class="font-arcade text-4xl font-extrabold text-[#00f5ff] tracking-tighter neon-text">ALTAIR</span>
-        </div>
-        <nav class="hidden md:flex items-center gap-8">
-            <a class="font-arcade text-lg text-zinc-400 hover:text-[#00f5ff] transition-colors uppercase tracking-widest" href="/home.html">HOME</a>
-            <a class="font-arcade text-lg text-zinc-400 hover:text-[#00f5ff] transition-colors uppercase tracking-widest" href="#">RADAR</a>
-            <a class="font-arcade text-lg text-zinc-400 hover:text-[#00f5ff] transition-colors uppercase tracking-widest" href="/sky.html">SKY VIEW</a>
-            <a class="font-arcade text-lg text-zinc-400 hover:text-[#00f5ff] transition-colors uppercase tracking-widest" href="/game.html">GAMES</a>
-            <a class="font-arcade text-lg text-[#00f5ff] border-b-2 border-[#00f5ff] pb-1 transition-all duration-300 uppercase tracking-widest neon-text" href="/knowledge.html">KNOWLEDGE HUB</a>
-        </nav>
-        <div class="flex items-center gap-6">
-            <button class="material-symbols-outlined text-zinc-400 hover:text-[#00f5ff] transition-all active:scale-95">notifications</button>
-            <div id="user-profile" class="hidden items-center gap-3 bg-white/5 px-3 py-1 rounded-full border border-white/20">
-                <span id="nav-username" class="font-arcade text-[10px] text-[#00f5ff]">COMMANDER</span>
-                <button class="material-symbols-outlined text-[#00f5ff]" style="font-variation-settings: 'FILL' 1;">account_circle</button>
-            </div>
-            <button id="nav-logout-btn" class="hidden font-arcade text-[10px] text-[#ff3300] hover:text-white transition-colors border border-[#ff3300]/30 px-3 py-1 rounded">LOGOUT</button>
-            <div id="auth-buttons" class="flex gap-4">
-                <button id="nav-login-btn" class="font-arcade text-[10px] text-zinc-400 hover:text-[#00f5ff] transition-colors">LOGIN</button>
-                <button id="nav-signup-btn" class="font-arcade text-[10px] bg-[#00f5ff]/10 border border-[#00f5ff] text-[#00f5ff] px-3 py-1 rounded hover:bg-[#00f5ff] hover:text-black transition-all">SIGN UP</button>
-            </div>
-        </div>
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-edge h-20 bg-void-black/80 backdrop-blur-md border-b border-outline-variant/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+    <div class="flex items-center gap-4">
+    <div class="w-10 h-10 flex items-center justify-center neon-glow">
+    <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
+    </div>
+    <span class="arcade-font text-4xl font-extrabold text-neon-cyan tracking-tighter neon-glow">ALTAIR</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8">
+    <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/home.html">HOME</a>
+    <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">RADAR</a>
+    <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/sky.html">SKY VIEW</a>
+    <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/game.html">GAMES</a>
+    <a class="font-label-caps text-label-caps text-neon-cyan border-b-2 border-neon-cyan pb-1 transition-all duration-300" href="/knowledge.html">KNOWLEDGE HUB</a>
+    </nav>
+    <div class="flex items-center gap-6">
+    <button class="material-symbols-outlined text-on-surface-variant hover:text-neon-cyan transition-all active:scale-95">notifications</button>
+    <div class="flex items-center gap-3 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/30">
+    <span id="user-profile-name" class="font-label-caps text-[10px] text-neon-cyan">COMMANDER</span>
+    <button class="material-symbols-outlined text-neon-cyan" style="font-variation-settings: &quot;FILL&quot; 1;">account_circle</button>
+    </div>
+    <button id="logout-btn" class="font-label-caps text-[10px] text-hazard-orange hover:text-white transition-colors border border-hazard-orange/30 px-3 py-1 rounded">LOGOUT</button>
+    </div>
     </header>
 
     <!-- Main Content Area -->
