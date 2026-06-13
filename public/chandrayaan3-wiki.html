@@ -49,24 +49,24 @@
     <main class="flex-1 mt-20 flex flex-col relative z-10 w-full h-[calc(100vh-80px)]">
         <!-- Back Bar -->
         <div class="w-full bg-[#111417] border-b border-[#3b494b] flex items-center px-8 py-3">
-            <a href="/chandrayaan2.html" class="flex items-center gap-2 text-[#00F0FF] hover:text-white transition-colors font-mono text-xs tracking-widest uppercase cursor-pointer">
-                <span class="material-symbols-outlined text-sm">arrow_back</span>
-                RETURN TO MISSION ARCHIVE
-            </a>
-            <div class="ml-auto font-mono text-xs text-zinc-500 tracking-widest uppercase">
-                EXTERNAL DATABASE CONNECTION ESTABLISHED
-            </div>
-        </div>
+            <a href="/chandrayaan3.html" class="flex items-center gap-2 text-[#00F0FF] hover:text-white transition-colors font-mono text-xs tracking-widest uppercase cursor-pointer px-4 py-2 border border-[#00F0FF]/30 hover:border-[#00F0FF] hover:bg-[#00F0FF]/10 rounded shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        RETURN TO MISSION ARCHIVE
+    </a>
+    <div class="ml-auto font-mono text-xl text-white tracking-widest uppercase">
+        DOSSIER: CHANDRAYAAN-3
+    </div>
+</div>
 
-        <!-- IFrame -->
-        <div class="flex-1 w-full h-full bg-white relative">
-            <iframe src="https://en.wikipedia.org/wiki/Chandrayaan-2" class="w-full h-full border-none" title="Wikipedia - Chandrayaan-2"></iframe>
+<!-- Wikipedia Frame -->
+<main class="w-full h-screen pt-32">
+    <iframe src="https://en.wikipedia.org/wiki/Chandrayaan-3" class="w-full h-full border-none" title="Chandrayaan-3 Wikipedia Dossier"></iframe>
             <!-- In case Wikipedia blocks the iframe, provide a fallback overlay -->
             <div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-black hidden" id="iframe-fallback">
                 <p class="font-mono mb-4 text-center">If Wikipedia refuses to connect due to security policies, you can view the article directly.</p>
-                <a href="https://en.wikipedia.org/wiki/Chandrayaan-2" target="_blank" class="pointer-events-auto bg-[#00F0FF] text-black px-4 py-2 font-mono font-bold tracking-widest uppercase hover:bg-black hover:text-[#00F0FF] border border-[#00F0FF] transition-colors">OPEN WIKIPEDIA IN NEW TAB</a>
+                <a href="https://en.wikipedia.org/wiki/Chandrayaan-3" target="_blank" class="pointer-events-auto bg-[#00F0FF] text-black px-4 py-2 font-mono font-bold tracking-widest uppercase hover:bg-black hover:text-[#00F0FF] border border-[#00F0FF] transition-colors">OPEN WIKIPEDIA IN NEW TAB</a>
             </div>
-        </div>
+        </main>
     </main>
 
     <script>
@@ -106,7 +106,9 @@
 </div>
 <div class="flex gap-8 font-label-caps text-[12px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">
 <a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
-<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command
+Version: 1.0.0
+Built for deep space simulation and training.'); return false;">ABOUT</a>
 </div>
 </footer>
 </body>
