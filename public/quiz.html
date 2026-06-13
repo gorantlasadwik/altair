@@ -160,7 +160,7 @@
 </head>
 <body class="bg-void-black text-on-surface overflow-x-hidden min-h-screen relative font-body-md">
 <!-- TopNavBar -->
-<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-void-black/80 backdrop-blur-md border-b border-outline-variant/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-edge h-20 bg-void-black/80 backdrop-blur-md border-b border-outline-variant/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
 <div class="flex items-center gap-4">
 <div class="w-10 h-10 flex items-center justify-center neon-glow">
 <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
@@ -168,19 +168,19 @@
 <span class="arcade-font text-4xl font-extrabold text-neon-cyan tracking-tighter neon-glow">ALTAIR</span>
 </div>
 <nav class="hidden md:flex items-center gap-8">
-<a class="font-label-caps text-[12px] font-bold tracking-[0.15em] text-on-surface-variant hover:text-neon-cyan transition-colors" href="/home.html">HOME</a>
-<a class="font-label-caps text-[12px] font-bold tracking-[0.15em] text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">RADAR</a>
-<a class="font-label-caps text-[12px] font-bold tracking-[0.15em] text-on-surface-variant hover:text-neon-cyan transition-colors" href="/sky.html">SKY VIEW</a>
-<a class="font-label-caps text-[12px] font-bold tracking-[0.15em] text-neon-cyan border-b-2 border-neon-cyan pb-1 transition-all duration-300" href="/game.html">GAMES</a>
-<a class="font-label-caps text-[12px] font-bold tracking-[0.15em] text-on-surface-variant hover:text-neon-cyan transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/home.html">HOME</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">RADAR</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/sky.html">SKY VIEW</a>
+<a class="font-label-caps text-label-caps text-neon-cyan border-b-2 border-neon-cyan pb-1 transition-all duration-300" href="/game.html">GAMES</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
 </nav>
 <div class="flex items-center gap-6">
 <button class="material-symbols-outlined text-on-surface-variant hover:text-neon-cyan transition-all active:scale-95">notifications</button>
 <div class="flex items-center gap-3 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/30">
-<span id="user-profile-name" class="font-label-caps text-[10px] font-bold tracking-[0.15em] text-neon-cyan uppercase">COMMANDER</span>
-<button class="material-symbols-outlined text-neon-cyan" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+<span id="user-profile-name" class="font-label-caps text-[10px] text-neon-cyan"></span>
+<button class="material-symbols-outlined text-neon-cyan" style="font-variation-settings: &quot;FILL&quot; 1;">account_circle</button>
 </div>
-<button id="logout-btn" class="font-label-caps text-[10px] font-bold tracking-[0.15em] text-hazard-orange hover:text-white transition-colors border border-hazard-orange/30 px-3 py-1 rounded">LOGOUT</button>
+<button id="logout-btn" class="font-label-caps text-[10px] text-hazard-orange hover:text-white transition-colors border border-hazard-orange/30 px-3 py-1 rounded">LOGOUT</button>
 </div>
 </header>
 <!-- Background Shader -->
@@ -381,7 +381,7 @@ void main() {
                 <thead>
                     <tr class="text-on-surface-variant border-b border-outline-variant/30">
                         <th class="py-2">RANK</th>
-                        <th class="py-2">COMMANDER</th>
+                        <th class="py-2">USERNAME</th>
                         <th class="py-2">SCORE</th>
                         <th class="py-2">QUESTIONS</th>
                         <th class="py-2">DIFFICULTY</th>
@@ -666,7 +666,7 @@ animate();
         if (username) {
             const profileName = document.getElementById('user-profile-name');
             if (profileName) {
-                profileName.textContent = "COMMANDER " + username.toUpperCase();
+                profileName.textContent = username.toUpperCase();
             }
         }
 

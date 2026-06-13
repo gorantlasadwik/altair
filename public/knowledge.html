@@ -159,6 +159,91 @@
             border-radius: 50%;
             position: absolute;
         }
+
+        /* Orbit System */
+        .solar-system {
+            position: relative;
+            width: 800px;
+            height: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transform: rotateX(60deg); /* 2.5D perspective */
+            margin-top: -100px;
+        }
+
+        .sun {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #fffdf2 10%, #ffd000 40%, #ff8c00 80%, transparent 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 100px #ff8c00, 0 0 200px #ffd000;
+            z-index: 10;
+            transform: rotateX(-60deg); /* Counter rotate to face camera */
+        }
+
+        .orbit-ring {
+            position: absolute;
+            border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+        }
+
+        .orbit-ring:hover {
+            border-color: rgba(0, 245, 255, 0.5);
+            z-index: 20;
+        }
+
+        .orbiting-planet {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            transform-origin: center;
+            /* Box shadow for mini 3d effect */
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.8);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .orbit-ring:hover .orbiting-planet {
+            transform: scale(2) rotateX(-60deg) !important;
+            box-shadow: 0 0 15px rgba(0,245,255,0.8);
+        }
+
+        .planet-name-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00f5ff;
+            font-family: 'VT323', monospace;
+            font-size: 14px;
+            letter-spacing: 0.2em;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+            text-shadow: 0 0 5px black;
+        }
+
+        .orbit-ring:hover .planet-name-label {
+            opacity: 1;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .neon-glow {
             text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);
         }
@@ -280,7 +365,7 @@
     <div class="flex items-center gap-6">
     <button class="material-symbols-outlined text-on-surface-variant hover:text-neon-cyan transition-all active:scale-95">notifications</button>
     <div class="flex items-center gap-3 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/30">
-    <span id="user-profile-name" class="font-label-caps text-[10px] text-neon-cyan">COMMANDER</span>
+    <span id="user-profile-name" class="font-label-caps text-[10px] text-neon-cyan"></span>
     <button class="material-symbols-outlined text-neon-cyan" style="font-variation-settings: &quot;FILL&quot; 1;">account_circle</button>
     </div>
     <button id="logout-btn" class="font-label-caps text-[10px] text-hazard-orange hover:text-white transition-colors border border-hazard-orange/30 px-3 py-1 rounded">LOGOUT</button>
@@ -291,18 +376,19 @@
     <main class="flex-1 mt-20 relative flex overflow-hidden">
         
         <!-- State 1: Solar System Overview -->
-        <div id="overview-state" class="w-full h-[calc(100vh-80px)] flex flex-col items-center justify-center relative z-10 transition-opacity duration-500">
-            <h1 class="font-display text-4xl tracking-[0.3em] mb-16 text-white text-center">SOLAR SYSTEM <br><span class="text-primary text-xl">ARCHIVES</span></h1>
+        <div id="overview-state" class="w-full h-[calc(100vh-80px)] flex flex-col items-center justify-center relative z-10 transition-opacity duration-500 overflow-hidden">
+            <h1 class="absolute top-10 font-display text-4xl tracking-[0.3em] text-white text-center z-20 pointer-events-none">SOLAR SYSTEM <br><span class="text-primary text-xl">ARCHIVES</span></h1>
             
-            <div class="flex flex-wrap justify-center gap-8 max-w-5xl px-8" id="planet-grid">
-                <!-- Planet Thumbnails Injected via JS -->
+            <div class="solar-system" id="planet-grid">
+                <div class="sun"></div>
+                <!-- Orbits Injected via JS -->
             </div>
         </div>
 
         <!-- State 2: Planet Detail HUD -->
         <div id="detail-state" class="absolute inset-0 w-full h-[calc(100vh-80px)] hidden opacity-0 transition-opacity duration-1000 bg-black z-20">
             
-            <button onclick="showOverview()" class="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-mono text-xs tracking-widest uppercase">
+            <button onclick="showOverview()" class="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-mono text-xs tracking-widest uppercase cursor-pointer">
                 <span class="material-symbols-outlined text-sm">arrow_back</span>
                 Return to Overview
             </button>
@@ -329,7 +415,7 @@
             </div>
 
             <!-- HUD Data Bottom Layer -->
-            <div class="absolute bottom-16 left-16 flex flex-col gap-2">
+            <div class="absolute bottom-32 left-16 flex flex-col gap-2">
                 <div class="absolute -top-4 -left-4 w-12 h-12 border-t border-l border-white/10 opacity-50"></div>
                 <div class="absolute -bottom-4 -left-4 w-12 h-12 border-b border-l border-white/10 opacity-50"></div>
                 <div class="flex gap-4 items-baseline justify-between w-48">
@@ -342,7 +428,7 @@
                 </div>
             </div>
 
-            <div class="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col gap-2 items-center">
+            <div class="absolute bottom-32 left-1/2 -translate-x-1/2 flex flex-col gap-2 items-center">
                 <div class="flex gap-4 items-baseline justify-between w-48">
                     <span class="data-label">ORBITAL PERIOD:</span>
                     <span class="data-value" id="hud-orbital-period"></span>
@@ -353,11 +439,11 @@
                 </div>
             </div>
 
-            <div class="absolute bottom-16 right-16 flex flex-col gap-2 items-end">
+            <div class="absolute bottom-32 right-16 flex flex-col gap-2 items-end">
                 <div class="absolute -top-4 -right-4 w-12 h-12 border-t border-r border-white/10 opacity-50"></div>
                 <div class="absolute -bottom-4 -right-4 w-12 h-12 border-b border-r border-white/10 opacity-50"></div>
                 <div class="flex gap-4 items-baseline justify-between w-64">
-                    <span class="data-label">DIAMETR:</span>
+                    <span class="data-label">DIAMETER:</span>
                     <span class="data-value" id="hud-diameter"></span>
                 </div>
                 <div class="flex gap-4 items-baseline justify-between w-64">
@@ -367,6 +453,18 @@
                 <div class="flex gap-4 items-baseline justify-between w-64">
                     <span class="data-label">SURFACE TEMPERATURE:</span>
                     <span class="data-value" id="hud-surface-temp"></span>
+                </div>
+            </div>
+
+            <!-- New Expanded Facts Section -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 w-3/4 max-w-4xl bg-white/5 border border-white/10 backdrop-blur-sm p-4 rounded flex gap-8 shadow-lg z-30">
+                <div class="flex-1 border-r border-white/10 pr-6">
+                    <div class="text-[10px] text-[#00f5ff] font-arcade tracking-widest mb-1 uppercase">ARCHIVE DESCRIPTION</div>
+                    <div class="font-mono text-xs text-zinc-300 leading-relaxed" id="hud-description"></div>
+                </div>
+                <div class="flex-1 pl-2">
+                    <div class="text-[10px] text-[#ff3300] font-arcade tracking-widest mb-1 uppercase">NOTABLE FACT</div>
+                    <div class="font-mono text-xs text-white leading-relaxed italic" id="hud-fun-fact"></div>
                 </div>
             </div>
 
@@ -382,6 +480,9 @@
                 id: 'mercury',
                 name: 'MERCURY',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Mercury_in_true_color.jpg',
+                orbitSize: 130,
+                planetSize: 12,
+                orbitSpeed: 8,
                 orbitDistance: '57 909 050 KM',
                 axialTilt: '2.04°',
                 orbitalPeriod: '88 DAYS',
@@ -389,6 +490,8 @@
                 diameter: '4 879 KM',
                 mass: '3.3011*10^23 KG',
                 surfaceTemp: '-173°C to +427°C',
+                funFact: 'Mercury experiences the most extreme temperature fluctuations in the solar system.',
+                description: 'The smallest and innermost planet in the Solar System. Its surface is heavily cratered and similar in appearance to the Earth\'s Moon, indicating that it has been geologically inactive for billions of years.',
                 composition: [
                     { label: 'O2', value: '42%' },
                     { label: 'Na', value: '29%' },
@@ -401,6 +504,9 @@
                 id: 'venus',
                 name: 'VENUS',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg',
+                orbitSize: 190,
+                planetSize: 18,
+                orbitSpeed: 14,
                 orbitDistance: '108 208 000 KM',
                 axialTilt: '177.36°',
                 orbitalPeriod: '224.7 DAYS',
@@ -408,6 +514,8 @@
                 diameter: '12 104 KM',
                 mass: '4.8675*10^24 KG',
                 surfaceTemp: '+462°C',
+                funFact: 'Venus rotates backwards compared to most other planets. The Sun rises in the west and sets in the east.',
+                description: 'Often called Earth\'s "sister planet" because of their similar size, mass, proximity to the Sun, and bulk composition. However, it is radically different, enveloped in a dense, toxic atmosphere that traps heat.',
                 composition: [
                     { label: 'CO2', value: '96.5%' },
                     { label: 'N2', value: '3.5%' },
@@ -427,6 +535,9 @@
                 id: 'earth',
                 name: 'EARTH',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg',
+                orbitSize: 250,
+                planetSize: 20,
+                orbitSpeed: 20,
                 orbitDistance: '149 598 261 KM',
                 axialTilt: '23.26°',
                 orbitalPeriod: '365 DAYS',
@@ -434,6 +545,8 @@
                 diameter: '12 742 KM',
                 mass: '5.97*10^24 KG',
                 surfaceTemp: '-89.2°C to +56.7°C',
+                funFact: 'Earth is the only planet not named after a mythological god or goddess.',
+                description: 'The third planet from the Sun and the only astronomical object known to harbor life. It has a dynamic atmosphere, oceans of liquid water, and a strong magnetic field generated by a molten iron core.',
                 composition: [
                     { label: 'ATMOSPHERE', isTitle: true },
                     { label: 'N2', value: '78.8%' },
@@ -453,6 +566,9 @@
                 id: 'mars',
                 name: 'MARS',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg',
+                orbitSize: 320,
+                planetSize: 15,
+                orbitSpeed: 32,
                 orbitDistance: '227 939 200 KM',
                 axialTilt: '25.19°',
                 orbitalPeriod: '687 DAYS',
@@ -460,6 +576,8 @@
                 diameter: '6 779 KM',
                 mass: '6.39*10^23 KG',
                 surfaceTemp: '-153°C to +20°C',
+                funFact: 'Mars is home to Olympus Mons, the highest mountain and largest volcano in the entire solar system.',
+                description: 'The fourth planet from the Sun, often referred to as the "Red Planet" due to the iron oxide prevalent on its surface. It hosts thin atmosphere and surface features reminiscent of impact craters of the Moon.',
                 composition: [
                     { label: 'CO2', value: '95.32%' },
                     { label: 'N2', value: '2.7%' },
@@ -472,6 +590,9 @@
                 id: 'jupiter',
                 name: 'JUPITER',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg',
+                orbitSize: 450,
+                planetSize: 40,
+                orbitSpeed: 60,
                 orbitDistance: '778 500 000 KM',
                 axialTilt: '3.13°',
                 orbitalPeriod: '4333 DAYS',
@@ -479,6 +600,8 @@
                 diameter: '139 820 KM',
                 mass: '1.898*10^27 KG',
                 surfaceTemp: '-110°C',
+                funFact: 'Jupiter\'s Great Red Spot is a giant storm that is larger than Earth and has been raging for hundreds of years.',
+                description: 'The largest planet in the Solar System. It is a gas giant with a mass more than two and a half times that of all the other planets in the Solar System combined.',
                 composition: [
                     { label: 'H2', value: '89.8%' },
                     { label: 'He', value: '10.2%' },
@@ -490,6 +613,9 @@
                 id: 'saturn',
                 name: 'SATURN',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg',
+                orbitSize: 560,
+                planetSize: 34,
+                orbitSpeed: 90,
                 orbitDistance: '1 434 000 000 KM',
                 axialTilt: '26.73°',
                 orbitalPeriod: '10759 DAYS',
@@ -497,6 +623,8 @@
                 diameter: '116 460 KM',
                 mass: '5.683*10^26 KG',
                 surfaceTemp: '-140°C',
+                funFact: 'Saturn has the most extensive ring system of any planet, made almost entirely of water ice particles.',
+                description: 'The sixth planet from the Sun and the second-largest in the Solar System. It is a gas giant with an average radius of about nine and a half times that of Earth.',
                 composition: [
                     { label: 'H2', value: '96.3%' },
                     { label: 'He', value: '3.25%' },
@@ -508,6 +636,9 @@
                 id: 'uranus',
                 name: 'URANUS',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg',
+                orbitSize: 660,
+                planetSize: 26,
+                orbitSpeed: 140,
                 orbitDistance: '2 871 000 000 KM',
                 axialTilt: '97.77°',
                 orbitalPeriod: '30688 DAYS',
@@ -515,6 +646,8 @@
                 diameter: '50 724 KM',
                 mass: '8.681*10^25 KG',
                 surfaceTemp: '-195°C',
+                funFact: 'Uranus rotates on its side, meaning its axis of spin is nearly parallel to its orbital plane.',
+                description: 'The seventh planet from the Sun. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System. Often classified as an "ice giant".',
                 composition: [
                     { label: 'H2', value: '83%' },
                     { label: 'He', value: '15%' },
@@ -525,6 +658,9 @@
                 id: 'neptune',
                 name: 'NEPTUNE',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Neptune_-_Voyager_2_%2829741875326%29.png',
+                orbitSize: 760,
+                planetSize: 26,
+                orbitSpeed: 200,
                 orbitDistance: '4 495 000 000 KM',
                 axialTilt: '28.32°',
                 orbitalPeriod: '60182 DAYS',
@@ -532,6 +668,8 @@
                 diameter: '49 244 KM',
                 mass: '1.024*10^26 KG',
                 surfaceTemp: '-200°C',
+                funFact: 'Neptune has the strongest winds in the solar system, which can reach supersonic speeds of 2,100 km/h.',
+                description: 'The eighth and farthest-known Solar planet from the Sun. In the Solar System, it is the fourth-largest planet by diameter, the third-most-massive planet, and the densest giant planet.',
                 composition: [
                     { label: 'H2', value: '80%' },
                     { label: 'He', value: '19%' },
@@ -544,19 +682,35 @@
         const detailState = document.getElementById('detail-state');
         const planetGrid = document.getElementById('planet-grid');
 
-        // Populate Overview Grid
-        planets.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'flex flex-col items-center gap-4 cursor-pointer group';
-            card.onclick = () => showDetail(p.id);
+        // Populate Overview Solar System
+        planets.forEach((p, index) => {
+            const orbitRing = document.createElement('div');
+            orbitRing.className = 'orbit-ring group';
+            orbitRing.style.width = p.orbitSize + 'px';
+            orbitRing.style.height = p.orbitSize + 'px';
+            // Stagger animation delay so they aren't all aligned
+            orbitRing.style.animation = `spin ${p.orbitSpeed}s linear infinite -${index * 5}s`;
             
-            card.innerHTML = `
-                <div class="w-32 h-32 rounded-full overflow-hidden border border-white/10 group-hover:border-primary transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('${p.image}')"></div>
-                </div>
-                <span class="font-arcade text-xl tracking-widest text-zinc-400 group-hover:text-white transition-colors">${p.name}</span>
-            `;
-            planetGrid.appendChild(card);
+            // Pause animation on hover
+            orbitRing.addEventListener('mouseover', () => orbitRing.style.animationPlayState = 'paused');
+            orbitRing.addEventListener('mouseout', () => orbitRing.style.animationPlayState = 'running');
+
+            const planetContainer = document.createElement('div');
+            planetContainer.className = 'orbiting-planet';
+            planetContainer.style.width = p.planetSize + 'px';
+            planetContainer.style.height = p.planetSize + 'px';
+            // Translate Y to place it on the rim, then counter rotate so the texture stays somewhat right
+            planetContainer.style.transform = `translate(-50%, -50%) rotateX(-60deg)`;
+            planetContainer.style.backgroundImage = `url('${p.image}')`;
+            planetContainer.onclick = () => showDetail(p.id);
+
+            const nameLabel = document.createElement('div');
+            nameLabel.className = 'planet-name-label';
+            nameLabel.textContent = p.name;
+
+            planetContainer.appendChild(nameLabel);
+            orbitRing.appendChild(planetContainer);
+            planetGrid.appendChild(orbitRing);
         });
 
         function showDetail(planetId) {
@@ -574,6 +728,9 @@
             document.getElementById('hud-diameter').textContent = data.diameter;
             document.getElementById('hud-mass').textContent = data.mass;
             document.getElementById('hud-surface-temp').textContent = data.surfaceTemp;
+            
+            document.getElementById('hud-description').textContent = data.description;
+            document.getElementById('hud-fun-fact').textContent = data.funFact;
 
             // Build composition callouts
             const compContainer = document.getElementById('hud-composition');
@@ -607,38 +764,38 @@
         }
 
         function showOverview() {
+            detailState.classList.remove('opacity-100');
             detailState.classList.add('opacity-0');
+            
             setTimeout(() => {
                 detailState.classList.add('hidden');
                 overviewState.classList.remove('hidden');
-                // reflow
-                void overviewState.offsetWidth;
-                overviewState.classList.remove('opacity-0');
-            }, 500);
+                
+                // Small delay to ensure display:block applies before opacity transition
+                requestAnimationFrame(() => {
+                    overviewState.classList.remove('opacity-0');
+                    overviewState.classList.add('opacity-100');
+                });
+            }, 500); // Wait for fade out
         }
 
-        // Basic Auth script from other pages
-        document.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('altair_token');
-            if (token) {
-                fetch('http://localhost:8000/auth/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }).then(r => r.json()).then(data => {
-                    if (data.username) {
-                        document.getElementById('auth-buttons').classList.add('hidden');
-                        document.getElementById('user-profile').classList.remove('hidden');
-                        document.getElementById('user-profile').classList.add('flex');
-                        document.getElementById('nav-username').textContent = data.username;
-                    }
-                });
+        // Auth Logic
+        const username = localStorage.getItem('altair_username');
+        if (username) {
+            const profileName = document.getElementById('user-profile-name');
+            if (profileName) {
+                profileName.textContent = username.toUpperCase();
             }
-            
-            document.getElementById('nav-logout-btn')?.addEventListener('click', () => {
+        }
+        
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
                 localStorage.removeItem('altair_token');
-                window.location.reload();
+                localStorage.removeItem('altair_username');
+                window.location.href = '/landing.html';
             });
-        });
-
+        }
     </script>
 </body>
 </html>
