@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALTAIR - Missions Archive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        :root {
+            --primary: #FF8A00;
+            --bg-dark: #050505;
+        }
+        
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+        }
+
+        .font-display { font-family: 'Syncopate', sans-serif; }
+        .font-arcade { font-family: 'VT323', monospace; }
+        
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+        
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#05070A]/80 backdrop-blur-md border-b border-[#3b494b]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+    <div class="flex items-center gap-4">
+        <div class="w-10 h-10 flex items-center justify-center" style="text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">
+            <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
+        </div>
+        <span class="text-4xl font-extrabold text-[#00F0FF] tracking-tighter" style="font-family: 'VT323', monospace; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">ALTAIR</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8" style="font-family: 'JetBrains Mono', monospace;">
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/home.html">HOME</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="#">RADAR</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/sky.html">SKY VIEW</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/game.html">GAMES</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
+    </nav>
+    <div class="flex items-center gap-6" style="font-family: 'JetBrains Mono', monospace;">
+        <button class="material-symbols-outlined text-[#b9cacb] hover:text-[#00F0FF] transition-all active:scale-95">notifications</button>
+        <a href="/profile.html" class="flex items-center gap-3 bg-[#282a2e] px-3 py-1 rounded-full border border-[#3b494b]/30 hover:bg-[#323539] transition-colors cursor-pointer">
+            <span id="user-profile-name" class="font-bold tracking-[0.15em] text-[10px] text-[#00F0FF]"></span>
+            <button class="material-symbols-outlined text-[#00F0FF]" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+        </a>
+        <button id="logout-btn" class="font-bold tracking-[0.15em] text-[10px] text-[#FF8A00] hover:text-white transition-colors border border-[#FF8A00]/30 px-3 py-1 rounded">LOGOUT</button>
+    </div>
+</header>
+
+    <main class="flex-1 mt-20 flex flex-col items-center pt-12 pb-24 px-8 relative z-10 overflow-y-auto">
+        <a href="/knowledge.html" class="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-mono text-xs tracking-widest uppercase cursor-pointer">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            Return to Hub
+        </a>
+
+        <h1 class="font-display text-4xl tracking-[0.3em] mb-16 text-white text-center">HISTORICAL <br><span class="text-[var(--primary)] text-xl">MISSIONS</span></h1>
+        
+        <div class="flex flex-wrap justify-center gap-12 max-w-7xl" id="grid">
+            <!-- Apollo 11 -->
+            <a href="/apollo11.html" class="flex flex-col items-center gap-4 cursor-pointer group transition-transform hover:-translate-y-2">
+                <div class="w-64 h-64 rounded-xl overflow-hidden border border-white/10 group-hover:border-[var(--primary)] transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(255,138,0,0.6)] relative">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-10"></div>
+                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('/apollo-hero.png')"></div>
+                    <div class="absolute bottom-4 left-0 right-0 z-20 flex justify-center">
+                        <span class="material-symbols-outlined text-[#FF8A00] text-3xl">rocket_launch</span>
+                    </div>
+                </div>
+                <span class="font-arcade text-2xl tracking-widest text-zinc-400 group-hover:text-white transition-colors max-w-[250px] text-center">APOLLO 11</span>
+            </a>
+            
+            <!-- Future Placeholder -->
+            <a class="flex flex-col items-center gap-4 cursor-default group opacity-50">
+                <div class="w-64 h-64 rounded-xl overflow-hidden border border-white/10 bg-black/50 flex flex-col items-center justify-center relative">
+                    <span class="material-symbols-outlined text-zinc-500 text-4xl mb-2">lock</span>
+                    <span class="font-arcade text-zinc-500 text-lg tracking-widest">ENCRYPTED</span>
+                </div>
+                <span class="font-arcade text-xl tracking-widest text-zinc-500 max-w-[250px] text-center">CHANDRAYAAN-2<br>(COMING SOON)</span>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auth Logic
+            const username = localStorage.getItem('altair_username');
+            if (username) {
+                const profileName = document.getElementById('user-profile-name');
+                if (profileName) {
+                    profileName.textContent = username.toUpperCase();
+                }
+            }
+            
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('altair_token');
+                    localStorage.removeItem('altair_username');
+                    window.location.href = '/landing.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
