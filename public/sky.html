@@ -111,7 +111,10 @@
     // Profile logic
     const username = localStorage.getItem('altair_username');
     if (username) {
-        document.getElementById('user-profile-name').textContent = username.toUpperCase();
+        const profileName = document.getElementById('user-profile-name');
+        if (profileName) {
+            profileName.textContent = "COMMANDER " + username.toUpperCase();
+        }
     }
     document.getElementById('logout-btn').addEventListener('click', () => {
         localStorage.removeItem('altair_token');

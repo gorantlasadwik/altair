@@ -612,10 +612,11 @@
         // Load username
         const username = localStorage.getItem('altair_username');
         if (username) {
-            document.getElementById('user-profile-name').textContent = username.toUpperCase();
-        }
-
-        // Logout logic
+            const profileName = document.getElementById('user-profile-name');
+            if (profileName) {
+                profileName.textContent = "COMMANDER " + username.toUpperCase();
+            }
+        }// Logout logic
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', () => {
