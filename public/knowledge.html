@@ -386,85 +386,101 @@
         </div>
 
         <!-- State 2: Planet Detail HUD -->
-        <div id="detail-state" class="absolute inset-0 w-full h-[calc(100vh-80px)] hidden opacity-0 transition-opacity duration-1000 bg-black z-20">
+        <div id="detail-state" class="absolute inset-0 w-full h-[calc(100vh-80px)] hidden opacity-0 transition-opacity duration-1000 bg-black z-20 overflow-y-auto">
             
-            <button onclick="showOverview()" class="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-mono text-xs tracking-widest uppercase cursor-pointer">
-                <span class="material-symbols-outlined text-sm">arrow_back</span>
-                Return to Overview
-            </button>
+            <!-- First Fold: HUD -->
+            <div class="relative w-full h-[calc(100vh-80px)] flex-shrink-0">
+                <button onclick="showOverview()" class="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-mono text-xs tracking-widest uppercase cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    Return to Overview
+                </button>
 
-            <!-- Planet Container (Positioned center) -->
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] planet-sphere" id="hud-planet">
-                <!-- Crosshair -->
-                <div class="crosshair-container">
-                    <div class="crosshair-circle">
-                        <div class="tick top"></div>
-                        <div class="tick bottom"></div>
-                        <div class="tick left"></div>
-                        <div class="tick right"></div>
-                        <div class="tick d1 bg-white/30"></div>
-                        <div class="tick d2 bg-white/30"></div>
-                        <div class="tick d3 bg-white/30"></div>
-                        <div class="tick d4 bg-white/30"></div>
+                <!-- Planet Container (Positioned center) -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] planet-sphere" id="hud-planet">
+                    <!-- Crosshair -->
+                    <div class="crosshair-container">
+                        <div class="crosshair-circle">
+                            <div class="tick top"></div>
+                            <div class="tick bottom"></div>
+                            <div class="tick left"></div>
+                            <div class="tick right"></div>
+                            <div class="tick d1 bg-white/30"></div>
+                            <div class="tick d2 bg-white/30"></div>
+                            <div class="tick d3 bg-white/30"></div>
+                            <div class="tick d4 bg-white/30"></div>
+                        </div>
+                        <div class="crosshair-text" id="hud-title">EARTH</div>
                     </div>
-                    <div class="crosshair-text" id="hud-title">EARTH</div>
+
+                    <!-- Composition Lines & Callouts -->
+                    <div id="hud-composition" class="absolute inset-0 pointer-events-none"></div>
                 </div>
 
-                <!-- Composition Lines & Callouts -->
-                <div id="hud-composition" class="absolute inset-0 pointer-events-none"></div>
+                <!-- HUD Data Bottom Layer -->
+                <div class="absolute bottom-32 left-16 flex flex-col gap-2">
+                    <div class="absolute -top-4 -left-4 w-12 h-12 border-t border-l border-white/10 opacity-50"></div>
+                    <div class="absolute -bottom-4 -left-4 w-12 h-12 border-b border-l border-white/10 opacity-50"></div>
+                    <div class="flex gap-4 items-baseline justify-between w-48">
+                        <span class="data-label">ORBIT DISTANCE:</span>
+                        <span class="data-value" id="hud-orbit-dist"></span>
+                    </div>
+                    <div class="flex gap-4 items-baseline justify-between w-48">
+                        <span class="data-label">AXIAL TILT:</span>
+                        <span class="data-value" id="hud-axial-tilt"></span>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-32 left-1/2 -translate-x-1/2 flex flex-col gap-2 items-center">
+                    <div class="flex gap-4 items-baseline justify-between w-48">
+                        <span class="data-label">ORBITAL PERIOD:</span>
+                        <span class="data-value" id="hud-orbital-period"></span>
+                    </div>
+                    <div class="flex gap-4 items-baseline justify-between w-48">
+                        <span class="data-label">LENGHT OF DAY:</span>
+                        <span class="data-value" id="hud-length-day"></span>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-32 right-16 flex flex-col gap-2 items-end">
+                    <div class="absolute -top-4 -right-4 w-12 h-12 border-t border-r border-white/10 opacity-50"></div>
+                    <div class="absolute -bottom-4 -right-4 w-12 h-12 border-b border-r border-white/10 opacity-50"></div>
+                    <div class="flex gap-4 items-baseline justify-between w-64">
+                        <span class="data-label">DIAMETER:</span>
+                        <span class="data-value" id="hud-diameter"></span>
+                    </div>
+                    <div class="flex gap-4 items-baseline justify-between w-64">
+                        <span class="data-label">MASS:</span>
+                        <span class="data-value" id="hud-mass"></span>
+                    </div>
+                    <div class="flex gap-4 items-baseline justify-between w-64">
+                        <span class="data-label">SURFACE TEMPERATURE:</span>
+                        <span class="data-value" id="hud-surface-temp"></span>
+                    </div>
+                </div>
+
+                <!-- Scroll Indicator -->
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity cursor-pointer animate-bounce" onclick="document.getElementById('planet-details-section').scrollIntoView({behavior: 'smooth'})">
+                    <span class="font-label-caps text-[10px] tracking-widest text-neon-cyan uppercase">Scroll for Archives</span>
+                    <span class="material-symbols-outlined text-neon-cyan text-xl">keyboard_arrow_down</span>
+                </div>
             </div>
 
-            <!-- HUD Data Bottom Layer -->
-            <div class="absolute bottom-32 left-16 flex flex-col gap-2">
-                <div class="absolute -top-4 -left-4 w-12 h-12 border-t border-l border-white/10 opacity-50"></div>
-                <div class="absolute -bottom-4 -left-4 w-12 h-12 border-b border-l border-white/10 opacity-50"></div>
-                <div class="flex gap-4 items-baseline justify-between w-48">
-                    <span class="data-label">ORBIT DISTANCE:</span>
-                    <span class="data-value" id="hud-orbit-dist"></span>
-                </div>
-                <div class="flex gap-4 items-baseline justify-between w-48">
-                    <span class="data-label">AXIAL TILT:</span>
-                    <span class="data-value" id="hud-axial-tilt"></span>
-                </div>
-            </div>
-
-            <div class="absolute bottom-32 left-1/2 -translate-x-1/2 flex flex-col gap-2 items-center">
-                <div class="flex gap-4 items-baseline justify-between w-48">
-                    <span class="data-label">ORBITAL PERIOD:</span>
-                    <span class="data-value" id="hud-orbital-period"></span>
-                </div>
-                <div class="flex gap-4 items-baseline justify-between w-48">
-                    <span class="data-label">LENGHT OF DAY:</span>
-                    <span class="data-value" id="hud-length-day"></span>
-                </div>
-            </div>
-
-            <div class="absolute bottom-32 right-16 flex flex-col gap-2 items-end">
-                <div class="absolute -top-4 -right-4 w-12 h-12 border-t border-r border-white/10 opacity-50"></div>
-                <div class="absolute -bottom-4 -right-4 w-12 h-12 border-b border-r border-white/10 opacity-50"></div>
-                <div class="flex gap-4 items-baseline justify-between w-64">
-                    <span class="data-label">DIAMETER:</span>
-                    <span class="data-value" id="hud-diameter"></span>
-                </div>
-                <div class="flex gap-4 items-baseline justify-between w-64">
-                    <span class="data-label">MASS:</span>
-                    <span class="data-value" id="hud-mass"></span>
-                </div>
-                <div class="flex gap-4 items-baseline justify-between w-64">
-                    <span class="data-label">SURFACE TEMPERATURE:</span>
-                    <span class="data-value" id="hud-surface-temp"></span>
-                </div>
-            </div>
-
-            <!-- New Expanded Facts Section -->
-            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 w-3/4 max-w-4xl bg-white/5 border border-white/10 backdrop-blur-sm p-4 rounded flex gap-8 shadow-lg z-30">
-                <div class="flex-1 border-r border-white/10 pr-6">
-                    <div class="text-[10px] text-[#00f5ff] font-arcade tracking-widest mb-1 uppercase">ARCHIVE DESCRIPTION</div>
-                    <div class="font-mono text-xs text-zinc-300 leading-relaxed" id="hud-description"></div>
-                </div>
-                <div class="flex-1 pl-2">
-                    <div class="text-[10px] text-[#ff3300] font-arcade tracking-widest mb-1 uppercase">NOTABLE FACT</div>
-                    <div class="font-mono text-xs text-white leading-relaxed italic" id="hud-fun-fact"></div>
+            <!-- Second Fold: Details -->
+            <div id="planet-details-section" class="w-full min-h-[50vh] bg-surface flex flex-col items-center justify-center p-16 border-t border-outline-variant/30 z-30 relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#00f0ff 1px, transparent 1px); background-size: 40px 40px;"></div>
+                <div class="w-full max-w-5xl bg-surface-container-high/80 border border-outline-variant/50 p-10 rounded-lg flex flex-col md:flex-row gap-12 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md relative z-10">
+                    <div class="flex-1 md:border-r border-outline-variant/50 md:pr-12">
+                        <div class="text-sm text-neon-cyan font-arcade tracking-widest mb-6 uppercase flex items-center gap-3">
+                            <span class="material-symbols-outlined">library_books</span> ARCHIVE DESCRIPTION
+                        </div>
+                        <div class="font-body-md text-[16px] text-on-surface-variant leading-relaxed tracking-wide" id="hud-description"></div>
+                    </div>
+                    <div class="flex-1 md:pl-4">
+                        <div class="text-sm text-hazard-orange font-arcade tracking-widest mb-6 uppercase flex items-center gap-3">
+                            <span class="material-symbols-outlined">lightbulb</span> NOTABLE FACT
+                        </div>
+                        <div class="font-body-md text-[16px] text-on-surface leading-relaxed italic border-l-4 border-hazard-orange/50 pl-4 py-2" id="hud-fun-fact"></div>
+                    </div>
                 </div>
             </div>
 
@@ -759,6 +775,7 @@
                 detailState.classList.remove('hidden');
                 // reflow
                 void detailState.offsetWidth;
+                detailState.scrollTop = 0;
                 detailState.classList.remove('opacity-0');
             }, 500);
         }
