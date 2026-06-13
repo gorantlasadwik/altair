@@ -396,8 +396,8 @@
 <p class="font-label-caps text-[10px] text-on-surface-variant">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
 </div>
 <div class="flex gap-8 font-label-caps text-label-caps text-on-surface-variant">
-<a class="arcade-nav-link hover:text-hazard-orange transition-colors" href="#">SHARE</a>
-<a class="arcade-nav-link hover:text-hazard-orange transition-colors" href="#">ABOUT</a>
+<a class="arcade-nav-link hover:text-hazard-orange transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR Games', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
+<a class="arcade-nav-link hover:text-hazard-orange transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
 </div>
 </footer>
 <script>
