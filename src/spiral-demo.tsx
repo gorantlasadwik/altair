@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { SpiralAnimation } from '@/components/ui/spiral-animation'
 
-const INTRO_DURATION_MS = 9000
+const INTRO_DURATION_MS = 8000
 
 const SpiralDemo = () => {
   const [introVisible, setIntroVisible] = useState(true)
@@ -16,7 +16,7 @@ const SpiralDemo = () => {
   useEffect(() => {
     const brandTimer = window.setTimeout(() => {
       setBrandVisible(true)
-    }, 7500)
+    }, 6500)
 
     const introTimer = window.setTimeout(() => {
       revealLanding()
