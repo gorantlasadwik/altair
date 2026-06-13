@@ -12,5 +12,15 @@
 </head>
   <body>
     <div id="root"></div>
-  </body>
+  <footer class="w-full py-8 px-10 flex flex-col md:flex-row justify-between items-center opacity-60 bg-[#05070A] border-t border-[#FF8A00]/20 mt-auto z-50 relative">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="arcade-font text-4xl text-[#00F0FF] mb-2" style="font-family: 'VT323', monospace;">ALTAIR</span>
+<p class="font-label-caps text-[10px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-8 font-label-caps text-[12px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
+</div>
+</footer>
+</body>
 </html>

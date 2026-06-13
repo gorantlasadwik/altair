@@ -281,18 +281,18 @@
         </aside>
     </main>
 
-    <footer class="w-full border-t border-outline-variant/30 py-8 mt-12 bg-surface-container-lowest/50 mt-auto">
-        <div class="max-w-[1440px] mx-auto px-margin-edge flex flex-col md:flex-row justify-between items-center opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-            <div class="flex items-center gap-2 mb-4 md:mb-0">
-                <span class="font-arcade text-3xl font-black text-neon-cyan tracking-tighter uppercase">ALTAIR COMMAND</span>
-            </div>
-            <div class="font-data-readout text-[10px] text-on-surface-variant flex gap-6">
-                <span>COORD: 23h 06m 29.283s</span>
-                <span>DATA INTEGRITY: 99.8%</span>
-                <span>NETWORK: DEEP SPACE 7</span>
-            </div>
-        </div>
-    </footer>
+    <footer class="w-full py-8 px-10 flex flex-col md:flex-row justify-between items-center opacity-60 bg-[#05070A] border-t border-[#FF8A00]/20 mt-auto z-50 relative">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="arcade-font text-4xl text-[#00F0FF] mb-2" style="font-family: 'VT323', monospace;">ALTAIR</span>
+<p class="font-label-caps text-[10px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-8 font-label-caps text-[12px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command
+Version: 1.0.0
+Built for deep space simulation and training.'); return false;">ABOUT</a>
+</div>
+</footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
