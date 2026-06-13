@@ -33,3 +33,5 @@ vite.out.log
 # Custom
 test.txt
 sample pages/
+
+.vercel

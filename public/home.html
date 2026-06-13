@@ -171,7 +171,7 @@
       <script>
         // Simple auth check
         if (!localStorage.getItem('altair_token')) {
-            window.location.href = '/landing.html';
+            window.location.href = '/';
         }
       </script>
 </head>
@@ -621,7 +621,7 @@
             logoutBtn.addEventListener('click', () => {
                 localStorage.removeItem('altair_token');
                 localStorage.removeItem('altair_username');
-                window.location.href = '/landing.html';
+                window.location.href = '/';
             });
         }
     </script>
