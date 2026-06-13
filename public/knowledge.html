@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ALTAIR - Knowledge Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=JetBrains+Mono:wght@400;500;700&family=Hanken+Grotesk:wght@400;500&family=VT323&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
         :root {
@@ -175,6 +174,39 @@
         .arcade-font {
             font-family: 'VT323', monospace;
         }
+
+        .glow-sm { text-shadow: 0 0 8px rgba(0, 240, 255, 0.6); }
+        .glow-border { box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); }
+        .scanline {
+            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(to right, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 2px 100%;
+            pointer-events: none;
+        }
+        .holographic {
+            backdrop-filter: blur(12px);
+            background: rgba(5, 7, 10, 0.8);
+        }
+        .mechanical-corner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 12px; height: 12px;
+            border-top: 2px solid #00F0FF;
+            border-left: 2px solid #00F0FF;
+        }
+        .mechanical-corner::after {
+            content: '';
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 12px; height: 12px;
+            border-bottom: 2px solid #00F0FF;
+            border-right: 2px solid #00F0FF;
+        }
+
+  /* Hide scrollbar globally */
+  ::-webkit-scrollbar { display: none; }
+  * { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 <script id="tailwind-config">
         tailwind.config = {
@@ -249,12 +281,12 @@
                       "unit": "4px"
               },
               "fontFamily": {
-                      "body-md": ["hankenGrotesk"],
-                      "headline-lg": ["VT323", "monospace"],
-                      "data-readout": ["jetbrainsMono"],
-                      "headline-xl": ["VT323", "monospace"],
-                      "headline-lg-mobile": ["VT323", "monospace"],
-                      "label-caps": ["jetbrainsMono"]
+                      "body-md": ["Hanken Grotesk"],
+                      "headline-lg": ["Sora"],
+                      "data-readout": ["JetBrains Mono"],
+                      "headline-xl": ["Sora"],
+                      "headline-lg-mobile": ["Sora"],
+                      "label-caps": ["JetBrains Mono"]
               },
               "fontSize": {
                       "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
@@ -268,12 +300,6 @@
           },
         }
       </script>
-
-<style>
-  /* Hide scrollbar globally */
-  ::-webkit-scrollbar { display: none; }
-  * { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
 </head>
 <body class="flex flex-col min-h-screen">
 
@@ -317,105 +343,185 @@
             </div>
         </div>
 
-        <!-- State 2: Planet Detail HUD -->
+        <!-- State 2: Planet Detail HUD (Classified Archive Layout) -->
         <div id="detail-state" class="absolute inset-0 w-full h-[calc(100vh-80px)] hidden opacity-0 transition-opacity duration-1000 bg-black z-20 overflow-y-auto">
             
-            <!-- First Fold: HUD -->
-            <div class="relative w-full h-[calc(100vh-80px)] flex-shrink-0">
-                <button onclick="showOverview()" class="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-mono text-xs tracking-widest uppercase cursor-pointer">
-                    <span class="material-symbols-outlined text-sm">arrow_back</span>
-                    Return to Overview
-                </button>
+            <button onclick="showOverview()" class="absolute top-4 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-label-caps text-xs tracking-widest uppercase cursor-pointer bg-void-black/80 px-4 py-2 border border-outline-variant/30 rounded">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                Return to Solar System
+            </button>
 
-                <!-- Planet Container (Positioned center) -->
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] planet-sphere" id="hud-planet">
-                    <!-- Crosshair -->
-                    <div class="crosshair-container">
-                        <div class="crosshair-circle">
-                            <div class="tick top"></div>
-                            <div class="tick bottom"></div>
-                            <div class="tick left"></div>
-                            <div class="tick right"></div>
-                            <div class="tick d1 bg-white/30"></div>
-                            <div class="tick d2 bg-white/30"></div>
-                            <div class="tick d3 bg-white/30"></div>
-                            <div class="tick d4 bg-white/30"></div>
+            <!-- HUD Scanline Overlay -->
+            <div class="fixed inset-0 scanline z-10 pointer-events-none opacity-20"></div>
+
+            <div class="relative pt-20 pb-24 px-margin-edge max-w-[1440px] mx-auto flex flex-col md:flex-row gap-gutter z-20">
+                <!-- Left: Main Article -->
+                <article class="md:w-[65%] space-y-12">
+                    <!-- Header Section -->
+                    <section class="space-y-6">
+                        <div class="flex items-center gap-4">
+                            <span class="px-3 py-1 bg-cyber-purple/20 border border-cyber-purple text-cyber-purple font-label-caps text-label-caps glow-border">CLASSIFIED ARCHIVE v4.2</span>
+                            <span class="text-outline-variant font-label-caps text-label-caps">LAST UPDATE: <span id="detail-date">22.04.3042</span></span>
                         </div>
-                        <div class="crosshair-text" id="hud-title">EARTH</div>
-                    </div>
+                        <h1 id="detail-title" class="font-headline-xl text-headline-xl text-primary-fixed uppercase tracking-widest border-l-4 border-neon-cyan pl-6">PLANET NAME</h1>
+                        <div class="flex flex-wrap gap-8 py-4 border-y border-outline-variant/30">
+                            <div>
+                                <p class="text-on-surface-variant font-label-caps text-[10px] uppercase">Category</p>
+                                <p id="detail-category" class="font-data-readout text-data-readout text-neon-cyan">Exoplanet</p>
+                            </div>
+                            <div>
+                                <p class="text-on-surface-variant font-label-caps text-[10px] uppercase">Location</p>
+                                <p id="detail-location" class="font-data-readout text-data-readout text-neon-cyan">Solar System</p>
+                            </div>
+                            <div>
+                                <p class="text-on-surface-variant font-label-caps text-[10px] uppercase">Distance</p>
+                                <p id="detail-distance" class="font-data-readout text-data-readout text-neon-cyan">1 AU</p>
+                            </div>
+                        </div>
+                    </section>
 
-                    <!-- Composition Lines & Callouts -->
-                    <div id="hud-composition" class="absolute inset-0 pointer-events-none"></div>
-                </div>
+                    <!-- Overview -->
+                    <section class="space-y-4">
+                        <h2 class="font-headline-lg text-headline-lg text-neon-cyan flex items-center gap-3">
+                            <span class="material-symbols-outlined text-neon-cyan">info</span>
+                            Overview
+                        </h2>
+                        <div class="p-6 holographic border border-outline-variant/20 rounded-lg relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-2 opacity-10">
+                                <span class="material-symbols-outlined text-6xl">public</span>
+                            </div>
+                            <p id="detail-overview-1" class="leading-relaxed text-on-background opacity-90 text-lg"></p>
+                            <p id="detail-overview-2" class="mt-4 leading-relaxed text-on-background opacity-90"></p>
+                        </div>
+                    </section>
 
-                <!-- HUD Data Bottom Layer -->
-                <div class="absolute bottom-32 left-16 flex flex-col gap-2">
-                    <div class="absolute -top-4 -left-4 w-12 h-12 border-t border-l border-white/10 opacity-50"></div>
-                    <div class="absolute -bottom-4 -left-4 w-12 h-12 border-b border-l border-white/10 opacity-50"></div>
-                    <div class="flex gap-4 items-baseline justify-between w-48">
-                        <span class="data-label">ORBIT DISTANCE:</span>
-                        <span class="data-value" id="hud-orbit-dist"></span>
-                    </div>
-                    <div class="flex gap-4 items-baseline justify-between w-48">
-                        <span class="data-label">AXIAL TILT:</span>
-                        <span class="data-value" id="hud-axial-tilt"></span>
-                    </div>
-                </div>
+                    <!-- Discovery -->
+                    <section class="space-y-4">
+                        <h2 class="font-headline-lg text-headline-lg text-neon-cyan flex items-center gap-3">
+                            <span class="material-symbols-outlined text-neon-cyan">history</span>
+                            Discovery & History
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-panel-padding bg-surface-container-low border-l-2 border-electric-blue">
+                                <p class="font-data-readout text-data-readout text-electric-blue mb-2">[ DATA_ENTRY: <span id="detail-discovery-year">2017</span> ]</p>
+                                <p id="detail-discovery-details">Discovery details.</p>
+                            </div>
+                            <div class="p-panel-padding bg-surface-container-low border-l-2 border-cyber-purple">
+                                <p class="font-data-readout text-data-readout text-cyber-purple mb-2">[ DATA_UPDATE: RECENT ]</p>
+                                <p id="detail-discovery-updates">Update details.</p>
+                            </div>
+                        </div>
+                    </section>
 
-                <div class="absolute bottom-32 left-1/2 -translate-x-1/2 flex flex-col gap-2 items-center">
-                    <div class="flex gap-4 items-baseline justify-between w-48">
-                        <span class="data-label">ORBITAL PERIOD:</span>
-                        <span class="data-value" id="hud-orbital-period"></span>
-                    </div>
-                    <div class="flex gap-4 items-baseline justify-between w-48">
-                        <span class="data-label">LENGHT OF DAY:</span>
-                        <span class="data-value" id="hud-length-day"></span>
-                    </div>
-                </div>
+                    <!-- Physical Characteristics -->
+                    <section class="space-y-4">
+                        <h2 class="font-headline-lg text-headline-lg text-neon-cyan flex items-center gap-3">
+                            <span class="material-symbols-outlined text-neon-cyan">architecture</span>
+                            Physical Characteristics
+                        </h2>
+                        <div class="p-6 bg-surface-container-lowest/50 border border-outline-variant/30 rounded-lg">
+                            <p id="detail-physics-desc" class="leading-relaxed"></p>
+                            <div class="my-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="text-center p-4 bg-void-black border border-neon-cyan/20">
+                                    <div class="text-xs text-on-surface-variant font-label-caps">RADIUS</div>
+                                    <div id="detail-radius" class="text-xl text-primary font-bold">1 R⊕</div>
+                                </div>
+                                <div class="text-center p-4 bg-void-black border border-neon-cyan/20">
+                                    <div class="text-xs text-on-surface-variant font-label-caps">ORBIT</div>
+                                    <div id="detail-orbit-period" class="text-xl text-primary font-bold">365 DAYS</div>
+                                </div>
+                                <div class="text-center p-4 bg-void-black border border-neon-cyan/20">
+                                    <div class="text-xs text-on-surface-variant font-label-caps">TEMP</div>
+                                    <div id="detail-temp" class="text-xl text-primary font-bold">15°C</div>
+                                </div>
+                                <div class="text-center p-4 bg-void-black border border-neon-cyan/20">
+                                    <div class="text-xs text-on-surface-variant font-label-caps">GRAVITY</div>
+                                    <div id="detail-gravity" class="text-xl text-primary font-bold">1 G</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-                <div class="absolute bottom-32 right-16 flex flex-col gap-2 items-end">
-                    <div class="absolute -top-4 -right-4 w-12 h-12 border-t border-r border-white/10 opacity-50"></div>
-                    <div class="absolute -bottom-4 -right-4 w-12 h-12 border-b border-r border-white/10 opacity-50"></div>
-                    <div class="flex gap-4 items-baseline justify-between w-64">
-                        <span class="data-label">DIAMETER:</span>
-                        <span class="data-value" id="hud-diameter"></span>
-                    </div>
-                    <div class="flex gap-4 items-baseline justify-between w-64">
-                        <span class="data-label">MASS:</span>
-                        <span class="data-value" id="hud-mass"></span>
-                    </div>
-                    <div class="flex gap-4 items-baseline justify-between w-64">
-                        <span class="data-label">SURFACE TEMPERATURE:</span>
-                        <span class="data-value" id="hud-surface-temp"></span>
-                    </div>
-                </div>
+                    <!-- Fun Facts & Research -->
+                    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 holographic border border-outline-variant/30 mechanical-corner relative">
+                            <h3 class="font-label-caps text-label-caps text-cyber-purple mb-4">FUN FACTS</h3>
+                            <ul id="detail-fun-facts" class="space-y-3">
+                                <!-- Injected via JS -->
+                            </ul>
+                        </div>
+                        <div class="p-6 holographic border border-outline-variant/30 mechanical-corner relative">
+                            <h3 class="font-label-caps text-label-caps text-neon-cyan mb-4">MODERN RESEARCH</h3>
+                            <p id="detail-modern-research" class="text-sm opacity-90 leading-relaxed"></p>
+                            <div class="mt-4 flex gap-2">
+                                <span class="text-xs px-2 py-1 bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30 rounded">ACTIVE MISSIONS</span>
+                                <span class="text-xs px-2 py-1 bg-electric-blue/10 text-electric-blue border border-electric-blue/30 rounded">ARCHIVAL DATA</span>
+                            </div>
+                        </div>
+                    </section>
+                </article>
 
-                <!-- Scroll Indicator -->
-                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity cursor-pointer animate-bounce" onclick="document.getElementById('planet-details-section').scrollIntoView({behavior: 'smooth'})">
-                    <span class="font-label-caps text-[10px] tracking-widest text-neon-cyan uppercase">Scroll for Archives</span>
-                    <span class="material-symbols-outlined text-neon-cyan text-xl">keyboard_arrow_down</span>
-                </div>
+                <!-- Right: Infobox Sidebar -->
+                <aside class="md:w-[35%] space-y-6">
+                    <div class="sticky top-28 space-y-6">
+                        <!-- Visual Card -->
+                        <div class="p-1 bg-outline-variant/30 rounded-lg overflow-hidden group">
+                            <div class="relative aspect-square bg-void-black flex items-center justify-center border border-neon-cyan/20 overflow-hidden">
+                                <div class="absolute inset-0 bg-gradient-to-t from-void-black to-transparent z-10 opacity-60"></div>
+                                <img id="detail-image" alt="Planet" class="object-cover w-full h-full opacity-80 group-hover:scale-110 transition-transform duration-700" src="">
+                                <div class="absolute bottom-4 left-4 z-20">
+                                    <span class="font-label-caps text-[10px] text-neon-cyan bg-void-black/80 px-2 py-1 border border-neon-cyan/40">SENSOR FEED: ACTIVE</span>
+                                </div>
+                                <!-- Holographic Glitch Element -->
+                                <div class="absolute top-4 right-4 z-20 flex gap-1">
+                                    <div class="w-2 h-2 rounded-full bg-neon-cyan animate-pulse"></div>
+                                    <div class="w-2 h-2 rounded-full bg-cyber-purple animate-pulse" style="animation-delay: 0.2s"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats Table -->
+                        <div class="holographic border border-neon-cyan/20 p-panel-padding relative">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-neon-cyan shadow-[0_0_10px_#00F0FF]"></div>
+                            <h3 class="font-headline-lg text-headline-lg text-primary-fixed mb-4 glow-sm">QUICK STATS</h3>
+                            <div class="space-y-3 font-data-readout text-data-readout">
+                                <div class="flex justify-between border-b border-outline-variant/20 pb-2">
+                                    <span class="text-on-surface-variant">HOST STAR</span>
+                                    <span id="stat-host-star" class="text-neon-cyan">Sun</span>
+                                </div>
+                                <div class="flex justify-between border-b border-outline-variant/20 pb-2">
+                                    <span class="text-on-surface-variant">YEAR DISCOVERED</span>
+                                    <span id="stat-year-discovered" class="text-neon-cyan">Antiquity</span>
+                                </div>
+                                <div class="flex justify-between border-b border-outline-variant/20 pb-2">
+                                    <span class="text-on-surface-variant">MASS</span>
+                                    <span id="stat-mass" class="text-neon-cyan">1.0</span>
+                                </div>
+                                <div class="flex justify-between border-b border-outline-variant/20 pb-2">
+                                    <span class="text-on-surface-variant">ORBITAL PERIOD</span>
+                                    <span id="stat-orbital-period" class="text-neon-cyan">365 DAYS</span>
+                                </div>
+                                <div class="flex justify-between border-b border-outline-variant/20 pb-2">
+                                    <span class="text-on-surface-variant">STEL. DISTANCE</span>
+                                    <span id="stat-stel-distance" class="text-neon-cyan">1 AU</span>
+                                </div>
+                                <div class="flex justify-between border-b border-outline-variant/20 pb-2">
+                                    <span class="text-on-surface-variant">HABITABLE ZONE</span>
+                                    <span id="stat-habitable" class="text-neon-cyan">YES</span>
+                                </div>
+                                <div class="flex justify-between border-b border-outline-variant/20 pb-2">
+                                    <span class="text-on-surface-variant">ATMOSPHERE</span>
+                                    <span id="stat-atmosphere" class="text-neon-cyan">YES</span>
+                                </div>
+                                <div class="flex justify-between border-b border-outline-variant/20 pb-2">
+                                    <span class="text-on-surface-variant">DETECTION</span>
+                                    <span id="stat-detection" class="text-neon-cyan">Direct</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
             </div>
-
-            <!-- Second Fold: Details -->
-            <div id="planet-details-section" class="w-full min-h-[50vh] bg-surface flex flex-col items-center justify-center p-16 border-t border-outline-variant/30 z-30 relative overflow-hidden">
-                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#00f0ff 1px, transparent 1px); background-size: 40px 40px;"></div>
-                <div class="w-full max-w-5xl bg-surface-container-high/80 border border-outline-variant/50 p-10 rounded-lg flex flex-col md:flex-row gap-12 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md relative z-10">
-                    <div class="flex-1 md:border-r border-outline-variant/50 md:pr-12">
-                        <div class="text-sm text-neon-cyan font-arcade tracking-widest mb-6 uppercase flex items-center gap-3">
-                            <span class="material-symbols-outlined">library_books</span> ARCHIVE DESCRIPTION
-                        </div>
-                        <div class="font-body-md text-[16px] text-on-surface-variant leading-relaxed tracking-wide" id="hud-description"></div>
-                    </div>
-                    <div class="flex-1 md:pl-4">
-                        <div class="text-sm text-hazard-orange font-arcade tracking-widest mb-6 uppercase flex items-center gap-3">
-                            <span class="material-symbols-outlined">lightbulb</span> NOTABLE FACT
-                        </div>
-                        <div class="font-body-md text-[16px] text-on-surface leading-relaxed italic border-l-4 border-hazard-orange/50 pl-4 py-2" id="hud-fun-fact"></div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
     </main>
@@ -426,98 +532,226 @@
             {
                 id: 'mercury', name: 'MERCURY',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Mercury_in_true_color.jpg',
-                orbitDistance: '57 909 050 KM', axialTilt: '2.04°', orbitalPeriod: '88 DAYS',
-                lengthOfDay: '58.65 DAYS', diameter: '4 879 KM', mass: '3.3011*10^23 KG',
-                surfaceTemp: '-173°C to +427°C',
-                funFact: 'Mercury experiences the most extreme temperature fluctuations in the solar system.',
-                description: 'The smallest and innermost planet in the Solar System. Its surface is heavily cratered and similar in appearance to the Earth\'s Moon, indicating that it has been geologically inactive for billions of years.',
-                composition: [
-                    { label: 'O2', value: '42%' }, { label: 'Na', value: '29%' }, { label: 'H2', value: '22%' }, { label: 'He', value: '6%' }, { label: 'K', value: '0.5%' }
-                ]
+                category: 'Terrestrial Planet',
+                location: 'Inner Solar System',
+                orbitDistance: '0.39 AU',
+                discoveryYear: 'Antiquity',
+                discoveryDetails: 'Known to ancient civilizations like the Sumerians and Babylonians.',
+                discoveryUpdates: 'Mariner 10 and MESSENGER mapped the surface entirely.',
+                physicsDesc: 'The smallest and innermost planet. Its surface is heavily cratered, resembling the Moon.',
+                radius: '0.38 R⊕',
+                orbitPeriod: '88 DAYS',
+                temp: '-173°C to 427°C',
+                gravity: '0.38 G',
+                funFacts: [
+                    'Mercury is the fastest planet, moving at 47 km/s.',
+                    'Despite being closest to the Sun, it is not the hottest planet.',
+                    'A year is 88 days, but a solar day is 176 Earth days.',
+                    'It has ice hidden in permanently shadowed craters.'
+                ],
+                modernResearch: 'BepiColombo mission is en route to study its magnetic field and interior structure.',
+                hostStar: 'Sun',
+                mass: '0.055 M⊕',
+                stelDistance: '0.39 AU',
+                habitable: 'NO',
+                atmosphere: 'EXOSPHERE',
+                detection: 'Direct Observation'
             },
             {
                 id: 'venus', name: 'VENUS',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg',
-                orbitDistance: '108 208 000 KM', axialTilt: '177.36°', orbitalPeriod: '224.7 DAYS',
-                lengthOfDay: '116.75 DAYS', diameter: '12 104 KM', mass: '4.8675*10^24 KG',
-                surfaceTemp: '+462°C',
-                funFact: 'Venus rotates backwards compared to most other planets. The Sun rises in the west and sets in the east.',
-                description: 'Often called Earth\'s "sister planet" because of their similar size, mass, proximity to the Sun, and bulk composition. However, it is radically different, enveloped in a dense, toxic atmosphere that traps heat.',
-                composition: [
-                    { label: 'CO2', value: '96.5%' }, { label: 'N2', value: '3.5%' }, { label: 'SO2', value: '0.015%' }
-                ]
+                category: 'Terrestrial Planet',
+                location: 'Inner Solar System',
+                orbitDistance: '0.72 AU',
+                discoveryYear: 'Antiquity',
+                discoveryDetails: 'Visible as the Morning Star and Evening Star to ancient skywatchers.',
+                discoveryUpdates: 'Venera probes confirmed an extremely dense, toxic atmosphere.',
+                physicsDesc: 'Similar in size to Earth but enveloped in a dense layer of sulfuric acid clouds.',
+                radius: '0.95 R⊕',
+                orbitPeriod: '225 DAYS',
+                temp: '462°C',
+                gravity: '0.90 G',
+                funFacts: [
+                    'Venus rotates backwards compared to most planets.',
+                    'It is the hottest planet in the solar system due to runaway greenhouse effect.',
+                    'Surface pressure is 92 times that of Earth.',
+                    'A day on Venus is longer than its year.'
+                ],
+                modernResearch: 'Upcoming missions like VERITAS and DAVINCI+ will map its surface and analyze atmospheric layers.',
+                hostStar: 'Sun',
+                mass: '0.815 M⊕',
+                stelDistance: '0.72 AU',
+                habitable: 'NO',
+                atmosphere: 'CO2 RICH',
+                detection: 'Direct Observation'
             },
             {
                 id: 'earth', name: 'EARTH',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg',
-                orbitDistance: '149 598 261 KM', axialTilt: '23.26°', orbitalPeriod: '365 DAYS',
-                lengthOfDay: '24 HOURS', diameter: '12 742 KM', mass: '5.97*10^24 KG',
-                surfaceTemp: '-89.2°C to +56.7°C',
-                funFact: 'Earth is the only planet not named after a mythological god or goddess.',
-                description: 'The third planet from the Sun and the only astronomical object known to harbor life. It has a dynamic atmosphere, oceans of liquid water, and a strong magnetic field generated by a molten iron core.',
-                composition: [
-                    { label: 'N2', value: '78.8%' }, { label: 'O2', value: '20.95%' }, { label: 'Ar', value: '0.93%' }
-                ]
+                category: 'Terrestrial Planet',
+                location: 'Habitable Zone, Solar System',
+                orbitDistance: '1.00 AU',
+                discoveryYear: 'Prehistoric',
+                discoveryDetails: 'Recognized as a planet orbiting the sun during the Copernican Revolution.',
+                discoveryUpdates: 'Modern satellites continuously monitor its changing climate and biosphere.',
+                physicsDesc: 'The only known astronomical object to harbor life, with vast oceans of liquid water.',
+                radius: '1.00 R⊕',
+                orbitPeriod: '365 DAYS',
+                temp: '-89°C to 57°C',
+                gravity: '1.00 G',
+                funFacts: [
+                    'Earth is the only planet not named after a deity.',
+                    'It has a powerful magnetic field that protects from solar wind.',
+                    'The planet is not a perfect sphere, it is an oblate spheroid.',
+                    '71% of the surface is covered by water.'
+                ],
+                modernResearch: 'Extensive monitoring of anthropogenic climate change and ecological health.',
+                hostStar: 'Sun',
+                mass: '1.00 M⊕',
+                stelDistance: '1.00 AU',
+                habitable: 'YES',
+                atmosphere: 'N2 / O2',
+                detection: 'N/A'
             },
             {
                 id: 'mars', name: 'MARS',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg',
-                orbitDistance: '227 939 200 KM', axialTilt: '25.19°', orbitalPeriod: '687 DAYS',
-                lengthOfDay: '24.6 HOURS', diameter: '6 779 KM', mass: '6.39*10^23 KG',
-                surfaceTemp: '-153°C to +20°C',
-                funFact: 'Mars is home to Olympus Mons, the highest mountain and largest volcano in the entire solar system.',
-                description: 'The fourth planet from the Sun, often referred to as the "Red Planet" due to the iron oxide prevalent on its surface. It hosts thin atmosphere and surface features reminiscent of impact craters of the Moon.',
-                composition: [
-                    { label: 'CO2', value: '95.32%' }, { label: 'N2', value: '2.7%' }
-                ]
+                category: 'Terrestrial Planet',
+                location: 'Inner Solar System',
+                orbitDistance: '1.52 AU',
+                discoveryYear: 'Antiquity',
+                discoveryDetails: 'Observed by ancient Egyptian astronomers and named by Romans for its blood-red color.',
+                discoveryUpdates: 'Rovers have confirmed the past presence of liquid water on its surface.',
+                physicsDesc: 'The Red Planet, featuring a thin atmosphere and surface marked by craters and volcanoes.',
+                radius: '0.53 R⊕',
+                orbitPeriod: '687 DAYS',
+                temp: '-153°C to 20°C',
+                gravity: '0.38 G',
+                funFacts: [
+                    'Home to Olympus Mons, the tallest volcano in the solar system.',
+                    'It has two tiny, irregularly shaped moons, Phobos and Deimos.',
+                    'Sunsets on Mars appear blue due to atmospheric dust.',
+                    'Pieces of Mars have fallen to Earth as meteorites.'
+                ],
+                modernResearch: 'Perseverance and Curiosity rovers are actively searching for signs of ancient microbial life.',
+                hostStar: 'Sun',
+                mass: '0.107 M⊕',
+                stelDistance: '1.52 AU',
+                habitable: 'POSSIBLE (PAST)',
+                atmosphere: 'THIN CO2',
+                detection: 'Direct Observation'
             },
             {
                 id: 'jupiter', name: 'JUPITER',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg',
-                orbitDistance: '778 500 000 KM', axialTilt: '3.13°', orbitalPeriod: '4333 DAYS',
-                lengthOfDay: '9.93 HOURS', diameter: '139 820 KM', mass: '1.898*10^27 KG',
-                surfaceTemp: '-110°C',
-                funFact: 'Jupiter\'s Great Red Spot is a giant storm that is larger than Earth and has been raging for hundreds of years.',
-                description: 'The largest planet in the Solar System. It is a gas giant with a mass more than two and a half times that of all the other planets in the Solar System combined.',
-                composition: [
-                    { label: 'H2', value: '89.8%' }, { label: 'He', value: '10.2%' }
-                ]
+                category: 'Gas Giant',
+                location: 'Outer Solar System',
+                orbitDistance: '5.20 AU',
+                discoveryYear: 'Antiquity',
+                discoveryDetails: 'Galileo discovered its four largest moons in 1610, proving not all celestial bodies orbit Earth.',
+                discoveryUpdates: 'Juno spacecraft revealed deep atmospheric dynamics and polar cyclones.',
+                physicsDesc: 'The largest planet in our solar system, composed mostly of hydrogen and helium.',
+                radius: '10.97 R⊕',
+                orbitPeriod: '12 YEARS',
+                temp: '-110°C',
+                gravity: '2.53 G',
+                funFacts: [
+                    'Jupiter’s Great Red Spot is a storm larger than Earth.',
+                    'It has the shortest day, rotating once every 10 hours.',
+                    'It acts as a vacuum cleaner, diverting comets from the inner planets.',
+                    'Jupiter has 95 officially recognized moons.'
+                ],
+                modernResearch: 'Europa Clipper will launch to investigate its icy moon Europa for subterranean oceans.',
+                hostStar: 'Sun',
+                mass: '317.8 M⊕',
+                stelDistance: '5.20 AU',
+                habitable: 'NO (MOONS POSS.)',
+                atmosphere: 'H2 / He',
+                detection: 'Direct Observation'
             },
             {
                 id: 'saturn', name: 'SATURN',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg',
-                orbitDistance: '1 434 000 000 KM', axialTilt: '26.73°', orbitalPeriod: '10759 DAYS',
-                lengthOfDay: '10.7 HOURS', diameter: '116 460 KM', mass: '5.683*10^26 KG',
-                surfaceTemp: '-140°C',
-                funFact: 'Saturn has the most extensive ring system of any planet, made almost entirely of water ice particles.',
-                description: 'The sixth planet from the Sun and the second-largest in the Solar System. It is a gas giant with an average radius of about nine and a half times that of Earth.',
-                composition: [
-                    { label: 'H2', value: '96.3%' }, { label: 'He', value: '3.25%' }
-                ]
+                category: 'Gas Giant',
+                location: 'Outer Solar System',
+                orbitDistance: '9.58 AU',
+                discoveryYear: 'Antiquity',
+                discoveryDetails: 'Galileo first observed its rings but mistook them for "ears".',
+                discoveryUpdates: 'Cassini mission provided unprecedented details of its rings and icy moons.',
+                physicsDesc: 'A massive gas giant famous for its extensive and beautiful ring system.',
+                radius: '9.14 R⊕',
+                orbitPeriod: '29 YEARS',
+                temp: '-140°C',
+                gravity: '1.06 G',
+                funFacts: [
+                    'Saturn is the only planet less dense than water; it would float in a bathtub.',
+                    'Its rings are made of chunks of ice and rock.',
+                    'Hexagon-shaped storm exists at its north pole.',
+                    'It has the most moons in the solar system, with 146 known.'
+                ],
+                modernResearch: 'Dragonfly mission will fly a drone on its moon Titan to study prebiotic chemistry.',
+                hostStar: 'Sun',
+                mass: '95.16 M⊕',
+                stelDistance: '9.58 AU',
+                habitable: 'NO (MOONS POSS.)',
+                atmosphere: 'H2 / He',
+                detection: 'Direct Observation'
             },
             {
                 id: 'uranus', name: 'URANUS',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg',
-                orbitDistance: '2 871 000 000 KM', axialTilt: '97.77°', orbitalPeriod: '30688 DAYS',
-                lengthOfDay: '17.2 HOURS', diameter: '50 724 KM', mass: '8.681*10^25 KG',
-                surfaceTemp: '-195°C',
-                funFact: 'Uranus rotates on its side, meaning its axis of spin is nearly parallel to its orbital plane.',
-                description: 'The seventh planet from the Sun. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System. Often classified as an "ice giant".',
-                composition: [
-                    { label: 'H2', value: '83%' }, { label: 'He', value: '15%' }
-                ]
+                category: 'Ice Giant',
+                location: 'Outer Solar System',
+                orbitDistance: '19.18 AU',
+                discoveryYear: '1781',
+                discoveryDetails: 'Discovered by William Herschel, the first planet found with the aid of a telescope.',
+                discoveryUpdates: 'Voyager 2 is the only spacecraft to have visited Uranus (1986).',
+                physicsDesc: 'An ice giant that rotates on its side, featuring a pale blue color due to methane.',
+                radius: '3.98 R⊕',
+                orbitPeriod: '84 YEARS',
+                temp: '-195°C',
+                gravity: '0.90 G',
+                funFacts: [
+                    'Uranus rolls on its side like a barrel, with a 98-degree axial tilt.',
+                    'It is the coldest planet in the solar system.',
+                    'It was originally named "George\'s Star" after King George III.',
+                    'It has a faint ring system.'
+                ],
+                modernResearch: 'Planetary Science Decadal Survey prioritized a flagship mission to Uranus in the 2030s.',
+                hostStar: 'Sun',
+                mass: '14.53 M⊕',
+                stelDistance: '19.18 AU',
+                habitable: 'NO',
+                atmosphere: 'H2 / He / CH4',
+                detection: 'Telescopic'
             },
             {
                 id: 'neptune', name: 'NEPTUNE',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Neptune_-_Voyager_2_%2829741875326%29.png',
-                orbitDistance: '4 495 000 000 KM', axialTilt: '28.32°', orbitalPeriod: '60182 DAYS',
-                lengthOfDay: '16.1 HOURS', diameter: '49 244 KM', mass: '1.024*10^26 KG',
-                surfaceTemp: '-200°C',
-                funFact: 'Neptune has the strongest winds in the solar system, which can reach supersonic speeds of 2,100 km/h.',
-                description: 'The eighth and farthest-known Solar planet from the Sun. In the Solar System, it is the fourth-largest planet by diameter, the third-most-massive planet, and the densest giant planet.',
-                composition: [
-                    { label: 'H2', value: '80%' }, { label: 'He', value: '19%' }
-                ]
+                category: 'Ice Giant',
+                location: 'Outer Solar System',
+                orbitDistance: '30.07 AU',
+                discoveryYear: '1846',
+                discoveryDetails: 'The first planet predicted by mathematical calculations before being observed.',
+                discoveryUpdates: 'Voyager 2 revealed supersonic winds and the Great Dark Spot.',
+                physicsDesc: 'The farthest known planet, deep blue in color, characterized by immense storms and winds.',
+                radius: '3.86 R⊕',
+                orbitPeriod: '165 YEARS',
+                temp: '-200°C',
+                gravity: '1.14 G',
+                funFacts: [
+                    'Winds on Neptune can reach 2,100 km/h.',
+                    'It has only completed one orbit around the Sun since its discovery.',
+                    'Its moon Triton orbits backwards and spews nitrogen geysers.',
+                    'It occasionally rains diamonds deep within its mantle.'
+                ],
+                modernResearch: 'Astronomers continuously monitor its atmospheric storms using the Hubble Space Telescope.',
+                hostStar: 'Sun',
+                mass: '17.15 M⊕',
+                stelDistance: '30.07 AU',
+                habitable: 'NO',
+                atmosphere: 'H2 / He / CH4',
+                detection: 'Prediction'
             }
         ];
 
@@ -544,45 +778,44 @@
             const data = planets.find(p => p.id === planetId);
             if (!data) return;
 
-            // Populate HUD
-            document.getElementById('hud-title').textContent = data.name;
-            document.getElementById('hud-planet').style.backgroundImage = `url('${data.image}')`;
-            
-            document.getElementById('hud-orbit-dist').textContent = data.orbitDistance;
-            document.getElementById('hud-axial-tilt').textContent = data.axialTilt;
-            document.getElementById('hud-orbital-period').textContent = data.orbitalPeriod;
-            document.getElementById('hud-length-day').textContent = data.lengthOfDay;
-            document.getElementById('hud-diameter').textContent = data.diameter;
-            document.getElementById('hud-mass').textContent = data.mass;
-            document.getElementById('hud-surface-temp').textContent = data.surfaceTemp;
-            
-            const descEl = document.getElementById('hud-description');
-            if(descEl) descEl.textContent = data.description;
-            const factEl = document.getElementById('hud-fun-fact');
-            if(factEl) factEl.textContent = data.funFact;
-            
-            document.getElementById('hud-description').textContent = data.description;
-            document.getElementById('hud-fun-fact').textContent = data.funFact;
+            document.getElementById('detail-title').textContent = data.name;
+            document.getElementById('detail-category').textContent = data.category;
+            document.getElementById('detail-location').textContent = data.location;
+            document.getElementById('detail-distance').textContent = data.orbitDistance;
 
-            // Build composition callouts
-            const compContainer = document.getElementById('hud-composition');
-            compContainer.innerHTML = '';
-            
-            if(data.composition && data.composition.length > 0) {
-                // To match screenshots, line goes right
-                const compHtml = `
-                    <div class="composition-line" style="top: 25%; left: 85%; width: 60px;"></div>
-                    <div class="dot" style="top: 25%; left: 85%; transform: translate(-50%, -50%);"></div>
-                    <div class="dot" style="top: 25%; left: calc(85% + 60px); transform: translate(-50%, -50%);"></div>
-                    <div class="composition-box" style="top: 25%; left: calc(85% + 70px); transform: translateY(-30%);">
-                        ${data.composition.map(c => {
-                            if (c.isTitle) return `<div class="mt-2 mb-1 text-white opacity-90">${c.label}</div>`;
-                            return `<div>${c.label} = ${c.value}</div>`;
-                        }).join('')}
-                    </div>
-                `;
-                compContainer.innerHTML = compHtml;
-            }
+            document.getElementById('detail-overview-1').textContent = data.physicsDesc;
+            document.getElementById('detail-overview-2').textContent = data.discoveryDetails;
+
+            document.getElementById('detail-discovery-year').textContent = data.discoveryYear;
+            document.getElementById('detail-discovery-details').textContent = data.discoveryDetails;
+            document.getElementById('detail-discovery-updates').textContent = data.discoveryUpdates;
+
+            document.getElementById('detail-physics-desc').textContent = data.physicsDesc;
+            document.getElementById('detail-radius').textContent = data.radius;
+            document.getElementById('detail-orbit-period').textContent = data.orbitPeriod;
+            document.getElementById('detail-temp').textContent = data.temp;
+            document.getElementById('detail-gravity').textContent = data.gravity;
+
+            const funFactsList = document.getElementById('detail-fun-facts');
+            funFactsList.innerHTML = '';
+            data.funFacts.forEach(fact => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-2';
+                li.innerHTML = `<span class="text-neon-cyan">>></span><span class="text-sm opacity-90">${fact}</span>`;
+                funFactsList.appendChild(li);
+            });
+
+            document.getElementById('detail-modern-research').textContent = data.modernResearch;
+
+            document.getElementById('detail-image').src = data.image;
+            document.getElementById('stat-host-star').textContent = data.hostStar;
+            document.getElementById('stat-year-discovered').textContent = data.discoveryYear;
+            document.getElementById('stat-mass').textContent = data.mass;
+            document.getElementById('stat-orbital-period').textContent = data.orbitPeriod;
+            document.getElementById('stat-stel-distance').textContent = data.stelDistance;
+            document.getElementById('stat-habitable').textContent = data.habitable;
+            document.getElementById('stat-atmosphere').textContent = data.atmosphere;
+            document.getElementById('stat-detection').textContent = data.detection;
 
             // Transition
             overviewState.classList.add('opacity-0');
