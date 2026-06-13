@@ -357,7 +357,7 @@ void main() {
             </div>
         </div>
 
-        <button onclick="commenceSimulation()" class="w-full py-4 bg-neon-cyan text-void-black font-label-caps text-label-caps font-extrabold arcade-btn-glow glitch-hover transition-all duration-300 tracking-[0.2em] uppercase text-lg">
+        <button id="commence-btn" onclick="commenceSimulation()" class="w-full py-4 bg-neon-cyan text-void-black font-label-caps text-label-caps font-extrabold arcade-btn-glow glitch-hover transition-all duration-300 tracking-[0.2em] uppercase text-lg">
             COMMENCE SIMULATION
         </button>
     </div>
@@ -720,14 +720,18 @@ animate();
     let timerInterval = null;
 
     function commenceSimulation() {
+        const btn = document.getElementById('commence-btn');
+        if(btn) {
+            btn.innerText = "INITIALIZING NEURAL LINK...";
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
         configQuestions = parseInt(document.getElementById('config-questions').value);
         configDifficulty = document.getElementById('config-difficulty').value;
         configTime = parseInt(document.getElementById('config-time').value);
         
         timerSeconds = configTime;
-
-        document.getElementById('setup-screen').style.display = 'none';
-        document.getElementById('game-hud').style.display = 'flex';
 
         initQuiz();
     }
@@ -784,11 +788,51 @@ animate();
                 document.getElementById('quiz-timer').innerText = "∞";
             }
             
+            // Transition UI
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('game-hud').style.display = 'flex';
+
             loadQuestion();
 
         } catch (e) {
             console.error("Quiz init error", e);
             document.getElementById('quiz-question-text').innerText = "ERROR: System malfunction. Please reload.";
+            const btn = document.getElementById('commence-btn');
+            if(btn) {
+                btn.innerText = "COMMENCE SIMULATION";
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+    }
+
+    // Web Audio API Sound Effects
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        if (type === 'correct') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1); // A5
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        } else if (type === 'incorrect') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime); 
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2); 
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.2);
         }
     }
 
@@ -835,12 +879,14 @@ animate();
             correctCount++;
             selectedBtn.classList.add('bg-neon-cyan', 'text-void-black', 'border-neon-cyan');
             selectedBtn.classList.remove('text-on-surface');
+            playSound('correct');
         } else {
             selectedBtn.classList.add('bg-error', 'text-void-black', 'border-error');
             selectedBtn.classList.remove('text-on-surface');
             if(correctBtn) {
                 correctBtn.classList.add('border-neon-cyan', 'shadow-[0_0_15px_rgba(0,240,255,0.5)]');
             }
+            playSound('incorrect');
         }
 
         document.getElementById('quiz-score').innerText = `${score} PTS`;
@@ -850,7 +896,7 @@ animate();
         setTimeout(() => {
             currentQuestionIndex++;
             loadQuestion();
-        }, 1500);
+        }, 800);
     }
 
     function startTimer() {
