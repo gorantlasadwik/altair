@@ -474,7 +474,7 @@
                     // Store token and redirect
                     localStorage.setItem('altair_token', data.access_token);
                     localStorage.setItem('altair_username', username);
-                    window.location.href = '/home.html';
+                    window.top.location.href = '/home.html';
                 } else {
                     authError.textContent = data.detail || 'Authentication failed';
                     authError.classList.remove('hidden');
