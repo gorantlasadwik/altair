@@ -73,7 +73,7 @@
       </script>
       <script>
         if (!localStorage.getItem('altair_token')) {
-            window.location.href = '/';
+            window.location.href = '/landing.html';
         }
       </script>
 </head>
@@ -115,7 +115,7 @@
     }
     document.getElementById('logout-btn').addEventListener('click', () => {
         localStorage.removeItem('altair_token');
-        window.location.href = '/';
+        window.location.href = '/landing.html';
     });
 </script>
 </body>
