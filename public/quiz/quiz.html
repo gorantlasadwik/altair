@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Altair Arcade - Constellation Identification Simulator</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Test your astronomical knowledge with the Altair Constellation Identification Game. Identify constellations from star maps in a retro-arcade sci-fi simulator.">
+  <meta name="keywords" content="altair, arcade, constellation game, space quiz, astronomy, star maps">
+  <meta name="author" content="Altair Flight Command">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- SheetJS CDN (XLSX parsing) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <style>
+    /* ==========================================
+       1. CSS CUSTOM VARIABLES & RESET
+       ========================================== */
+    :root {
+      --bg-space: #050816;
+      --bg-panel: rgba(5, 8, 22, 0.75);
+      --bg-panel-dark: rgba(2, 4, 12, 0.9);
+      --cyan-glow: #00f3ff;
+      --cyan-dim: rgba(0, 243, 255, 0.15);
+      --cyan-border: rgba(0, 243, 255, 0.3);
+      --orange-accent: #ff8800;
+      --orange-dim: rgba(255, 136, 0, 0.15);
+      --orange-border: rgba(255, 136, 0, 0.4);
+      --green-success: #00ff66;
+      --green-glow: rgba(0, 255, 102, 0.3);
+      --red-danger: #ff0055;
+      --red-glow: rgba(255, 0, 85, 0.3);
+      
+      --font-title: 'Orbitron', sans-serif;
+      --font-hud: 'Share Tech Mono', monospace;
+      --font-body: 'Rajdhani', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-space);
+      color: #ffffff;
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-space);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--cyan-border);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cyan-glow);
+    }
+
+    /* Background Starfield Canvas */
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Radar Background Glow Animation Decor */
+    .radar-bg-decor {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border: 1px solid rgba(0, 243, 255, 0.03);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .radar-bg-decor::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border: 1px dashed rgba(255, 136, 0, 0.02);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: spin-clockwise 60s linear infinite;
+    }
+    .radar-bg-decor::after {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border: 1px solid rgba(0, 243, 255, 0.02);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation: spin-counter-clockwise 30s linear infinite;
+    }
+
+    @keyframes spin-clockwise {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    @keyframes spin-counter-clockwise {
+      from { transform: translate(-50%, -50%) rotate(360deg); }
+      to { transform: translate(-50%, -50%) rotate(0deg); }
+    }
+
+    /* ==========================================
+       2. REUSABLE HUD COMPONENTS & STYLES
+       ========================================== */
+    .hud-box {
+      position: relative;
+      background: var(--bg-panel);
+      border: 1px solid var(--cyan-border);
+      border-radius: 6px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.08), inset 0 0 15px rgba(0, 243, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .hud-box.border-orange {
+      border: 1px solid var(--orange-border);
+      box-shadow: 0 0 20px rgba(255, 136, 0, 0.08), inset 0 0 15px rgba(255, 136, 0, 0.05);
+    }
+
+    /* Industrial Corner Brackets */
+    .hud-corner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .hud-box::before, .hud-box::after,
+    .hud-corner::before, .hud-corner::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-color: var(--cyan-glow);
+      border-style: solid;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    .hud-box.border-orange::before, .hud-box.border-orange::after,
+    .hud-box.border-orange .hud-corner::before, .hud-box.border-orange .hud-corner::after {
+      border-color: var(--orange-accent);
+    }
+    /* Top Left */
+    .hud-box::before {
+      top: -1px; left: -1px;
+      border-width: 2px 0 0 2px;
+    }
+    /* Top Right */
+    .hud-box::after {
+      top: -1px; right: -1px;
+      border-width: 2px 2px 0 0;
+    }
+    /* Bottom Left */
+    .hud-corner::before {
+      bottom: -1px; left: -1px;
+      border-width: 0 0 2px 2px;
+    }
+    /* Bottom Right */
+    .hud-corner::after {
+      bottom: -1px; right: -1px;
+      border-width: 0 2px 2px 0;
+    }
+
+    /* Panel hover glow */
+    .hud-box:hover {
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.15), inset 0 0 20px rgba(0, 243, 255, 0.08);
+    }
+    .hud-box.border-orange:hover {
+      box-shadow: 0 0 25px rgba(255, 136, 0, 0.15), inset 0 0 20px rgba(255, 136, 0, 0.08);
+    }
+
+    /* HUD Tags */
+    .hud-tag {
+      font-family: var(--font-hud);
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan-glow);
+      display: inline-block;
+      letter-spacing: 1.5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .hud-tag.orange {
+      background: var(--orange-dim);
+      border: 1px solid var(--orange-border);
+      color: var(--orange-accent);
+    }
+
+    /* Buttons */
+    .btn {
+      font-family: var(--font-title);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-cyan {
+      background: rgba(0, 243, 255, 0.05);
+      border: 1px solid var(--cyan-glow);
+      color: var(--cyan-glow);
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+    }
+    .btn-cyan:hover {
+      background: var(--cyan-glow);
+      color: var(--bg-space);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .btn-orange {
+      background: rgba(255, 136, 0, 0.05);
+      border: 1px solid var(--orange-accent);
+      color: var(--orange-accent);
+      box-shadow: 0 0 10px rgba(255, 136, 0, 0.1);
+    }
+    .btn-orange:hover {
+      background: var(--orange-accent);
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(255, 136, 0, 0.4);
+      transform: translateY(-2px);
+    }
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-lg {
+      padding: 15px 36px;
+      font-size: 1.1rem;
+    }
+
+    /* Scanline overlay for vintage CRT screen feel */
+    .scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+      );
+      background-size: 100% 4px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Colors and typography utilities */
+    .text-cyan { color: var(--cyan-glow); }
+    .text-orange { color: var(--orange-accent); }
+    .text-green { color: var(--green-success); }
+    .text-danger { color: var(--red-danger); }
+    .glow-text {
+      text-shadow: 0 0 10px var(--cyan-dim), 0 0 20px var(--cyan-dim);
+    }
+    .font-hud {
+      font-family: var(--font-hud);
+    }
+    .font-title {
+      font-family: var(--font-title);
+    }
+    .text-center {
+      text-align: center;
+    }
+    .my-3 {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* Screen transition states */
+    .screen {
+      width: 100%;
+      max-width: 1100px;
+      padding: 20px;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .screen.hidden {
+      display: none !important;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    /* ==========================================
+       3. SCREEN: BOOT LOADER & TERMINAL LOGS
+       ========================================== */
+    .boot-container {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .radar-decor {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 25px;
+    }
+    .radar-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid var(--cyan-border);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .radar-circle.circle-1 {
+      width: 80px; height: 80px;
+      border-style: solid;
+      animation: pulse-ring 2s infinite ease-in-out;
+    }
+    .radar-circle.circle-2 {
+      width: 45px; height: 45px;
+      border-style: dashed;
+      animation: spin-clockwise 8s linear infinite;
+    }
+    .radar-line {
+      position: absolute;
+      width: 40px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--cyan-glow));
+      top: 50%; left: 50%;
+      transform-origin: 0% 50%;
+      animation: spin-clockwise 3s linear infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0.2; }
+      50% { opacity: 0.8; }
+      100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0; }
+    }
+
+    .terminal-box {
+      width: 100%;
+      background: var(--bg-panel-dark);
+      border: 1px solid var(--cyan-border);
+      border-radius: 4px;
+      margin-bottom: 25px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+    .terminal-header {
+      background: rgba(0, 243, 255, 0.08);
+      border-bottom: 1px solid var(--cyan-border);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .terminal-header .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+    .terminal-header .dot.red { background: var(--red-danger); }
+    .terminal-header .dot.yellow { background: var(--orange-accent); }
+    .terminal-header .dot.green { background: var(--green-success); }
+    .terminal-title {
+      font-family: var(--font-hud);
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-left: 8px;
+    }
+
+    .terminal-body {
+      padding: 15px;
+      font-family: var(--font-hud);
+      font-size: 0.85rem;
+      height: 220px;
+      overflow-y: auto;
+      line-height: 1.6;
+      color: #a8f3ff;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .terminal-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px; height: 15px;
+      background: var(--cyan-glow);
+      animation: blink 0.8s infinite;
+      vertical-align: middle;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    .boot-loading-bar-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .boot-loading-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange-accent), var(--cyan-glow));
+      box-shadow: 0 0 10px var(--cyan-glow);
+      transition: width 0.1s linear;
+    }
+    .boot-loading-pct {
+      font-family: var(--font-hud);
+      font-size: 1rem;
+      color: var(--cyan-glow);
+    }
+
+    /* ==========================================
+       4. SCREEN: DATA UPLOAD / DRAG ZONE
+       ========================================== */
+    .upload-zone {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 50px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+      border: 1px solid var(--orange-border);
+    }
+    .upload-icon {
+      font-size: 3.5rem;
+      color: var(--orange-accent);
+      filter: drop-shadow(0 0 10px rgba(255, 136, 0, 0.4));
+      margin-bottom: 10px;
+      animation: pulse-orange-glow 2s infinite ease-in-out;
+    }
+    .upload-zone h2 {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: var(--orange-accent);
+    }
+    .upload-zone p {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 450px;
+    }
+    .upload-zone .terminal-text {
+      font-family: var(--font-hud);
+      font-size: 0.85rem;
+      color: #ffaa00;
+      background: rgba(255, 136, 0, 0.05);
+      padding: 6px 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 136, 0, 0.15);
+    }
+    .file-drag-desc {
+      font-size: 0.85rem !important;
+      color: rgba(255, 255, 255, 0.4) !important;
+      margin-top: 5px;
+    }
+    .drag-over {
+      background: rgba(255, 136, 0, 0.1) !important;
+      border-color: var(--orange-accent) !important;
+      box-shadow: 0 0 30px rgba(255, 136, 0, 0.2) !important;
+    }
+
+    @keyframes pulse-orange-glow {
+      0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 136, 0, 0.2)); }
+      50% { filter: drop-shadow(0 0 15px rgba(255, 136, 0, 0.6)); }
+    }
+
+    /* ==========================================
+       5. SCREEN: START BRIEFING & CONSOLE
+       ========================================== */
+    .briefing-container {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 820px) {
+      .briefing-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Side Panel Dashboard */
+    .side-panel {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+    }
+    .side-panel h3 {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      letter-spacing: 1.5px;
+      color: var(--cyan-glow);
+      border-bottom: 1px solid var(--cyan-border);
+      padding-bottom: 8px;
+    }
+    
+    .status-monitor {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 243, 255, 0.08);
+    }
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-hud);
+      font-size: 0.85rem;
+    }
+    .status-row .label {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .status-row .val.success {
+      color: var(--green-success);
+      text-shadow: 0 0 5px rgba(0, 255, 102, 0.3);
+    }
+
+    /* Radar Box Circle */
+    .radar-box {
+      width: 100%;
+      aspect-ratio: 1;
+      background: rgba(0, 243, 255, 0.02);
+      border: 1px solid var(--cyan-border);
+      border-radius: 50%;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+    .radar-svg {
+      width: 100%;
+      height: 100%;
+    }
+    .radar-bg {
+      fill: none;
+      stroke: rgba(0, 243, 255, 0.05);
+      stroke-width: 0.5px;
+    }
+    .radar-ring {
+      fill: none;
+      stroke: rgba(0, 243, 255, 0.15);
+      stroke-width: 0.5px;
+    }
+    .radar-axis {
+      stroke: rgba(0, 243, 255, 0.15);
+      stroke-width: 0.5px;
+    }
+    .radar-sweep {
+      stroke: var(--cyan-glow);
+      stroke-width: 1.5px;
+      transform-origin: 50px 50px;
+      animation: spin-clockwise 4s linear infinite;
+    }
+    .radar-blip {
+      fill: var(--orange-accent);
+      filter: drop-shadow(0 0 4px var(--orange-accent));
+    }
+    .radar-blip.blip-1 {
+      animation: blink 2.5s infinite ease-in-out;
+    }
+    .radar-blip.blip-2 {
+      animation: blink 1.8s infinite ease-in-out 0.5s;
+    }
+
+    .terminal-ticker {
+      font-family: var(--font-hud);
+      font-size: 0.8rem;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 10px;
+      border-radius: 4px;
+      border-left: 2px solid var(--cyan-glow);
+      color: #92e1ec;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Briefing Main Card */
+    .briefing-panel {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 25px;
+    }
+    .briefing-header {
+      border-bottom: 1px solid var(--cyan-border);
+      padding-bottom: 15px;
+    }
+    .briefing-subtitle {
+      font-family: var(--font-hud);
+      font-size: 0.85rem;
+      color: var(--orange-accent);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+    .briefing-title {
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      line-height: 1.25;
+    }
+    .briefing-body {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .mission-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 15px;
+      margin-top: 10px;
+    }
+    .stat-card {
+      background: rgba(0, 243, 255, 0.03);
+      border: 1px solid rgba(0, 243, 255, 0.1);
+      border-radius: 4px;
+      padding: 15px 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .stat-label {
+      font-family: var(--font-hud);
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 1px;
+    }
+    .stat-value {
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .briefing-warning {
+      background: rgba(255, 136, 0, 0.04);
+      border: 1px solid rgba(255, 136, 0, 0.15);
+      border-radius: 4px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: #ffd099;
+    }
+    .briefing-warning i {
+      font-size: 1.2rem;
+      margin-top: 2px;
+    }
+
+    .briefing-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* ==========================================
+       6. SCREEN: ACTIVE QUIZ VIEWPORT
+       ========================================== */
+    .quiz-hud-bar {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      gap: 15px;
+      padding: 10px 20px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 768px) {
+      .quiz-hud-bar {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .quiz-hud-bar .hud-hud-item:first-child {
+        grid-column: span 2;
+      }
+    }
+    .hud-hud-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hud-label {
+      font-family: var(--font-hud);
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 1px;
+    }
+    .hud-value {
+      font-family: var(--font-hud);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .mute-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      color: var(--cyan-glow);
+      width: 38px;
+      height: 38px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .mute-btn:hover {
+      background: var(--cyan-glow);
+      color: var(--bg-space);
+      box-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 850px) {
+      .quiz-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Side: Telescope feeds image */
+    .image-panel {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .panel-tag {
+      font-family: var(--font-hud);
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 2px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 6px;
+    }
+
+    .image-frame-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1.15;
+      background: #010208;
+      border: 1px solid var(--cyan-border);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+      transition: box-shadow 0.3s ease;
+    }
+    .constellation-img {
+      max-width: 95%;
+      max-height: 95%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.25));
+      transition: transform 0.4s ease, filter 0.4s ease;
+      z-index: 2;
+    }
+    /* Zoom effect on hover */
+    .image-frame-container:hover .constellation-img {
+      transform: scale(1.06);
+      filter: drop-shadow(0 0 25px rgba(0, 243, 255, 0.45));
+    }
+
+    /* Glowing feedbacks for correct/wrong */
+    .image-frame-container.correct-glow {
+      animation: correct-flash 1.5s ease-out;
+    }
+    .image-frame-container.wrong-glow {
+      animation: wrong-flash 1.5s ease-out;
+    }
+
+    @keyframes correct-flash {
+      0% { border-color: var(--green-success); box-shadow: 0 0 30px var(--green-glow), inset 0 0 20px var(--green-glow); }
+      100% { border-color: var(--cyan-border); box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9); }
+    }
+    @keyframes wrong-flash {
+      0% { border-color: var(--red-danger); box-shadow: 0 0 30px var(--red-glow), inset 0 0 20px var(--red-glow); }
+      100% { border-color: var(--cyan-border); box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9); }
+    }
+
+    /* Telescope Targeting Scope Graphic Overlay */
+    .scope-crosshairs {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .scope-crosshairs .hair {
+      position: absolute;
+      background: rgba(0, 243, 255, 0.08);
+    }
+    .scope-crosshairs .hair.vertical {
+      width: 1px; height: 100%;
+      left: 50%; top: 0;
+    }
+    .scope-crosshairs .hair.horizontal {
+      height: 1px; width: 100%;
+      top: 50%; left: 0;
+    }
+    .scope-crosshairs .scope-circle {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1px solid rgba(0, 243, 255, 0.04);
+    }
+    .scope-crosshairs .scope-circle.outer {
+      width: 80%; height: 80%;
+      border-style: dashed;
+    }
+    .scope-crosshairs .scope-circle.inner {
+      width: 45%; height: 45%;
+    }
+
+    /* Image Loading Spinner Overlay */
+    .image-loading-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--bg-panel-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      z-index: 5;
+      transition: opacity 0.3s ease;
+    }
+    .image-loading-overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loader-spinner {
+      width: 40px; height: 40px;
+      border: 2px solid rgba(0, 243, 255, 0.1);
+      border-top-color: var(--cyan-glow);
+      border-radius: 50%;
+      animation: spin-clockwise 1s linear infinite;
+    }
+    .loader-text {
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      color: var(--cyan-glow);
+    }
+
+    .sensor-logs {
+      font-size: 0.75rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 243, 255, 0.05);
+      border-radius: 3px;
+      padding: 8px 12px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* Right Side: Navigation Console controller */
+    .control-panel {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .progress-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      border: 1px solid rgba(0, 243, 255, 0.1);
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      width: 3%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan-glow), var(--cyan-dim));
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+      transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .question-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+    .question-header h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #ffffff;
+    }
+
+    /* Answers Vertical Switch Grid */
+    .options-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      width: 100%;
+      padding: 15px 20px;
+      background: rgba(0, 243, 255, 0.02);
+      border: 1px solid rgba(0, 243, 255, 0.15);
+      border-radius: 4px;
+      color: #ffffff;
+      font-family: var(--font-body);
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }
+    
+    /* Corner line accent details for option buttons */
+    .option-btn::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%;
+      width: 3px; height: 0%;
+      background: var(--cyan-glow);
+      transform: translateY(-50%);
+      transition: height 0.25s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: rgba(0, 243, 255, 0.07);
+      border-color: var(--cyan-glow);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+      transform: translateX(4px);
+    }
+    .option-btn:hover:not(:disabled)::before {
+      height: 60%;
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-marker {
+      font-family: var(--font-hud);
+      font-size: 0.9rem;
+      font-weight: 700;
+      width: 25px;
+      height: 25px;
+      border-radius: 3px;
+      background: rgba(255, 136, 0, 0.12);
+      border: 1px solid var(--orange-border);
+      color: var(--orange-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .option-btn:hover:not(:disabled) .option-marker {
+      background: rgba(0, 243, 255, 0.2);
+      border-color: var(--cyan-glow);
+      color: var(--cyan-glow);
+      filter: drop-shadow(0 0 3px var(--cyan-glow));
+    }
+    .option-text {
+      flex-grow: 1;
+    }
+
+    /* Option Button Feedback Classes */
+    .option-btn.btn-correct {
+      background: rgba(0, 255, 102, 0.08) !important;
+      border-color: var(--green-success) !important;
+      color: var(--green-success) !important;
+      box-shadow: 0 0 20px rgba(0, 255, 102, 0.25) !important;
+    }
+    .option-btn.btn-correct .option-marker {
+      background: rgba(0, 255, 102, 0.2) !important;
+      border-color: var(--green-success) !important;
+      color: var(--green-success) !important;
+    }
+    .option-btn.btn-correct::before {
+      background: var(--green-success) !important;
+      height: 100% !important;
+    }
+
+    .option-btn.btn-wrong {
+      background: rgba(255, 0, 85, 0.08) !important;
+      border-color: var(--red-danger) !important;
+      color: var(--red-danger) !important;
+      box-shadow: 0 0 20px rgba(255, 0, 85, 0.25) !important;
+    }
+    .option-btn.btn-wrong .option-marker {
+      background: rgba(255, 0, 85, 0.2) !important;
+      border-color: var(--red-danger) !important;
+      color: var(--red-danger) !important;
+    }
+    .option-btn.btn-wrong::before {
+      background: var(--red-danger) !important;
+      height: 100% !important;
+    }
+
+    .option-btn.btn-correct-highlight {
+      border-color: var(--green-success) !important;
+      border-style: dashed !important;
+      color: var(--green-success) !important;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.1) !important;
+    }
+
+    /* Feedback Status Box */
+    .feedback-toast {
+      background: var(--bg-panel-dark);
+      border: 1px solid var(--cyan-border);
+      border-radius: 4px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      min-height: 48px;
+    }
+    .feedback-toast.correct {
+      border-color: var(--green-success);
+      box-shadow: inset 0 0 10px rgba(0, 255, 102, 0.05);
+    }
+    .feedback-toast.wrong {
+      border-color: var(--red-danger);
+      box-shadow: inset 0 0 10px rgba(255, 0, 85, 0.05);
+    }
+    .toast-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+
+    /* XP Floating numbers */
+    .xp-floater {
+      position: absolute;
+      color: var(--green-success);
+      font-family: var(--font-hud);
+      font-size: 1.3rem;
+      font-weight: 700;
+      pointer-events: none;
+      animation: float-up-fade 1.3s forwards ease-out;
+      z-index: 100;
+      text-shadow: 0 0 10px rgba(0, 255, 102, 0.6);
+    }
+
+    @keyframes float-up-fade {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-40px); opacity: 0; }
+    }
+
+    /* Shaking animation on wrong selection */
+    .shake-anim {
+      animation: shake-device 0.4s ease-in-out;
+    }
+    @keyframes shake-device {
+      0%, 100% { transform: translateX(0); }
+      15%, 45%, 75% { transform: translateX(-8px); }
+      30%, 60%, 90% { transform: translateX(8px); }
+    }
+
+    /* ==========================================
+       7. SCREEN: RESULTS & PILOT REPORT
+       ========================================== */
+    .results-container {
+      width: 100%;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+    .results-panel {
+      padding: 35px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .results-title {
+      font-family: var(--font-title);
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--cyan-glow);
+      text-shadow: 0 0 15px var(--cyan-dim);
+      border-bottom: 1px solid var(--cyan-border);
+      padding-bottom: 15px;
+      text-transform: uppercase;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 30px;
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .results-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+      }
+    }
+
+    /* Badge Design */
+    .badge-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 243, 255, 0.08);
+      border-radius: 4px;
+      padding: 25px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .rank-badge-container {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .rank-badge-svg {
+      width: 100%;
+      height: 100%;
+    }
+    .badge-shield {
+      fill: rgba(0, 243, 255, 0.02);
+      stroke: var(--cyan-glow);
+      stroke-width: 1.5;
+      filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.3));
+    }
+    .badge-shield-inner {
+      fill: none;
+      stroke: var(--orange-accent);
+      stroke-width: 1;
+      stroke-dasharray: 4 2;
+    }
+    .badge-star {
+      fill: var(--orange-accent);
+      filter: drop-shadow(0 0 5px var(--orange-accent));
+      opacity: 0.9;
+    }
+    .rank-title-overlay {
+      position: absolute;
+      bottom: 15px;
+      width: 140px;
+      text-align: center;
+      font-family: var(--font-title);
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #ffffff;
+      background: rgba(5, 8, 22, 0.9);
+      border: 1px solid var(--cyan-border);
+      border-radius: 3px;
+      padding: 4px 6px;
+      letter-spacing: 0.5px;
+    }
+    
+    .rank-desc {
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Scoreboard */
+    .stats-scoreboard {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .score-card {
+      background: rgba(0, 243, 255, 0.02);
+      border: 1px solid rgba(0, 243, 255, 0.12);
+      border-radius: 4px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .score-card-label {
+      font-family: var(--font-title);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .score-card-value {
+      font-family: var(--font-hud);
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .stats-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    .mini-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .mini-label {
+      font-family: var(--font-hud);
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .mini-val {
+      font-family: var(--font-hud);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .results-actions {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 25px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+    }
+
+    @media (max-width: 500px) {
+      .results-actions {
+        flex-direction: column;
+      }
+      .results-actions .btn {
+        width: 100%;
+      }
+    }
+
+    /* Glow overlays */
+    .btn-glow-orange:hover {
+      box-shadow: 0 0 25px rgba(255, 136, 0, 0.4), inset 0 0 10px rgba(255, 136, 0, 0.2);
+    }
+    .btn-glow-cyan:hover {
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.4), inset 0 0 10px rgba(0, 243, 255, 0.2);
+    }
+  </style>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#05070A]/80 backdrop-blur-md border-b border-[#3b494b]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+    <div class="flex items-center gap-4">
+        <div class="w-10 h-10 flex items-center justify-center" style="text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">
+            <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
+        </div>
+        <span class="text-4xl font-extrabold text-[#00F0FF] tracking-tighter" style="font-family: 'VT323', monospace; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">ALTAIR</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8" style="font-family: 'JetBrains Mono', monospace;">
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/home.html">HOME</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/iss.html">ISS TRACKER</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/sky.html">SKY VIEW</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/game.html">GAMES</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
+    </nav>
+    <div class="flex items-center gap-6" style="font-family: 'JetBrains Mono', monospace;">
+        <button class="material-symbols-outlined text-[#b9cacb] hover:text-[#00F0FF] transition-all active:scale-95">notifications</button>
+        <a href="/profile.html" class="flex items-center gap-3 bg-[#282a2e] px-3 py-1 rounded-full border border-[#3b494b]/30 hover:bg-[#323539] transition-colors cursor-pointer">
+            <span id="user-profile-name" class="font-bold tracking-[0.15em] text-[10px] text-[#00F0FF]"></span>
+            <button class="material-symbols-outlined text-[#00F0FF]" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+        </a>
+        <button id="logout-btn" class="font-bold tracking-[0.15em] text-[10px] text-[#FF8A00] hover:text-white transition-colors border border-[#FF8A00]/30 px-3 py-1 rounded">LOGOUT</button>
+    </div>
+</header>
+
+  <!-- Dynamic Starfield Canvas Background -->
+  <canvas id="starfield"></canvas>
+  
+  <!-- Rotating Radar Graphics Background -->
+  <div class="radar-bg-decor"></div>
+
+  <!-- ==========================================
+       1. SCREEN: BOOT LOADER & SYSTEM DIAGNOSTICS
+       ========================================== -->
+  <div id="boot-screen" class="screen">
+    <div class="boot-container">
+      <div class="radar-decor">
+        <div class="radar-circle circle-1"></div>
+        <div class="radar-circle circle-2"></div>
+        <div class="radar-line"></div>
+      </div>
+      
+      <div class="terminal-box">
+        <div class="terminal-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="terminal-title">ALTAIR ARCADE COMPUTER SYSTEM v7.8</span>
+        </div>
+        <div class="terminal-body" id="boot-logs">
+          <!-- Dynamically populated via JS -->
+          <div class="terminal-line"><span class="text-cyan">[SYS]</span> INITIALIZING SYSTEM BOOT STRAP PROCESSOR...</div>
+        </div>
+      </div>
+      
+      <div class="boot-loading-bar-container">
+        <div class="boot-loading-bar" id="boot-progress"></div>
+      </div>
+      <div class="boot-loading-pct" id="boot-pct">0%</div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       2. SCREEN: UPLOAD FILE DRAG FALLBACK (CORS)
+       ========================================== -->
+  <div id="upload-screen" class="screen hidden">
+    <div class="hud-box upload-zone" id="drop-zone">
+      <div class="hud-corner"></div>
+      <i class="fa-solid fa-file-excel upload-icon"></i>
+      <h2>ASTROMETRIC DATA OFFLINE</h2>
+      <p>Local browser security constraints (CORS) or network error blocked the automatic database connection.</p>
+      
+      <div class="terminal-text my-3 font-hud">
+        [STATUS: STANDBY FOR MANUAL STAR MAP IMPORT...]
+      </div>
+      
+      <label for="excel-file" class="btn btn-orange btn-glow-orange">
+        <i class="fa-solid fa-folder-open"></i> SELECT DATABASE FILE
+      </label>
+      <input type="file" id="excel-file" accept=".xlsx, .xls" style="display: none;">
+      
+      <p class="file-drag-desc">or drag & drop the 'constellations.xlsx' database file directly here</p>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       3. SCREEN: MISSION BRIEFING / START PANEL
+       ========================================== -->
+  <div id="start-screen" class="screen hidden">
+    <div class="briefing-container">
+      
+      <!-- Left side Status Panel -->
+      <div class="hud-box side-panel">
+        <div class="hud-corner"></div>
+        <h3>CONSOLE LOGS</h3>
+        
+        <div class="status-monitor">
+          <div class="status-row">
+            <span class="label">CONSOLE:</span>
+            <span class="val success">ONLINE</span>
+          </div>
+          <div class="status-row">
+            <span class="label">STARFIELD:</span>
+            <span class="val success">RENDERING</span>
+          </div>
+          <div class="status-row">
+            <span class="label">DATABASE:</span>
+            <span class="val text-cyan" id="start-db-status">SYNCHRONIZED</span>
+          </div>
+          <div class="status-row">
+            <span class="label">SOUND:</span>
+            <span class="val text-orange" id="start-sound-status">SYNTH ACTIVE</span>
+          </div>
+        </div>
+        
+        <div class="radar-box">
+          <svg viewBox="0 0 100 100" class="radar-svg">
+            <circle cx="50" cy="50" r="45" class="radar-bg"></circle>
+            <circle cx="50" cy="50" r="32" class="radar-ring"></circle>
+            <circle cx="50" cy="50" r="18" class="radar-ring"></circle>
+            <line x1="50" y1="5" x2="50" y2="95" class="radar-axis"></line>
+            <line x1="5" y1="50" x2="95" y2="50" class="radar-axis"></line>
+            <line x1="50" y1="50" x2="82" y2="18" class="radar-sweep"></line>
+            <circle cx="70" cy="30" r="2.5" class="radar-blip blip-1"></circle>
+            <circle cx="30" cy="65" r="2" class="radar-blip blip-2"></circle>
+          </svg>
+        </div>
+        
+        <div class="terminal-ticker font-hud" id="start-ticker">
+          [MISSION READY]: AWAITING COMMAND DEPLOYMENT...
+        </div>
+      </div>
+      
+      <!-- Right side Briefing Deck -->
+      <div class="hud-box briefing-panel">
+        <div class="hud-corner"></div>
+        <div class="briefing-header">
+          <div class="briefing-subtitle">FLIGHT COMMAND ARCHIVE</div>
+          <h1 class="briefing-title text-cyan glow-text">CONSTELLATION IDENTIFICATION SIMULATOR</h1>
+        </div>
+        
+        <div class="briefing-body">
+          <p>Welcome, Astro-Navigator. You are ordered to identify navigation stellar maps based on orbital camera feeds. Correct constellation calculations are required to align telescope target nodes.</p>
+          
+          <div class="mission-stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">MAP BANK</span>
+              <span class="stat-value text-cyan" id="briefing-total-questions">30</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">DIFFICULTY</span>
+              <span class="stat-value text-orange">EXPLORER</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">EST. TIME</span>
+              <span class="stat-value text-cyan">5 MINS</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">XP REWARD</span>
+              <span class="stat-value text-green">+3000 XP</span>
+            </div>
+          </div>
+          
+          <div class="briefing-warning font-body">
+            <i class="fa-solid fa-triangle-exclamation text-orange"></i>
+            <span>WARNING: System shuffles stellar sectors and option patterns on initiation. Minimum score threshold of 95%+ required for Galactic Master certification.</span>
+          </div>
+        </div>
+        
+        <div class="briefing-actions">
+          <button id="start-mission-btn" class="btn btn-orange btn-lg btn-glow-orange">
+            <i class="fa-solid fa-rocket"></i> START MISSION
+          </button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- ==========================================
+       4. SCREEN: ACTIVE COGNITIVE SIMULATION
+       ========================================== -->
+  <div id="quiz-screen" class="screen hidden">
+    
+    <!-- Top Dashboard Header -->
+    <div class="hud-box quiz-hud-bar">
+      <div class="hud-corner"></div>
+      
+      <div class="hud-hud-item">
+        <span class="hud-label">SIMULATOR LINK:</span>
+        <span class="hud-value text-cyan glow-text" id="status-bar-text">MISSION IN PROGRESS</span>
+      </div>
+      <div class="hud-hud-item">
+        <span class="hud-label">ACCURACY RATE:</span>
+        <span class="hud-value text-cyan" id="hud-accuracy">100%</span>
+      </div>
+      <div class="hud-hud-item">
+        <span class="hud-label">XP NET:</span>
+        <span class="hud-value text-green animate-change" id="hud-xp">0 XP</span>
+      </div>
+      <div class="hud-hud-item">
+        <span class="hud-label">MISSION SCORE:</span>
+        <span class="hud-value text-orange" id="hud-score">00000</span>
+      </div>
+      
+      <button class="mute-btn" id="mute-toggle" title="Toggle Simulation Sounds">
+        <i class="fa-solid fa-volume-high"></i>
+      </button>
+    </div>
+    
+    <div class="quiz-grid">
+      
+      <!-- Left: Telemetry Feed (Image) -->
+      <div class="hud-box image-panel">
+        <div class="hud-corner"></div>
+        <div class="panel-tag font-hud">TELEMETRY SECTOR STAR CHART</div>
+        
+        <div class="image-frame-container" id="image-frame">
+          <div class="image-loading-overlay" id="image-loader">
+            <div class="loader-spinner"></div>
+            <div class="loader-text font-hud">DOWNLINKING STAR MAP CHARTS...</div>
+          </div>
+          
+          <img id="constellation-image" src="" alt="Star Map Sensor Feed" class="constellation-img">
+          
+          <div class="scanlines"></div>
+          
+          <div class="scope-crosshairs">
+            <div class="hair vertical"></div>
+            <div class="hair horizontal"></div>
+            <div class="scope-circle outer"></div>
+            <div class="scope-circle inner"></div>
+          </div>
+        </div>
+        
+        <div class="sensor-logs font-hud">
+          <div id="sensor-coordinates">RANGE: -- LY // ROTATION: -- DEG // MAGNITUDE: --</div>
+          <div id="sensor-spectrograpic">ATMOSPHERE DETECTOR: DEEP GRID STAR DUST CLOUDS</div>
+        </div>
+      </div>
+      
+      <!-- Right: Cognitive Input Controls -->
+      <div class="hud-box control-panel" id="control-panel">
+        <div class="hud-corner"></div>
+        
+        <!-- Progress bar tracking -->
+        <div class="progress-section">
+          <div class="progress-text font-hud">
+            <span>SECTOR MAP SCANNER: <span class="text-cyan" id="progress-text-val">01 / 30</span></span>
+            <span class="pct-complete text-orange" id="progress-pct-val">3%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="quiz-progress-bar"></div>
+          </div>
+        </div>
+        
+        <!-- Active Question Header -->
+        <div class="question-header">
+          <span class="hud-tag orange">DECISION CONSOLE</span>
+          <h2>Which constellation corresponds to the sensor feed pattern?</h2>
+        </div>
+        
+        <!-- Options List -->
+        <div class="options-container" id="options-grid">
+          <!-- Generated Dynamically in JS -->
+        </div>
+        
+        <!-- Console Feedback Display logs -->
+        <div class="feedback-toast font-hud" id="feedback-overlay">
+          <div class="toast-content" id="feedback-message">
+            <i class="fa-solid fa-circle-notch fa-spin text-cyan"></i> DECISION CONSOLE ENGAGED: SELECT OPTION
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- ==========================================
+       5. SCREEN: MISSION REPORT / SCORES
+       ========================================== -->
+  <div id="results-screen" class="screen hidden">
+    <div class="results-container">
+      <div class="hud-box results-panel">
+        <div class="hud-corner"></div>
+        
+        <div class="briefing-subtitle text-orange font-hud">DECISION REPORT GENERATED</div>
+        <h1 class="results-title">MISSION LOG COMPLETE</h1>
+        
+        <div class="results-grid">
+          
+          <!-- Badge Panel -->
+          <div class="badge-card">
+            <span class="stat-label">PILOT DEPLOYMENT RATING</span>
+            
+            <div class="rank-badge-container">
+              <svg class="rank-badge-svg" viewBox="0 0 100 100">
+                <polygon points="50,5 90,28 90,72 50,95 10,72 10,28" class="badge-shield"></polygon>
+                <polygon points="50,12 83,32 83,68 50,88 17,68 17,32" class="badge-shield-inner"></polygon>
+                
+                <!-- Rank Star SVG polygons -->
+                <path d="M50 22 L54 34 L66 34 L56 42 L60 54 L50 46 L40 54 L44 42 L34 34 L46 34 Z" class="badge-star" id="badge-star-1"></path>
+                <path d="M50 48 L53 58 L63 58 L55 64 L58 74 L50 68 L42 74 L45 64 L37 58 L47 58 Z" class="badge-star" id="badge-star-2" style="display: none;"></path>
+              </svg>
+              <div class="rank-title-overlay" id="results-rank-title">STELLAR COMMANDER</div>
+            </div>
+            
+            <p class="rank-desc" id="results-rank-desc">
+              Superb astral navigation, commander. You are ready to chart interstellar routes.
+            </p>
+          </div>
+          
+          <!-- Score Stats Display -->
+          <div class="stats-scoreboard">
+            <div class="score-card">
+              <div class="score-card-label">FINAL SCORE</div>
+              <div class="score-card-value text-orange" id="results-score">03000</div>
+            </div>
+            
+            <div class="score-card">
+              <div class="score-card-label">TOTAL XP NET</div>
+              <div class="score-card-value text-green" id="results-xp">+3000 XP</div>
+            </div>
+            
+            <div class="stats-mini-grid">
+              <div class="mini-card">
+                <span class="mini-label">ACCURACY RATE</span>
+                <span class="mini-val text-cyan" id="results-accuracy">100%</span>
+              </div>
+              <div class="mini-card">
+                <span class="mini-label">VERIFIED SECTORS</span>
+                <span class="mini-val text-green" id="results-correct">30</span>
+              </div>
+              <div class="mini-card">
+                <span class="mini-label">DEVIATED SECTORS</span>
+                <span class="mini-val text-danger" id="results-wrong">0</span>
+              </div>
+              <div class="mini-card">
+                <span class="mini-label">SECTORS ATTEMPTED</span>
+                <span class="mini-val" id="results-attempted">30 / 30</span>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- Replay Actions -->
+        <div class="results-actions font-hud">
+          <button id="replay-btn" class="btn btn-orange btn-glow-orange">
+            <i class="fa-solid fa-rotate-left"></i> PLAY AGAIN
+          </button>
+          <button id="return-arcade-btn" class="btn btn-cyan btn-glow-cyan">
+            <i class="fa-solid fa-gamepad"></i> RETURN TO ARCADE
+          </button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       8. JAVASCRIPT GAME LOGIC & SYSTEMS
+       ========================================== -->
+  <script>
+    /* Arcade Redirect config */
+    const arcadePage = "games.html";
+    const constellationImageDir = "images/"; // Local workspace path
+
+    // Pre-compiled question database matching constellations.xlsx to bypass local CORS file blocks
+    const defaultQuestions = [
+      { q: "1", answer: "Orion", options: ["Orion", "Leo", "Draco", "Lyra"] },
+      { q: "2", answer: "Ursa Major", options: ["Cassiopeia", "Ursa Major", "Pegasus", "Taurus"] },
+      { q: "3", answer: "Cassiopeia", options: ["Cygnus", "Gemini", "Cassiopeia", "Leo"] },
+      { q: "4", answer: "Scorpius", options: ["Andromeda", "Scorpius", "Aquila", "Virgo"] },
+      { q: "5", answer: "Leo", options: ["Taurus", "Draco", "Leo", "Lyra"] },
+      { q: "6", answer: "Cygnus", options: ["Orion", "Cygnus", "Hercules", "Aries"] },
+      { q: "7", answer: "Taurus", options: ["Pegasus", "Taurus", "Cancer", "Libra"] },
+      { q: "8", answer: "Gemini", options: ["Virgo", "Pisces", "Gemini", "Auriga"] },
+      { q: "9", answer: "Pegasus", options: ["Pegasus", "Orion", "Leo", "Scorpius"] },
+      { q: "10", answer: "Andromeda", options: ["Draco", "Lyra", "Andromeda", "Capricornus"] },
+      { q: "11", answer: "Lyra", options: ["Lyra", "Aquila", "Cetus", "Perseus"] },
+      { q: "12", answer: "Draco", options: ["Aries", "Draco", "Orion", "Leo"] },
+      { q: "13", answer: "Virgo", options: ["Virgo", "Cancer", "Cygnus", "Hydra"] },
+      { q: "14", answer: "Aquila", options: ["Taurus", "Aquila", "Gemini", "Ursa Minor"] },
+      { q: "15", answer: "Ursa Minor", options: ["Pegasus", "Leo", "Ursa Minor", "Cassiopeia"] },
+      { q: "16", answer: "Hercules", options: ["Hercules", "Orion", "Libra", "Pisces"] },
+      { q: "17", answer: "Aries", options: ["Cygnus", "Aries", "Draco", "Virgo"] },
+      { q: "18", answer: "Libra", options: ["Taurus", "Libra", "Andromeda", "Leo"] },
+      { q: "19", answer: "Pisces", options: ["Pisces", "Aquila", "Gemini", "Auriga"] },
+      { q: "20", answer: "Cancer", options: ["Cancer", "Draco", "Pegasus", "Lyra"] },
+      { q: "21", answer: "Perseus", options: ["Orion", "Perseus", "Aries", "Scorpius"] },
+      { q: "22", answer: "Auriga", options: ["Auriga", "Libra", "Leo", "Virgo"] },
+      { q: "23", answer: "Capricornus", options: ["Gemini", "Pegasus", "Capricornus", "Draco"] },
+      { q: "24", answer: "Cetus", options: ["Cetus", "Pisces", "Cygnus", "Orion"] },
+      { q: "25", answer: "Hydra", options: ["Leo", "Hydra", "Taurus", "Cassiopeia"] },
+      { q: "26", answer: "Phoenix", options: ["Phoenix", "Perseus", "Libra", "Cancer"] },
+      { q: "27", answer: "Canis Major", options: ["Andromeda", "Canis Major", "Lyra", "Pisces"] },
+      { q: "28", answer: "Canis Minor", options: ["Taurus", "Virgo", "Canis Minor", "Pegasus"] },
+      { q: "29", answer: "Sagittarius", options: ["Sagittarius", "Draco", "Gemini", "Aries"] },
+      { q: "30", answer: "Corona Borealis", options: ["Leo", "Corona Borealis", "Cetus", "Hydra"] }
+    ];
+
+    // State Variables
+    let isMuted = false;
+    let questions = [];
+    let currentQuestionIndex = 0;
+    
+    let score = 0;
+    let xp = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let isAnswered = false;
+    
+    /* ----------------------------------------------------
+       A. SOUND SYNTHESIS SYSTEM (Web Audio API)
+       ---------------------------------------------------- */
+    const AudioSynth = {
+      ctx: null,
+      
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            this.ctx = new AudioContextClass();
+          }
+        }
+      },
+      
+      playClick() {
+        if (isMuted) return;
+        this.init();
+        if (!this.ctx) return;
+        
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(150, now + 0.05);
+        
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      },
+
+      playCorrect() {
+        if (isMuted) return;
+        this.init();
+        if (!this.ctx) return;
+        
+        const now = this.ctx.currentTime;
+        const gainNode = this.ctx.createGain();
+        gainNode.gain.setValueAtTime(0.12, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        gainNode.connect(this.ctx.destination);
+        
+        // Double electronic arpeggiated chime
+        const osc1 = this.ctx.createOscillator();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(523.25, now); // C5
+        osc1.frequency.setValueAtTime(659.25, now + 0.08); // E5
+        osc1.connect(gainNode);
+        
+        const osc2 = this.ctx.createOscillator();
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(783.99, now + 0.16); // G5
+        osc2.frequency.setValueAtTime(1046.50, now + 0.24); // C6
+        osc2.connect(gainNode);
+        
+        osc1.start(now);
+        osc1.stop(now + 0.35);
+        osc2.start(now);
+        osc2.stop(now + 0.35);
+      },
+
+      playWrong() {
+        if (isMuted) return;
+        this.init();
+        if (!this.ctx) return;
+        
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        
+        // Downward sci-fi warning buzz
+        osc.frequency.setValueAtTime(130, now);
+        osc.frequency.linearRampToValueAtTime(65, now + 0.35);
+        
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      },
+
+      playWin() {
+        if (isMuted) return;
+        this.init();
+        if (!this.ctx) return;
+        
+        const now = this.ctx.currentTime;
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+        gain.connect(this.ctx.destination);
+        
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; // C Major Fanfare
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+          osc.connect(gain);
+          osc.start(now + idx * 0.08);
+          osc.stop(now + 0.7);
+        });
+      },
+
+      playBootLine() {
+        if (isMuted) return;
+        this.init();
+        if (!this.ctx) return;
+        
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1000, now);
+        
+        gain.gain.setValueAtTime(0.02, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.02);
+      }
+    };
+
+    /* ----------------------------------------------------
+       B. TWINKLING CANVAS STARFIELD ENGINE
+       ---------------------------------------------------- */
+    class SpaceBackground {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.stars = [];
+        this.shootingStars = [];
+        this.resize();
+        this.generateStars(140);
+        window.addEventListener('resize', () => this.resize());
+      }
+      
+      resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      }
+      
+      generateStars(count) {
+        this.stars = [];
+        for (let i = 0; i < count; i++) {
+          this.stars.push({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            size: Math.random() * 1.5 + 0.2,
+            alpha: Math.random(),
+            twinkle: Math.random() * 0.015 + 0.005,
+            driftX: (Math.random() - 0.5) * 0.08,
+            driftY: Math.random() * 0.06 + 0.02
+          });
+        }
+      }
+      
+      triggerShootingStar() {
+        if (this.shootingStars.length > 2) return;
+        this.shootingStars.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * (this.canvas.height / 2),
+          length: Math.random() * 100 + 40,
+          speed: Math.random() * 8 + 5,
+          angle: Math.PI / 6 + Math.random() * (Math.PI / 10),
+          alpha: 1,
+          decay: Math.random() * 0.012 + 0.008
+        });
+      }
+      
+      render() {
+        this.ctx.fillStyle = '#050816';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Stars rendering
+        this.stars.forEach(star => {
+          star.alpha += star.twinkle;
+          if (star.alpha > 1 || star.alpha < 0.1) {
+            star.twinkle = -star.twinkle;
+          }
+          
+          star.x += star.driftX;
+          star.y += star.driftY;
+          
+          if (star.y > this.canvas.height) {
+            star.y = 0;
+            star.x = Math.random() * this.canvas.width;
+          }
+          if (star.x < 0) star.x = this.canvas.width;
+          if (star.x > this.canvas.width) star.x = 0;
+          
+          this.ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+          this.ctx.beginPath();
+          this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+          this.ctx.fill();
+        });
+        
+        // Shooting stars rendering
+        for (let i = this.shootingStars.length - 1; i >= 0; i--) {
+          const s = this.shootingStars[i];
+          s.x += Math.cos(s.angle) * s.speed;
+          s.y += Math.sin(s.angle) * s.speed;
+          s.alpha -= s.decay;
+          
+          if (s.alpha <= 0) {
+            this.shootingStars.splice(i, 1);
+            continue;
+          }
+          
+          const grad = this.ctx.createLinearGradient(
+            s.x, s.y, 
+            s.x - Math.cos(s.angle) * s.length, 
+            s.y - Math.sin(s.angle) * s.length
+          );
+          grad.addColorStop(0, `rgba(0, 243, 255, ${s.alpha})`);
+          grad.addColorStop(0.3, `rgba(0, 243, 255, ${s.alpha * 0.4})`);
+          grad.addColorStop(1, 'rgba(0, 243, 255, 0)');
+          
+          this.ctx.strokeStyle = grad;
+          this.ctx.lineWidth = 1.2;
+          this.ctx.beginPath();
+          this.ctx.moveTo(s.x, s.y);
+          this.ctx.lineTo(
+            s.x - Math.cos(s.angle) * s.length, 
+            s.y - Math.sin(s.angle) * s.length
+          );
+          this.ctx.stroke();
+        }
+        
+        if (Math.random() < 0.002) {
+          this.triggerShootingStar();
+        }
+      }
+      
+      start() {
+        const tick = () => {
+          this.render();
+          requestAnimationFrame(tick);
+        };
+        tick();
+      }
+    }
+
+    // Initialize starfield rendering
+    const spaceBg = new SpaceBackground('starfield');
+    spaceBg.start();
+
+    /* ----------------------------------------------------
+       C. SHEETJS SPREADSHEET PARSING SYSTEM
+       ---------------------------------------------------- */
+    // Shuffler utility (Fisher-Yates)
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Standard parser for XLSX Workbook
+    function processWorkbook(workbook) {
+      try {
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        // Convert sheet to row array lists
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        if (!jsonData || jsonData.length < 2) {
+          throw new Error("Invalid spreadsheet row sizes.");
+        }
+        
+        // Read header columns to resolve positions dynamically
+        const headers = jsonData[0].map(h => String(h).trim().toLowerCase());
+        
+        let qIdx = headers.findIndex(h => h === 'q' || h === 'image');
+        let answerIdx = headers.findIndex(h => h.includes('answer') || h.includes('correct'));
+        
+        let optionIndices = [];
+        headers.forEach((h, index) => {
+          if (index !== qIdx && index !== answerIdx && (h.includes('option') || h.includes('opt') || h.startsWith('opt'))) {
+            optionIndices.push(index);
+          }
+        });
+        
+        // Fallbacks if columns don't align with criteria
+        if (qIdx === -1) qIdx = 0;
+        if (answerIdx === -1) answerIdx = 1;
+        if (optionIndices.length === 0) {
+          optionIndices = [2, 3, 4, 5]; // Default indices matching A, B, C, D
+        }
+        
+        const parsedQuestions = [];
+        for (let i = 1; i < jsonData.length; i++) {
+          const row = jsonData[i];
+          if (!row || row.length === 0) continue;
+          
+          const qVal = row[qIdx] !== undefined ? String(row[qIdx]).trim() : '';
+          const correctAns = row[answerIdx] !== undefined ? String(row[answerIdx]).trim() : '';
+          
+          if (!qVal || !correctAns) continue; // Skip incomplete items
+          
+          const optsList = optionIndices
+            .map(idx => row[idx] !== undefined ? String(row[idx]).trim() : '')
+            .filter(opt => opt !== '');
+            
+          if (optsList.length === 0) continue;
+          
+          parsedQuestions.push({
+            q: qVal,
+            answer: correctAns,
+            options: optsList
+          });
+        }
+        
+        if (parsedQuestions.length === 0) {
+          throw new Error("Parsed data was completely empty.");
+        }
+        
+        questions = parsedQuestions;
+        return true;
+      } catch (err) {
+        console.error("Workbook Parsing Failure:", err);
+        return false;
+      }
+    }
+
+    // Auto-fetch server spreadsheet
+    async function autoFetchDatabase() {
+      try {
+        const response = await fetch('constellations.xlsx');
+        if (!response.ok) {
+          throw new Error(`Server returned status: ${response.status}`);
+        }
+        
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        return processWorkbook(workbook);
+      } catch (e) {
+        console.warn("Autoload fetch rejected:", e);
+        return false;
+      }
+    }
+
+    /* ----------------------------------------------------
+       D. SCREEN NAVIGATION STATE MACHINE
+       ---------------------------------------------------- */
+    function switchScreen(activeScreenId) {
+      const screens = ['boot-screen', 'upload-screen', 'start-screen', 'quiz-screen', 'results-screen'];
+      screens.forEach(id => {
+        const el = document.getElementById(id);
+        if (id === activeScreenId) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+    }
+
+    /* ----------------------------------------------------
+       E. TERMINAL BOOT LOADER ANIMATIONS
+       ---------------------------------------------------- */
+    const bootLogsContainer = document.getElementById('boot-logs');
+    const bootProgress = document.getElementById('boot-progress');
+    const bootPct = document.getElementById('boot-pct');
+
+    function appendBootLog(text, type = 'info') {
+      let prefix = '<span class="text-cyan">[SYS]</span>';
+      if (type === 'ok') prefix = '<span class="text-green">[OK]</span>';
+      if (type === 'warn') prefix = '<span class="text-orange">[WARN]</span>';
+      if (type === 'error') prefix = '<span class="text-danger">[ERR]</span>';
+      
+      const line = document.createElement('div');
+      line.className = 'terminal-line';
+      line.innerHTML = `${prefix} ${text}`;
+      
+      // Remove trailing cursor if exists, and append it to new line
+      const cursor = bootLogsContainer.querySelector('.terminal-cursor');
+      if (cursor) cursor.remove();
+      
+      bootLogsContainer.appendChild(line);
+      
+      const newCursor = document.createElement('span');
+      newCursor.className = 'terminal-cursor';
+      line.appendChild(newCursor);
+      
+      // Auto scroll terminal
+      bootLogsContainer.scrollTop = bootLogsContainer.scrollHeight;
+      AudioSynth.playBootLine();
+    }
+
+    // Run custom sequence on page load
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Step 1: Boot animation sequence
+      const bootTasks = [
+        { text: "INITIALIZING STELLAR NAVIGATION MODULES...", delay: 200, type: 'info' },
+        { text: "COLD INITIATING AUDIO SYNTHESIZERS...", delay: 350, type: 'info' },
+        { text: "SYNTH SOUND CARD BOOTED: NATIVE OSCILLATORS ACTIVE", delay: 100, type: 'ok' },
+        { text: "CONNECTING STARFIELD RENDERING ENGINE...", delay: 400, type: 'info' },
+        { text: "DYNAMICS LAYER OK // TWINKLE INTENSITY SECURED", delay: 100, type: 'ok' },
+        { text: "ATTEMPTING DOCKING PROTOCOL TO ASTROMETRIC DATABASE...", delay: 400, type: 'info' },
+      ];
+      
+      let step = 0;
+      let progress = 0;
+      
+      const bootTimer = setInterval(async () => {
+        if (step < bootTasks.length) {
+          const task = bootTasks[step];
+          appendBootLog(task.text, task.type);
+          progress += 10;
+          bootProgress.style.width = `${progress}%`;
+          bootPct.textContent = `${progress}%`;
+          step++;
+        } else {
+          clearInterval(bootTimer);
+          
+          // Try to autoload the database
+          const loadSuccess = await autoFetchDatabase();
+          
+          if (loadSuccess) {
+            appendBootLog("DB CONNECTION: LIVE CONNECT SECURED", "ok");
+            appendBootLog(`INTEGRITY MAP: OK (${questions.length} SECTOR RECORDS MOUNTED)`, "ok");
+            finishBootSequence();
+          } else {
+            appendBootLog("DB CONNECTION: CORS ACCESS ENFORCED OR DB OFFLINE", "warn");
+            appendBootLog("MOUNTING SYSTEM FALLBACK DATABASE...", "info");
+            
+            // Populate fallback database matching constellations.xlsx
+            questions = JSON.parse(JSON.stringify(defaultQuestions));
+            
+            appendBootLog("FALLBACK DATABASE STATUS: SECURE", "ok");
+            appendBootLog(`INTEGRITY MAP: OK (${questions.length} SECTOR RECORDS MOUNTED)`, "ok");
+            finishBootSequence();
+          }
+        }
+      }, 450);
+    });
+
+    function finishBootSequence() {
+      let progress = 60;
+      const progressTimer = setInterval(() => {
+        progress += 8;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(progressTimer);
+          
+          appendBootLog("ALL SYSTEMS SYNCHRONIZED", "ok");
+          appendBootLog("MISSION COMMAND: READY", "ok");
+          
+          // Load Start briefing details
+          document.getElementById('briefing-total-questions').textContent = questions.length;
+          
+          setTimeout(() => {
+            switchScreen('start-screen');
+            AudioSynth.playWin(); // Sci-fi completion sound
+          }, 900);
+        }
+        bootProgress.style.width = `${progress}%`;
+        bootPct.textContent = `${progress}%`;
+      }, 150);
+    }
+
+    /* ----------------------------------------------------
+       F. FILE DRAG & DROP EVENT CONTROLLERS
+       ---------------------------------------------------- */
+    function setupDragDropInterface() {
+      const dropZone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('excel-file');
+      
+      // Drag events
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropZone.classList.add('drag-over');
+        }, false);
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+        }, false);
+      });
+      
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length > 0) {
+          handleUserExcelFile(files[0]);
+        }
+      });
+      
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          handleUserExcelFile(e.target.files[0]);
+        }
+      });
+    }
+
+    function handleUserExcelFile(file) {
+      AudioSynth.playClick();
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const success = processWorkbook(workbook);
+          
+          if (success) {
+            document.getElementById('start-db-status').textContent = "IMPORTED";
+            document.getElementById('start-db-status').className = "val text-green";
+            document.getElementById('briefing-total-questions').textContent = questions.length;
+            
+            // Switch screen to start briefing
+            switchScreen('start-screen');
+            AudioSynth.playWin();
+          } else {
+            alert("Database parsing error: Please verify your file column headers match constellations.xlsx structure.");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("File read error: Invalid spreadsheet structure.");
+        }
+      };
+      
+      reader.readAsArrayBuffer(file);
+    }
+
+    /* ----------------------------------------------------
+       G. GAMEPLAY ACTIVE MISSION CONTROLLERS
+       ---------------------------------------------------- */
+    // Start button trigger
+    document.getElementById('start-mission-btn').addEventListener('click', () => {
+      AudioSynth.playClick();
+      startMission();
+    });
+
+    function startMission() {
+      currentQuestionIndex = 0;
+      score = 0;
+      xp = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      isAnswered = false;
+      
+      // Shuffle our main database questions array to randomize gameplay order
+      shuffleArray(questions);
+      
+      // Switch screen to quiz HUD view
+      switchScreen('quiz-screen');
+      loadQuestion(currentQuestionIndex);
+    }
+
+    function getTelemetryImageName(questionObj) {
+      const qVal = String(questionObj.q).trim();
+      
+      // Extension format check
+      if (qVal.toLowerCase().endsWith('.png') || 
+          qVal.toLowerCase().endsWith('.jpg') || 
+          qVal.toLowerCase().endsWith('.jpeg') || 
+          qVal.toLowerCase().endsWith('.webp')) {
+        return qVal;
+      }
+      
+      // Digit check mappings matching Q6.png and q[id].png
+      if (qVal === '6') {
+        return 'Q6.png';
+      }
+      return `q${qVal}.png`;
+    }
+
+    function loadQuestion(index) {
+      isAnswered = false;
+      const question = questions[index];
+      
+      // Update telemetry coordinates text
+      const mockCoordX = (Math.random() * 180 - 90).toFixed(4);
+      const mockCoordY = (Math.random() * 180 - 90).toFixed(4);
+      const mockLightRange = (Math.random() * 9.5 + 0.5).toFixed(1);
+      document.getElementById('sensor-coordinates').textContent = 
+        `COORD: ${mockCoordX}X, ${mockCoordY}Y // RANGE: ${mockLightRange} LY`;
+      
+      // Reveal downlink loader spinner
+      const imgLoader = document.getElementById('image-loader');
+      const imgEl = document.getElementById('constellation-image');
+      imgLoader.classList.remove('fade-out');
+      
+      // Format image load triggers
+      const imgFilename = getTelemetryImageName(question);
+      imgEl.src = constellationImageDir + imgFilename;
+      
+      imgEl.onload = () => {
+        imgLoader.classList.add('fade-out');
+      };
+      imgEl.onerror = () => {
+        // Fallback placeholder if image resource fails
+        imgLoader.classList.add('fade-out');
+        imgEl.src = ""; // Clear
+        document.getElementById('sensor-coordinates').textContent = "ERROR: SENSOR DISCONNECTED // TELEMETRY FEED UNREADABLE";
+      };
+
+      // Reset feedback deck UI
+      const feedbackToast = document.getElementById('feedback-overlay');
+      feedbackToast.className = "feedback-toast font-hud";
+      document.getElementById('feedback-message').innerHTML = 
+        `<i class="fa-solid fa-circle-notch fa-spin text-cyan"></i> DECISION CONSOLE ENGAGED: SELECT OPTION`;
+      
+      // Reset layout styles on image frame container
+      const imageFrame = document.getElementById('image-frame');
+      imageFrame.className = "image-frame-container";
+      
+      // Update HUD metrics
+      updateHUD();
+      
+      // Update Progress text
+      const currentNumber = index + 1;
+      const formattedNum = String(currentNumber).padStart(2, '0');
+      const formattedTotal = String(questions.length).padStart(2, '0');
+      document.getElementById('progress-text-val').textContent = `${formattedNum} / ${formattedTotal}`;
+      
+      const percentage = Math.round((currentNumber / questions.length) * 100);
+      document.getElementById('progress-pct-val').textContent = `${percentage}%`;
+      document.getElementById('quiz-progress-bar').style.width = `${percentage}%`;
+      
+      // Options shuffling
+      // Excel option distractor array items
+      const rawOptions = [...question.options];
+      const cleanedOptions = [...new Set(rawOptions.map(opt => String(opt).trim()))];
+      
+      // Shuffle distractor item slots
+      shuffleArray(cleanedOptions);
+      
+      // Build option buttons
+      const optionsGrid = document.getElementById('options-grid');
+      optionsGrid.innerHTML = '';
+      
+      const optionLetters = ['A', 'B', 'C', 'D'];
+      cleanedOptions.forEach((optionText, optIdx) => {
+        const letter = optionLetters[optIdx] || '?';
+        const button = document.createElement('button');
+        button.className = 'option-btn';
+        button.innerHTML = `
+          <span class="option-marker">${letter}</span>
+          <span class="option-text">${optionText}</span>
+        `;
+        
+        button.addEventListener('click', (e) => {
+          if (!isAnswered) {
+            selectOption(optionText, button);
+          }
+        });
+        
+        optionsGrid.appendChild(button);
+      });
+    }
+
+    function selectOption(selectedText, buttonElement) {
+      isAnswered = true;
+      const question = questions[currentQuestionIndex];
+      
+      const cleanedSelected = selectedText.trim().toLowerCase();
+      const cleanedCorrect = question.answer.trim().toLowerCase();
+      
+      const optionButtons = document.querySelectorAll('.option-btn');
+      // Disable further clicks
+      optionButtons.forEach(btn => btn.disabled = true);
+      
+      const imageFrame = document.getElementById('image-frame');
+      const feedbackToast = document.getElementById('feedback-overlay');
+      const feedbackMessage = document.getElementById('feedback-message');
+      
+      if (cleanedSelected === cleanedCorrect) {
+        // Correct Choice
+        correctCount++;
+        score += 100;
+        xp += 100;
+        
+        buttonElement.classList.add('btn-correct');
+        imageFrame.classList.add('correct-glow');
+        
+        feedbackToast.classList.add('correct');
+        feedbackMessage.innerHTML = 
+          `<i class="fa-solid fa-circle-check text-green"></i> SYSTEM VERIFIED: CORRECT CONSTELLATION (+100 XP)`;
+          
+        AudioSynth.playCorrect();
+        triggerXPFloater(buttonElement);
+      } else {
+        // Incorrect Choice
+        wrongCount++;
+        
+        buttonElement.classList.add('btn-wrong');
+        imageFrame.classList.add('wrong-glow');
+        
+        // Shake feedback deck
+        document.getElementById('control-panel').classList.add('shake-anim');
+        setTimeout(() => {
+          document.getElementById('control-panel').classList.remove('shake-anim');
+        }, 400);
+        
+        feedbackToast.classList.add('wrong');
+        feedbackMessage.innerHTML = 
+          `<i class="fa-solid fa-circle-xmark text-danger"></i> ERROR: CORRECTION TO [ ${question.answer.toUpperCase()} ]`;
+        
+        // Find correct button and outline it
+        optionButtons.forEach(btn => {
+          const btnText = btn.querySelector('.option-text').textContent.trim().toLowerCase();
+          if (btnText === cleanedCorrect) {
+            btn.classList.add('btn-correct-highlight');
+          }
+        });
+        
+        AudioSynth.playWrong();
+      }
+      
+      // Update HUD values instantly
+      updateHUD();
+      
+      // Auto advance to next question after 1.5 seconds
+      setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+          loadQuestion(currentQuestionIndex);
+        } else {
+          endMission();
+        }
+      }, 1500);
+    }
+
+    function triggerXPFloater(buttonEl) {
+      const rect = buttonEl.getBoundingClientRect();
+      const floater = document.createElement('div');
+      floater.className = 'xp-floater';
+      floater.textContent = '+100 XP';
+      
+      // Position relative to cursor click point or center of button
+      floater.style.left = `${rect.left + rect.width / 2 - 25}px`;
+      floater.style.top = `${rect.top - 10}px`;
+      
+      document.body.appendChild(floater);
+      
+      // Cleanup DOM element after animation ends
+      setTimeout(() => {
+        floater.remove();
+      }, 1300);
+    }
+
+    function updateHUD() {
+      // Calculate current accuracy rate
+      const attempts = correctCount + wrongCount;
+      const accuracyRate = attempts > 0 ? Math.round((correctCount / attempts) * 100) : 100;
+      
+      document.getElementById('hud-accuracy').textContent = `${accuracyRate}%`;
+      document.getElementById('hud-xp').textContent = `${xp} XP`;
+      document.getElementById('hud-score').textContent = String(score).padStart(5, '0');
+    }
+
+    /* ----------------------------------------------------
+       H. MISSION COMPLETE / RESULTS LOGICS
+       ---------------------------------------------------- */
+    function endMission() {
+      switchScreen('results-screen');
+      AudioSynth.playWin();
+      
+      // Calculate final stats
+      const totalAttempts = correctCount + wrongCount;
+      const finalAccuracy = totalAttempts > 0 ? Math.round((correctCount / totalAttempts) * 100) : 0;
+      
+      document.getElementById('results-score').textContent = String(score).padStart(5, '0');
+      document.getElementById('results-xp').textContent = `+${xp} XP`;
+      document.getElementById('results-accuracy').textContent = `${finalAccuracy}%`;
+      document.getElementById('results-correct').textContent = correctCount;
+      document.getElementById('results-wrong').textContent = wrongCount;
+      document.getElementById('results-attempted').textContent = `${totalAttempts} / ${questions.length}`;
+      
+      // Determine Rank Ratings
+      let rankTitle = "";
+      let rankDesc = "";
+      const star2 = document.getElementById('badge-star-2');
+      
+      if (finalAccuracy >= 95) {
+        rankTitle = "GALACTIC MASTER";
+        rankDesc = "Incredible celestial recognition navigation, captain. You are master of the galaxy charts.";
+        star2.style.display = 'block'; // Display double star badge
+      } else if (finalAccuracy >= 85) {
+        rankTitle = "STELLAR COMMANDER";
+        rankDesc = "Superb astronomical navigation, commander. You are ready to command planetary flight corridors.";
+        star2.style.display = 'block';
+      } else if (finalAccuracy >= 70) {
+        rankTitle = "COSMIC EXPLORER";
+        rankDesc = "Accurate navigation patterns, explorer. Continue exploring unfamiliar stellar cartography sectors.";
+        star2.style.display = 'none';
+      } else if (finalAccuracy >= 50) {
+        rankTitle = "SPACE CADET";
+        rankDesc = "Acceptable pattern identification. Revise the constellation star indexes before leaving base.";
+        star2.style.display = 'none';
+      } else {
+        rankTitle = "ROOKIE ASTRONOMER";
+        rankDesc = "Star charts coordinates misaligned. Rerunning simulated cockpit flight drills is highly recommended.";
+        star2.style.display = 'none';
+      }
+      
+      document.getElementById('results-rank-title').textContent = rankTitle;
+      document.getElementById('results-rank-desc').textContent = rankDesc;
+    }
+
+    // Play again handler
+    document.getElementById('replay-btn').addEventListener('click', () => {
+      AudioSynth.playClick();
+      startMission();
+    });
+
+    // Return to Arcade handler
+    document.getElementById('return-arcade-btn').addEventListener('click', () => {
+      AudioSynth.playClick();
+      window.location.href = arcadePage;
+    });
+
+    /* ----------------------------------------------------
+       I. SOUND TOGGLE BUTTONS
+       ---------------------------------------------------- */
+    const muteToggleBtn = document.getElementById('mute-toggle');
+    muteToggleBtn.addEventListener('click', () => {
+      isMuted = !isMuted;
+      
+      if (isMuted) {
+        muteToggleBtn.innerHTML = `<i class="fa-solid fa-volume-xmark"></i>`;
+        muteToggleBtn.style.color = '#ff0055';
+        muteToggleBtn.style.borderColor = 'rgba(255, 0, 85, 0.4)';
+        document.getElementById('start-sound-status').textContent = "OFFLINE";
+        document.getElementById('start-sound-status').className = "val text-danger";
+      } else {
+        muteToggleBtn.innerHTML = `<i class="fa-solid fa-volume-high"></i>`;
+        muteToggleBtn.style.color = 'var(--cyan-glow)';
+        muteToggleBtn.style.borderColor = 'rgba(0, 243, 255, 0.3)';
+        document.getElementById('start-sound-status').textContent = "SYNTH ACTIVE";
+        document.getElementById('start-sound-status').className = "val text-orange";
+        AudioSynth.playClick();
+      }
+    });
+  </script>
+<footer class="w-full py-8 px-10 flex flex-col md:flex-row justify-between items-center opacity-60 bg-[#05070A] border-t border-[#FF8A00]/20 mt-auto z-50 relative">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="arcade-font text-4xl text-[#00F0FF] mb-2" style="font-family: 'VT323', monospace;">ALTAIR</span>
+<p class="font-label-caps text-[10px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-8 font-label-caps text-[12px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\\nVersion: 1.0.0\\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
+</div>
+</footer>
+</body>
+</html>

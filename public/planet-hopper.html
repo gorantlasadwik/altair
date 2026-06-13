@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>PLANET HOPPER | Altair Arcade</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #05070A;
+            font-family: 'Hanken Grotesk', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        /* Scanline theme detail */
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 240, 255, 0.05);
+            position: absolute;
+            animation: scan 10s linear infinite;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        /* Glass design cards using colors from Altair theme */
+        .game-modal {
+            background: rgba(5, 7, 10, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(0, 240, 255, 0.25);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0, 240, 255, 0.05);
+        }
+
+        .neon-glow-cyan {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+        }
+
+        .neon-glow-orange {
+            text-shadow: 0 0 10px rgba(255, 138, 0, 0.6);
+        }
+
+        .btn-neon {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid #00F0FF;
+            color: #00F0FF;
+            text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-neon:hover {
+            background: #00F0FF;
+            color: #05070A;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="w-screen h-screen flex flex-col justify-between items-center text-slate-100">
+    <div class="scanline"></div>
+
+    <!-- CLEAN TOP BAR -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#05070A]/80 backdrop-blur-md border-b border-[#3b494b]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+    <div class="flex items-center gap-4">
+        <div class="w-10 h-10 flex items-center justify-center" style="text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">
+            <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
+        </div>
+        <span class="text-4xl font-extrabold text-[#00F0FF] tracking-tighter" style="font-family: 'VT323', monospace; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">ALTAIR</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8" style="font-family: 'JetBrains Mono', monospace;">
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/home.html">HOME</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/iss.html">ISS TRACKER</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/sky.html">SKY VIEW</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/game.html">GAMES</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
+    </nav>
+    <div class="flex items-center gap-6" style="font-family: 'JetBrains Mono', monospace;">
+        <button class="material-symbols-outlined text-[#b9cacb] hover:text-[#00F0FF] transition-all active:scale-95">notifications</button>
+        <a href="/profile.html" class="flex items-center gap-3 bg-[#282a2e] px-3 py-1 rounded-full border border-[#3b494b]/30 hover:bg-[#323539] transition-colors cursor-pointer">
+            <span id="user-profile-name" class="font-bold tracking-[0.15em] text-[10px] text-[#00F0FF]"></span>
+            <button class="material-symbols-outlined text-[#00F0FF]" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+        </a>
+        <button id="logout-btn" class="font-bold tracking-[0.15em] text-[10px] text-[#FF8A00] hover:text-white transition-colors border border-[#FF8A00]/30 px-3 py-1 rounded">LOGOUT</button>
+    </div>
+</header>
+
+    <!-- INTERACTIVE GAME CONTAINER -->
+    <main class="flex-1 w-full max-w-[1200px] my-4 px-4 flex flex-col justify-center items-center relative overflow-hidden">
+        <div class="w-full h-full relative rounded-lg border border-zinc-800/80 bg-[#05070A] overflow-hidden flex justify-center items-center">
+            
+            <!-- Canvas -->
+            <canvas id="game-canvas" class="w-full h-full block bg-[#05070A] cursor-pointer"></canvas>
+
+            <!-- SCREEN: TITLE / MENU -->
+            <div id="screen-title" class="absolute inset-0 bg-[#05070A]/90 flex flex-col justify-center items-center p-6 text-center z-20">
+                <h1 class="text-4xl md:text-5xl font-['Sora'] font-black tracking-widest text-[#E1F5FE] mb-3 neon-glow-cyan uppercase">PLANET HOPPER</h1>
+                <p class="text-sm font-['JetBrains_Mono'] text-[#00F0FF] tracking-wider mb-8 max-w-md">
+                    Launch between gravity fields, adjust paths using thrusters, and land safely inside the target wormhole.
+                </p>
+                <div class="flex flex-col gap-4 w-full max-w-[280px]">
+                    <button onclick="startGame()" class="py-3 btn-neon font-['JetBrains_Mono'] text-xs font-bold tracking-widest uppercase">
+                        Start Simulation
+                    </button>
+                    <button onclick="toggleInstructions(true)" class="py-3 border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 font-['JetBrains_Mono'] text-xs font-bold tracking-widest uppercase transition-all">
+                        How to Pilot
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN: INSTRUCTIONS MODAL -->
+            <div id="screen-instructions" class="absolute inset-0 bg-[#05070A]/95 hidden flex-col justify-center items-center p-6 z-20">
+                <div class="max-w-md w-full game-modal p-6 rounded-lg text-left">
+                    <h2 class="font-['Sora'] font-bold text-lg text-[#00F0FF] mb-4 uppercase tracking-widest border-b border-zinc-800 pb-2">FLIGHT CONTROLS</h2>
+                    <div class="space-y-4 font-['JetBrains_Mono'] text-[13px] text-zinc-300 leading-relaxed mb-6">
+                        <div>
+                            <p class="font-bold text-white mb-1">1. Orbit Navigation</p>
+                            <p class="text-zinc-400">Ship orbits planets automatically. Press <kbd class="px-1.5 py-0.5 bg-zinc-800 text-[#00F0FF] rounded">A</kbd>/<kbd class="px-1.5 py-0.5 bg-zinc-800 text-[#00F0FF] rounded">D</kbd> or <kbd class="px-1.5 py-0.5 bg-zinc-800 text-[#00F0FF] rounded">◀</kbd>/<kbd class="px-1.5 py-0.5 bg-zinc-800 text-[#00F0FF] rounded">▶</kbd> keys to change rotation angle.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white mb-1">2. Launching</p>
+                            <p class="text-zinc-400">Press <kbd class="px-3 py-0.5 bg-zinc-800 text-[#00F0FF] rounded">SPACEBAR</kbd> or click the screen to launch off the planet surface. Launching consumes <span class="text-[#FF8A00] font-bold">5% Fuel</span>.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white mb-1">3. Trajectory Thrusters</p>
+                            <p class="text-zinc-400">In space, steer with <kbd class="px-1.5 py-0.5 bg-zinc-800 text-[#00F0FF] rounded">W,A,S,D</kbd> or <kbd class="px-1.5 py-0.5 bg-zinc-800 text-[#00F0FF] rounded">Arrow Keys</kbd>. Thrusting consumes fuel continuously. Path projection line shows gravity effects.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white mb-1">4. Docking Threshold</p>
+                            <p class="text-zinc-400">Land below <span class="text-[#00F0FF] font-bold">4.0 km/s</span> to dock safely. Landing too fast destroys the vessel. Docking partially refuels your ship.</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleInstructions(false)" class="w-full py-2.5 btn-neon font-['JetBrains_Mono'] text-xs font-bold tracking-widest uppercase">
+                        Acknowledge
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN: LEVEL SECURE -->
+            <div id="screen-complete" class="absolute inset-0 bg-[#05070A]/90 hidden flex-col justify-center items-center p-6 text-center z-20">
+                <h2 class="text-2xl md:text-3xl font-['Sora'] font-black tracking-widest text-emerald-400 mb-2 uppercase">SECTOR SECURED</h2>
+                <p class="text-xs font-['JetBrains_Mono'] text-zinc-500 tracking-wider mb-6 uppercase" id="complete-title">Level Completion Report</p>
+
+                <div class="game-modal p-6 rounded-lg max-w-[280px] w-full mb-6 space-y-2 font-['JetBrains_Mono'] text-xs text-left">
+                    <div class="flex justify-between">
+                        <span class="text-zinc-400">Remaining Fuel:</span>
+                        <span id="score-fuel" class="text-[#00F0FF] font-bold">100%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-400">Jumps:</span>
+                        <span id="score-jumps" class="text-white font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between border-t border-zinc-800 pt-2 text-sm">
+                        <span class="text-white font-bold">XP Secured:</span>
+                        <span id="score-xp" class="text-[#FF8A00] font-bold">0 XP</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 w-full max-w-[280px]">
+                    <button onclick="retryLevel()" class="flex-1 py-2.5 border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 font-['JetBrains_Mono'] text-xs tracking-wider uppercase transition-all">
+                        Retry
+                    </button>
+                    <button id="next-btn" onclick="nextLevel()" class="flex-1 py-2.5 btn-neon font-['JetBrains_Mono'] text-xs font-bold tracking-widest uppercase">
+                        Next Sector
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN: GAME OVER -->
+            <div id="screen-gameover" class="absolute inset-0 bg-[#05070A]/90 hidden flex-col justify-center items-center p-6 text-center z-20">
+                <h2 class="text-2xl md:text-3xl font-['Sora'] font-black tracking-widest text-[#FF8A00] mb-2 neon-glow-orange uppercase">VESSEL LOST</h2>
+                <p class="text-xs font-['JetBrains_Mono'] text-zinc-500 tracking-wider mb-6 uppercase">Simulation Terminated</p>
+
+                <div class="game-modal p-6 rounded-lg max-w-[280px] w-full mb-6 space-y-2 font-['JetBrains_Mono'] text-xs text-left border-red-500/35">
+                    <div class="text-center font-bold text-red-400 pb-2 border-b border-zinc-850 uppercase" id="gameover-reason">
+                        COLLISION LIMIT EXCEEDED
+                    </div>
+                    <div class="flex justify-between pt-2">
+                        <span class="text-zinc-400">Impact Speed:</span>
+                        <span id="gameover-speed" class="text-[#00F0FF]">0.0 km/s</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-400">Safety Threshold:</span>
+                        <span class="text-zinc-400">4.0 km/s</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 w-full max-w-[280px]">
+                    <button onclick="showScreen('title')" class="flex-1 py-2.5 border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 font-['JetBrains_Mono'] text-xs tracking-wider uppercase transition-all">
+                        Exit
+                    </button>
+                    <button onclick="retryLevel()" class="flex-1 py-2.5 btn-neon font-['JetBrains_Mono'] text-xs font-bold tracking-widest uppercase">
+                        Restart Sim
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CLEAN FOOTER -->
+    <footer class="w-full py-8 px-10 flex flex-col md:flex-row justify-between items-center opacity-60 bg-[#05070A] border-t border-[#FF8A00]/20 mt-auto z-50 relative">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="arcade-font text-4xl text-[#00F0FF] mb-2" style="font-family: 'VT323', monospace;">ALTAIR</span>
+<p class="font-label-caps text-[10px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-8 font-label-caps text-[12px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
+</div>
+</footer>
+
+    <!-- Game Script -->
+    <script>
+        // ==========================================
+        // 1. SOUND SYNTHESIS ENGINE (Web Audio API)
+        // ==========================================
+        let audioCtx = null;
+        let isSoundMuted = false;
+        let activeThrustOsc = null;
+        let activeThrustGain = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleSound() {
+            isSoundMuted = !isSoundMuted;
+            const icon = document.getElementById("sound-icon");
+            if (isSoundMuted) {
+                icon.innerText = "volume_off";
+                if (activeThrustGain) activeThrustGain.gain.setValueAtTime(0, audioCtx.currentTime);
+            } else {
+                icon.innerText = "volume_up";
+                initAudio();
+            }
+            playTone(400, 0.05, "sine");
+        }
+
+        function playTone(frequency, duration, type = "sine", volume = 0.1, sweepEndFreq = null) {
+            if (isSoundMuted) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            try {
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                if (sweepEndFreq) {
+                    osc.frequency.exponentialRampToValueAtTime(sweepEndFreq, audioCtx.currentTime + duration);
+                }
+
+                gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+                osc.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.error("Audio error:", e);
+            }
+        }
+
+        function playSoundClick() {
+            playTone(800, 0.08, "triangle", 0.1, 1200);
+        }
+
+        function playSoundLaunch() {
+            playTone(180, 0.3, "sine", 0.15, 600);
+        }
+
+        function playSoundLanding() {
+            playTone(350, 0.2, "sine", 0.1, 180);
+        }
+
+        function playSoundCrash() {
+            if (isSoundMuted) return;
+            initAudio();
+            try {
+                const bufferSize = audioCtx.sampleRate * 0.5;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = "lowpass";
+                filter.frequency.setValueAtTime(600, audioCtx.currentTime);
+                filter.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.4);
+
+                const gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.5);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                noise.start();
+            } catch (e) {
+                playTone(80, 0.5, "sawtooth", 0.25, 20);
+            }
+        }
+
+        function playSoundWin() {
+            const tempo = 0.08;
+            const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 1046.50];
+            notes.forEach((freq, index) => {
+                setTimeout(() => {
+                    playTone(freq, 0.22, "triangle", 0.06, freq * 1.05);
+                }, index * tempo * 1000);
+            });
+        }
+
+        function startThrustSound() {
+            if (isSoundMuted) return;
+            initAudio();
+            if (activeThrustOsc) return;
+
+            try {
+                activeThrustOsc = audioCtx.createOscillator();
+                activeThrustGain = audioCtx.createGain();
+
+                activeThrustOsc.type = "sawtooth";
+                activeThrustOsc.frequency.setValueAtTime(60, audioCtx.currentTime);
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = "lowpass";
+                filter.frequency.setValueAtTime(120, audioCtx.currentTime);
+
+                activeThrustGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+
+                activeThrustOsc.connect(filter);
+                filter.connect(activeThrustGain);
+                activeThrustGain.connect(audioCtx.destination);
+
+                activeThrustOsc.start();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function stopThrustSound() {
+            if (activeThrustOsc) {
+                try {
+                    activeThrustOsc.stop();
+                } catch(e) {}
+                activeThrustOsc = null;
+                activeThrustGain = null;
+            }
+        }
+
+        // ==========================================
+        // 2. GAME SETUP & PHYSICS CONFIG
+        // ==========================================
+        const canvas = document.getElementById("game-canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Physics constants (tuned for fun, proper gameplay)
+        const G = 0.16;
+        const LAUNCH_SPEED = 6.4;
+        const THRUST_POWER = 0.1;
+        const FUEL_CONSUMPTION_THRUST = 0.08;
+        const FUEL_CONSUMPTION_LAUNCH = 5.0;
+        const DOCKING_SPEED_LIMIT = 4.0;
+
+        let gameState = "title"; 
+        let currentLevelIndex = 0;
+        let scoreTotalAccumulated = 0;
+        let levelTime = 0;
+        let levelTimerInterval = null;
+        let jumpCount = 0;
+
+        const ship = {
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            angle: 0,
+            radius: 8,
+            fuel: 100,
+            dockedPlanet: null,
+            dockedAngle: 0,
+            isThrusting: false,
+            trail: []
+        };
+
+        // Handcrafted campaign levels
+        const levels = [
+            {
+                name: "Alpha Calibration",
+                planets: [
+                    { x: 150, y: 300, radius: 45, gravity: 0.8, color: "#00F0FF", name: "Alpha Star", isStart: true },
+                    { x: 650, y: 300, radius: 55, gravity: 1.0, color: "#FF8A00", name: "Beta Gate", isTarget: true }
+                ]
+            },
+            {
+                name: "Binary Gravity Wells",
+                planets: [
+                    { x: 120, y: 180, radius: 35, gravity: 0.6, color: "#00F0FF", name: "Vega Prime", isStart: true },
+                    { x: 400, y: 400, radius: 65, gravity: 1.8, color: "#BC00FF", name: "Helios Mass", isStart: false },
+                    { x: 700, y: 180, radius: 40, gravity: 0.7, color: "#FF8A00", name: "Nexus Portal", isTarget: true }
+                ]
+            },
+            {
+                name: "Orbits & Sling Paths",
+                planets: [
+                    { x: 100, y: 450, radius: 30, gravity: 0.5, color: "#00F0FF", name: "Orbit Pad", isStart: true },
+                    { x: 380, y: 220, radius: 45, gravity: 1.1, color: "#00F0FF", name: "Mid station", isStart: false },
+                    { x: 500, y: 480, radius: 35, gravity: 0.8, color: "#00F0FF", name: "Docking Well", isStart: false },
+                    { x: 720, y: 180, radius: 40, gravity: 0.9, color: "#FF8A00", name: "Wormhole Target", isTarget: true }
+                ]
+            },
+            {
+                name: "Singularity Pass",
+                planets: [
+                    { x: 100, y: 300, radius: 35, gravity: 0.6, color: "#00F0FF", name: "Dock Station A", isStart: true },
+                    { x: 400, y: 300, radius: 22, gravity: 4.8, color: "#111", isSingularity: true, name: "BLACK HOLE" },
+                    { x: 700, y: 300, radius: 35, gravity: 0.7, color: "#FF8A00", name: "Dock Station B", isTarget: true }
+                ]
+            },
+            {
+                name: "Orbital Synchrony",
+                planets: [
+                    { x: 100, y: 150, radius: 35, gravity: 0.6, color: "#00F0FF", name: "Sync Dock", isStart: true },
+                    { x: 400, y: 300, radius: 55, gravity: 1.5, color: "#BC00FF", name: "Solar Core", isStart: false },
+                    { x: 400, y: 120, radius: 25, gravity: 0.5, color: "#BC00FF", name: "Rotor Star", isOrbiting: true, orbitCenter: {x: 400, y: 300}, orbitRadius: 180, orbitSpeed: 0.009, orbitAngle: 0 },
+                    { x: 700, y: 450, radius: 40, gravity: 0.8, color: "#FF8A00", name: "Goal Gateway", isTarget: true }
+                ]
+            },
+            {
+                name: "Void Slingshot",
+                planets: [
+                    { x: 100, y: 480, radius: 30, gravity: 0.5, color: "#00F0FF", name: "Odyssey Launch", isStart: true },
+                    { x: 260, y: 220, radius: 45, gravity: 1.2, color: "#00F0FF", name: "Mid Star", isStart: false },
+                    { x: 500, y: 450, radius: 35, gravity: 0.9, color: "#00F0FF", name: "Orbit Depot", isStart: false },
+                    { x: 520, y: 150, radius: 25, gravity: 3.0, color: "#111", isSingularity: true, name: "VOID CORE" },
+                    { x: 720, y: 200, radius: 35, gravity: 0.7, color: "#FF8A00", name: "Portal Gateway", isTarget: true }
+                ]
+            }
+        ];
+
+        let planets = [];
+        let particles = [];
+        let stars = [];
+        let fuelCells = [];
+        const keys = {};
+
+        // Canvas scaling to match viewport layout elegantly
+        let scaleX = 1;
+        let scaleY = 1;
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            scaleX = canvas.width / 800;
+            scaleY = canvas.height / 600;
+        }
+        window.addEventListener("resize", resizeCanvas);
+
+        // ==========================================
+        // 3. UI SCREEN MANAGEMENT
+        // ==========================================
+        function showScreen(screenId) {
+            gameState = screenId;
+            playSoundClick();
+
+            document.getElementById("screen-title").classList.add("hidden");
+            document.getElementById("screen-instructions").classList.add("hidden");
+            document.getElementById("screen-complete").classList.add("hidden");
+            document.getElementById("screen-gameover").classList.add("hidden");
+
+            stopThrustSound();
+
+            if (screenId === "title") {
+                document.getElementById("screen-title").classList.remove("hidden");
+                stopTimer();
+            } else if (screenId === "instructions") {
+                document.getElementById("screen-instructions").classList.remove("hidden");
+            } else if (screenId === "playing") {
+                startTimer();
+            } else if (screenId === "complete") {
+                document.getElementById("screen-complete").classList.remove("hidden");
+                stopTimer();
+            } else if (screenId === "gameover") {
+                document.getElementById("screen-gameover").classList.remove("hidden");
+                stopTimer();
+            }
+        }
+
+        function toggleInstructions(show) {
+            if (show) {
+                showScreen("instructions");
+            } else {
+                showScreen("title");
+            }
+        }
+
+        // ==========================================
+        // 4. GAME LAUNCH & CONFIG
+        // ==========================================
+        function loadLevel(index) {
+            currentLevelIndex = index;
+            const lvlDef = levels[index];
+            document.getElementById("header-level").innerText = `SECTOR ${index + 1}: ${lvlDef.name.toUpperCase()}`;
+
+            planets = JSON.parse(JSON.stringify(lvlDef.planets));
+            planets.forEach(p => {
+                if (p.isOrbiting) p.orbitAngle = 0;
+            });
+
+            resizeCanvas();
+
+            const startPlanet = planets.find(p => p.isStart) || planets[0];
+            ship.dockedPlanet = planets.indexOf(startPlanet);
+            ship.dockedAngle = Math.PI * 1.5; 
+            ship.fuel = 100;
+            ship.vx = 0;
+            ship.vy = 0;
+            ship.isThrusting = false;
+            ship.trail = [];
+            ship.x = startPlanet.x * scaleX + (startPlanet.radius + 12) * Math.cos(ship.dockedAngle);
+            ship.y = startPlanet.y * scaleY + (startPlanet.radius + 12) * Math.sin(ship.dockedAngle);
+            
+            jumpCount = 0;
+            levelTime = 0;
+            updateHUD();
+
+            // Place fuel cells at key places (centered coords)
+            fuelCells = [];
+            if (index >= 2) {
+                fuelCells.push({ x: 380, y: 330, radius: 7, pulse: 0, active: true });
+            }
+            if (index >= 4) {
+                fuelCells.push({ x: 520, y: 320, radius: 7, pulse: 1, active: true });
+            }
+
+            particles = [];
+            if (stars.length === 0) {
+                for (let i = 0; i < 90; i++) {
+                    stars.push({
+                        x: Math.random() * 1000,
+                        y: Math.random() * 1000,
+                        size: Math.random() * 1.6 + 0.4,
+                        alpha: Math.random() * 0.7 + 0.3,
+                        speed: Math.random() * 0.02 + 0.005
+                    });
+                }
+            }
+        }
+
+        function startGame() {
+            initAudio();
+            loadLevel(currentLevelIndex);
+            showScreen("playing");
+        }
+
+        function retryLevel() {
+            startGame();
+        }
+
+        function nextLevel() {
+            if (currentLevelIndex < levels.length - 1) {
+                loadLevel(currentLevelIndex + 1);
+                startGame();
+            } else {
+                alert("COSMOS CONQUERED! ALL SIMULATION SECTORS SECURED.");
+                currentLevelIndex = 0;
+                showScreen("title");
+            }
+        }
+
+        function startTimer() {
+            stopTimer();
+            levelTime = 0;
+            levelTimerInterval = setInterval(() => {
+                if (gameState === "playing") {
+                    levelTime += 0.01;
+                }
+            }, 10);
+        }
+
+        function stopTimer() {
+            if (levelTimerInterval) {
+                clearInterval(levelTimerInterval);
+                levelTimerInterval = null;
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById("header-jumps").innerText = jumpCount;
+            document.getElementById("header-score").innerText = scoreTotalAccumulated;
+            
+            const fuelPct = Math.round(ship.fuel);
+            document.getElementById("header-fuel-text").innerText = `${fuelPct}%`;
+            const bar = document.getElementById("header-fuel-bar");
+            bar.style.width = `${fuelPct}%`;
+            
+            if (fuelPct < 25) {
+                bar.style.backgroundColor = "#FF8A00";
+            } else {
+                bar.style.backgroundColor = "#00F0FF";
+            }
+        }
+
+        // ==========================================
+        // 5. INPUT REGISTRATION
+        // ==========================================
+        window.addEventListener("keydown", (e) => {
+            keys[e.key] = true;
+            keys[e.code] = true;
+
+            if ((e.key === " " || e.code === "Space") && gameState === "playing") {
+                e.preventDefault();
+                triggerLaunch();
+            }
+        });
+
+        window.addEventListener("keyup", (e) => {
+            keys[e.key] = false;
+            keys[e.code] = false;
+        });
+
+        canvas.addEventListener("mousedown", (e) => {
+            if (gameState === "playing") triggerLaunch();
+        });
+
+        canvas.addEventListener("touchstart", (e) => {
+            if (gameState === "playing") {
+                e.preventDefault();
+                triggerLaunch();
+            }
+        });
+
+        function triggerLaunch() {
+            if (ship.dockedPlanet !== null) {
+                if (ship.fuel < FUEL_CONSUMPTION_LAUNCH) {
+                    playTone(200, 0.15, "sawtooth", 0.1);
+                    return;
+                }
+
+                ship.fuel -= FUEL_CONSUMPTION_LAUNCH;
+                const p = planets[ship.dockedPlanet];
+                
+                ship.vx = Math.cos(ship.dockedAngle) * LAUNCH_SPEED;
+                ship.vy = Math.sin(ship.dockedAngle) * LAUNCH_SPEED;
+                
+                ship.dockedPlanet = null;
+                jumpCount++;
+                playSoundLaunch();
+                updateHUD();
+
+                // Spark burst
+                for(let i=0; i<12; i++) {
+                    const sparkAngle = ship.dockedAngle + (Math.random() * 0.4 - 0.2) + Math.PI;
+                    particles.push({
+                        x: ship.x,
+                        y: ship.y,
+                        vx: Math.cos(sparkAngle) * (Math.random() * 2.5 + 1.2),
+                        vy: Math.sin(sparkAngle) * (Math.random() * 2.5 + 1.2),
+                        size: Math.random() * 1.5 + 1,
+                        alpha: 1,
+                        decay: Math.random() * 0.05 + 0.03,
+                        color: "#00F0FF"
+                    });
+                }
+            }
+        }
+
+        // ==========================================
+        // 6. PHYSICS & RENDERING LOOPS
+        // ==========================================
+        function updateGame() {
+            if (gameState !== "playing") return;
+
+            // Update orbiting planets
+            planets.forEach((p) => {
+                if (p.isOrbiting) {
+                    p.orbitAngle += p.orbitSpeed;
+                    p.x = p.orbitCenter.x + p.orbitRadius * Math.cos(p.orbitAngle);
+                    p.y = p.orbitCenter.y + p.orbitRadius * Math.sin(p.orbitAngle);
+                }
+            });
+
+            if (ship.dockedPlanet !== null) {
+                // Docked rotation control
+                const p = planets[ship.dockedPlanet];
+                let rotInput = 0;
+                if (keys["ArrowLeft"] || keys["a"] || keys["A"]) rotInput = -1;
+                if (keys["ArrowRight"] || keys["d"] || keys["D"]) rotInput = 1;
+
+                ship.dockedAngle += 0.008 + rotInput * 0.035;
+
+                const px = p.x * scaleX;
+                const py = p.y * scaleY;
+                ship.x = px + (p.radius + 12) * Math.cos(ship.dockedAngle);
+                ship.y = py + (p.radius + 12) * Math.sin(ship.dockedAngle);
+                ship.vx = 0;
+                ship.vy = 0;
+                ship.angle = ship.dockedAngle;
+
+                if (ship.fuel < 100) {
+                    ship.fuel = Math.min(100, ship.fuel + 0.2);
+                    updateHUD();
+                }
+            } else {
+                // Gravity physics calculations
+                let totalFx = 0;
+                let totalFy = 0;
+
+                planets.forEach((p) => {
+                    const px = p.x * scaleX;
+                    const py = p.y * scaleY;
+                    const dx = px - ship.x;
+                    const dy = py - ship.y;
+                    const distSq = dx * dx + dy * dy;
+                    const dist = Math.sqrt(distSq);
+
+                    if (dist > 5) {
+                        const force = (G * (p.gravity * 250)) / distSq;
+                        totalFx += (dx / dist) * force;
+                        totalFy += (dy / dist) * force;
+                    }
+                });
+
+                // User Directional Thruster Steering
+                let tx = 0;
+                let ty = 0;
+                if (keys["ArrowLeft"] || keys["a"] || keys["A"]) tx = -1;
+                if (keys["ArrowRight"] || keys["d"] || keys["D"]) tx = 1;
+                if (keys["ArrowUp"] || keys["w"] || keys["W"]) ty = -1;
+                if (keys["ArrowDown"] || keys["s"] || keys["S"]) ty = 1;
+
+                if ((tx !== 0 || ty !== 0) && ship.fuel > 0) {
+                    ship.vx += tx * THRUST_POWER;
+                    ship.vy += ty * THRUST_POWER;
+                    ship.fuel = Math.max(0, ship.fuel - FUEL_CONSUMPTION_THRUST);
+                    ship.isThrusting = true;
+                    startThrustSound();
+                    updateHUD();
+
+                    // Jet flame particles
+                    for(let i=0; i<2; i++) {
+                        particles.push({
+                            x: ship.x - (tx * 6),
+                            y: ship.y - (ty * 6),
+                            vx: -tx * (Math.random() * 2 + 0.8),
+                            vy: -ty * (Math.random() * 2 + 0.8),
+                            size: Math.random() * 1.5 + 1,
+                            alpha: 1,
+                            decay: 0.05,
+                            color: "#FF8A00"
+                        });
+                    }
+                } else {
+                    ship.isThrusting = false;
+                    stopThrustSound();
+                }
+
+                // Apply gravity vector
+                ship.vx += totalFx;
+                ship.vy += totalFy;
+
+                // Move ship coordinates
+                ship.x += ship.vx;
+                ship.y += ship.vy;
+
+                if (Math.abs(ship.vx) > 0.01 || Math.abs(ship.vy) > 0.01) {
+                    ship.angle = Math.atan2(ship.vy, ship.vx);
+                }
+
+                // Add trail path
+                if (Math.round(levelTime * 100) % 2 === 0) {
+                    ship.trail.push({ x: ship.x, y: ship.y, maxAge: 25, age: 0 });
+                }
+                if (ship.trail.length > 30) ship.trail.shift();
+
+                const speed = Math.sqrt(ship.vx * ship.vx + ship.vy * ship.vy);
+
+                // Planet boundary intersection checks
+                planets.forEach((p, idx) => {
+                    const px = p.x * scaleX;
+                    const py = p.y * scaleY;
+                    const dx = ship.x - px;
+                    const dy = ship.y - py;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist <= p.radius + 8) {
+                        if (p.isSingularity) {
+                            triggerGameOver("Pulled into gravitational singularity core", speed);
+                        } else {
+                            if (speed > DOCKING_SPEED_LIMIT) {
+                                triggerGameOver("Docking speed limits exceeded", speed);
+                            } else {
+                                // Safe Landing
+                                ship.dockedPlanet = idx;
+                                ship.vx = 0;
+                                ship.vy = 0;
+                                ship.dockedAngle = Math.atan2(dy, dx);
+                                stopThrustSound();
+                                playSoundLanding();
+
+                                // Impact visual ring
+                                for (let i = 0; i < 15; i++) {
+                                    const pAngle = Math.random() * Math.PI * 2;
+                                    particles.push({
+                                        x: ship.x,
+                                        y: ship.y,
+                                        vx: Math.cos(pAngle) * (Math.random() * 1.5 + 0.4),
+                                        vy: Math.sin(pAngle) * (Math.random() * 1.5 + 0.4),
+                                        size: 1.5,
+                                        alpha: 1,
+                                        decay: 0.04,
+                                        color: "#00F0FF"
+                                    });
+                                }
+
+                                if (p.isTarget) {
+                                    triggerLevelSecure();
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Boundary check
+                if (ship.x < -40 || ship.x > canvas.width + 40 || ship.y < -40 || ship.y > canvas.height + 40) {
+                    triggerGameOver("Vessel drifted out of tracking coverage", speed);
+                }
+
+                // Drift lock failure check
+                if (ship.fuel <= 0 && speed < 0.2 && ship.dockedPlanet === null) {
+                    triggerGameOver("Vessel lost propulsion energy in deep space", speed);
+                }
+            }
+
+            // Update active particles
+            particles.forEach((p, idx) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= p.decay;
+                if (p.alpha <= 0) particles.splice(idx, 1);
+            });
+
+            // Update fuel items
+            fuelCells.forEach((cell) => {
+                if (cell.active) {
+                    cell.pulse += 0.06;
+                    const cx = cell.x * scaleX;
+                    const cy = cell.y * scaleY;
+                    const dx = ship.x - cx;
+                    const dy = ship.y - cy;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < cell.radius + 15) {
+                        cell.active = false;
+                        ship.fuel = Math.min(100, ship.fuel + 35);
+                        playSoundLanding();
+                        updateHUD();
+
+                        for(let i=0; i<8; i++) {
+                            const parAngle = Math.random() * Math.PI*2;
+                            particles.push({
+                                x: cx, y: cy,
+                                vx: Math.cos(parAngle) * 2.5,
+                                vy: Math.sin(parAngle) * 2.5,
+                                size: 1.5, alpha: 1, decay: 0.05,
+                                color: "#00F0FF"
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+        // Draw dotted flight paths predicting gravity trajectories
+        function drawTrajectory() {
+            if (ship.dockedPlanet !== null) {
+                // Show docking normal launch vector direction
+                ctx.beginPath();
+                ctx.strokeStyle = "rgba(0, 240, 255, 0.4)";
+                ctx.lineWidth = 1.2;
+                ctx.setLineDash([4, 4]);
+
+                const p = planets[ship.dockedPlanet];
+                const px = p.x * scaleX;
+                const py = p.y * scaleY;
+                const startX = px + (p.radius + 12) * Math.cos(ship.dockedAngle);
+                const startY = py + (p.radius + 12) * Math.sin(ship.dockedAngle);
+
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(
+                    startX + Math.cos(ship.dockedAngle) * 75,
+                    startY + Math.sin(ship.dockedAngle) * 75
+                );
+                ctx.stroke();
+                ctx.setLineDash([]);
+                return;
+            }
+
+            // In flight trajectory projection
+            let simX = ship.x;
+            let simY = ship.y;
+            let simVx = ship.vx;
+            let simVy = ship.vy;
+            const simSteps = 65;
+
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(0, 240, 255, 0.3)";
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash([3, 4]);
+            ctx.moveTo(simX, simY);
+
+            for (let step = 0; step < simSteps; step++) {
+                let totalFx = 0;
+                let totalFy = 0;
+                let collided = false;
+
+                for (let i = 0; i < planets.length; i++) {
+                    const p = planets[i];
+                    const px = p.x * scaleX;
+                    const py = p.y * scaleY;
+                    const dx = px - simX;
+                    const dy = py - simY;
+                    const distSq = dx * dx + dy * dy;
+                    const dist = Math.sqrt(distSq);
+
+                    if (dist < p.radius + 8) {
+                        collided = true;
+                        break;
+                    }
+
+                    if (dist > 5) {
+                        const force = (G * (p.gravity * 250)) / distSq;
+                        totalFx += (dx / dist) * force;
+                        totalFy += (dy / dist) * force;
+                    }
+                }
+
+                if (collided) break;
+
+                simVx += totalFx;
+                simVy += totalFy;
+                simX += simVx;
+                simY += simVy;
+
+                ctx.lineTo(simX, simY);
+            }
+
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawGame() {
+            // Background
+            ctx.fillStyle = "#05070A";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Stars
+            stars.forEach((star) => {
+                let sx = star.x * (canvas.width / 1000);
+                let sy = star.y * (canvas.height / 1000);
+                if (ship.dockedPlanet === null) {
+                    sx = (sx - (ship.x - canvas.width/2) * 0.03) % canvas.width;
+                    sy = (sy - (ship.y - canvas.height/2) * 0.03) % canvas.height;
+                    if (sx < 0) sx += canvas.width;
+                    if (sy < 0) sy += canvas.height;
+                }
+                ctx.fillStyle = `rgba(225, 245, 254, ${star.alpha})`;
+                ctx.beginPath();
+                ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Gravity Well Circles
+            planets.forEach((p) => {
+                const px = p.x * scaleX;
+                const py = p.y * scaleY;
+                ctx.strokeStyle = p.isSingularity ? "rgba(188, 0, 255, 0.06)" : "rgba(0, 240, 255, 0.04)";
+                ctx.lineWidth = 1;
+                for (let i = 1; i <= 3; i++) {
+                    ctx.beginPath();
+                    ctx.arc(px, py, p.radius + (i * (p.gravity * 30)), 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            });
+
+            // Fuel Cells
+            fuelCells.forEach(cell => {
+                if (cell.active) {
+                    const cx = cell.x * scaleX;
+                    const cy = cell.y * scaleY;
+                    const scalePulse = 1 + Math.sin(cell.pulse) * 0.12;
+                    ctx.strokeStyle = "rgba(0, 240, 255, 0.4)";
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, cell.radius * scalePulse * 1.5, 0, Math.PI*2);
+                    ctx.stroke();
+
+                    ctx.fillStyle = "#00F0FF";
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy - cell.radius * scalePulse);
+                    ctx.lineTo(cx + cell.radius * scalePulse, cy);
+                    ctx.lineTo(cx, cy + cell.radius * scalePulse);
+                    ctx.lineTo(cx - cell.radius * scalePulse, cy);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            });
+
+            // Draw Planets
+            planets.forEach((p) => {
+                const px = p.x * scaleX;
+                const py = p.y * scaleY;
+                ctx.save();
+                ctx.translate(px, py);
+
+                if (p.isSingularity) {
+                    ctx.fillStyle = "#000";
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Singularity vortex outline
+                    ctx.strokeStyle = "#BC00FF";
+                    ctx.lineWidth = 2.5;
+                    ctx.shadowColor = "#BC00FF";
+                    ctx.shadowBlur = 12;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.radius + 4, levelTime * 2.5, levelTime * 2.5 + Math.PI * 1.6);
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = "#111417";
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.strokeStyle = p.color;
+                    ctx.lineWidth = 2.5;
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 8;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.radius, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    if (p.isTarget) {
+                        ctx.strokeStyle = "#FF8A00";
+                        ctx.lineWidth = 1.5;
+                        ctx.setLineDash([6, 8]);
+                        ctx.save();
+                        ctx.rotate(levelTime * 1.1);
+                        ctx.beginPath();
+                        ctx.arc(0, 0, p.radius + 8, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.restore();
+                        ctx.setLineDash([]);
+                    }
+                }
+                ctx.restore();
+                ctx.shadowBlur = 0;
+
+                // Planet Name Tags
+                ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+                ctx.font = "9px 'JetBrains Mono', monospace";
+                ctx.textAlign = "center";
+                ctx.fillText(p.name, px, py + p.radius + 15);
+            });
+
+            // Target lock box layout
+            planets.forEach(p => {
+                if (p.isTarget) {
+                    const px = p.x * scaleX;
+                    const py = p.y * scaleY;
+                    ctx.strokeStyle = "rgba(255, 138, 0, 0.4)";
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(px, py, p.radius + 15, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            });
+
+            // Trajectory
+            drawTrajectory();
+
+            // Ship trail
+            ship.trail.forEach((t) => {
+                t.age++;
+                const opacity = 1 - t.age / t.maxAge;
+                ctx.fillStyle = `rgba(0, 240, 255, ${opacity * 0.4})`;
+                ctx.beginPath();
+                ctx.arc(t.x, t.y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Ship drawing
+            ctx.save();
+            ctx.translate(ship.x, ship.y);
+            ctx.rotate(ship.angle);
+
+            ctx.shadowColor = "#00F0FF";
+            ctx.shadowBlur = 8;
+
+            ctx.fillStyle = "#111417";
+            ctx.strokeStyle = "#00F0FF";
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(11, 0);
+            ctx.lineTo(-7, -7);
+            ctx.lineTo(-3, 0);
+            ctx.lineTo(-7, 7);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Fire sparks when steering
+            if (ship.isThrusting) {
+                ctx.shadowColor = "#FF8A00";
+                ctx.fillStyle = "#FF8A00";
+                ctx.beginPath();
+                ctx.moveTo(-4, -1.8);
+                ctx.lineTo(-15 - Math.random() * 5, 0);
+                ctx.lineTo(-4, 1.8);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            ctx.restore();
+            ctx.shadowBlur = 0;
+
+            // Particles drawing
+            particles.forEach((p) => {
+                ctx.fillStyle = `rgba(${p.color === "#00F0FF" ? "0, 240, 255" : "255, 138, 0"}, ${p.alpha})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Velocity readout overlay inside canvas
+            if (ship.dockedPlanet === null) {
+                const speed = Math.sqrt(ship.vx * ship.vx + ship.vy * ship.vy);
+                ctx.fillStyle = speed > DOCKING_SPEED_LIMIT ? "#FF8A00" : "#00F0FF";
+                ctx.font = "11px 'JetBrains Mono', monospace";
+                ctx.textAlign = "left";
+                ctx.fillText(`VELOCITY: ${speed.toFixed(2)} km/s`, 20, canvas.height - 25);
+                
+                if (speed > DOCKING_SPEED_LIMIT) {
+                    ctx.fillStyle = "#FF8A00";
+                    ctx.fillText("⚠️ SPEED LIMIT EXCEEDED", 20, canvas.height - 10);
+                } else {
+                    ctx.fillStyle = "#00F0FF";
+                    ctx.fillText("✓ SAFE DOCKING STATUS", 20, canvas.height - 10);
+                }
+            }
+        }
+
+        function gameLoop() {
+            updateGame();
+            drawGame();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ==========================================
+        // 7. LEVEL SECURE / GAME OVER TELEMETRY
+        // ==========================================
+        function triggerGameOver(reason, speed) {
+            gameState = "gameover";
+            stopThrustSound();
+            playSoundCrash();
+            
+            document.getElementById("gameover-reason").innerText = reason.toUpperCase();
+            document.getElementById("gameover-speed").innerText = `${speed.toFixed(1)} km/s`;
+            
+            showScreen("gameover");
+        }
+
+        function triggerLevelSecure() {
+            gameState = "complete";
+            stopThrustSound();
+            playSoundWin();
+
+            const fuelFactor = Math.round(ship.fuel);
+            const timeBonus = Math.max(0, Math.round(3000 - levelTime * 90));
+            const totalScore = fuelFactor * 10 + timeBonus;
+
+            scoreTotalAccumulated += totalScore;
+
+            document.getElementById("score-fuel").innerText = `${fuelFactor}%`;
+            document.getElementById("score-jumps").innerText = jumpCount;
+            document.getElementById("score-xp").innerText = totalScore;
+            document.getElementById("complete-title").innerText = `${levels[currentLevelIndex].name.toUpperCase()} SECTOR DATA REPORT`;
+            
+            const nextBtn = document.getElementById("next-btn");
+            if (currentLevelIndex >= levels.length - 1) {
+                nextBtn.innerText = "FINISH GAME";
+            } else {
+                nextBtn.innerText = "NEXT SECTOR";
+            }
+
+            showScreen("complete");
+            updateHUD();
+        }
+
+        // Start initialization
+        resizeCanvas();
+        loadLevel(0);
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>

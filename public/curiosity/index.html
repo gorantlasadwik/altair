@@ -5,6 +5,24 @@
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <style>
+      .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
 </head><body>
 <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#05070A]/80 backdrop-blur-md border-b border-[#3b494b]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
     <div class="flex items-center gap-4">
@@ -15,7 +33,7 @@
     </div>
     <nav class="hidden md:flex items-center gap-8" style="font-family: 'JetBrains Mono', monospace;">
         <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/home.html">HOME</a>
-        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="#">RADAR</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/iss.html">ISS TRACKER</a>
         <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/sky.html">SKY VIEW</a>
         <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/game.html">GAMES</a>
         <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
@@ -39,7 +57,7 @@
 </div>
 <div class="flex gap-8 font-label-caps text-[12px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">
 <a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
-<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\\nVersion: 1.0.0\\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
 </div>
 </footer>
 </body></html>

@@ -218,7 +218,7 @@
     </div>
     <nav class="hidden md:flex items-center gap-8" style="font-family: 'JetBrains Mono', monospace;">
         <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/home.html">HOME</a>
-        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="#">RADAR</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/iss.html">ISS TRACKER</a>
         <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/sky.html">SKY VIEW</a>
         <a class="text-[12px] tracking-[0.15em] font-bold text-[#00F0FF] border-b-2 border-[#00F0FF] pb-1 transition-all duration-300" href="/game.html">GAMES</a>
         <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
@@ -317,7 +317,7 @@
 <span class="material-symbols-outlined text-hazard-orange">joystick</span>
 <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white">AVAILABLE GAMES</h2>
 </div>
-<!-- Premium Game Card -->
+<!-- Premium Game Card 1 -->
 <div class="group relative bg-void-black border border-outline-variant/30 rounded-lg overflow-hidden transition-all duration-500 hover:neon-border-cyan hover:-translate-y-1">
 <div class="relative h-48 overflow-hidden">
 <img alt="Space Quiz Simulator" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCF8gLX18Tsgm4E6dVrF-KQF6Zy_e7YZxkO6PUIvpSUyBTfeTdx15odImCAUR7RCyvV1o7M2G7DazhVIEmfrZL792AVTiWVSsjOcNRSn04uaFsMcigAzIqOvmrmxARB8JcQuoYuRZzUQM26Q2YVXWPq3fH46C-nzIkz6MC9zxq8q212qQRZDU23hwyDv1q5zuzqsh_nzmqX0zcF_rVn-FJNKj_TvN7f02HXkP8E3MBcG3iCR7TD5ZogVFZ8zTyJ6i9QlFF7pZ0s5-8">
@@ -341,21 +341,56 @@
 <button onclick="window.location.href='/quiz.html'" class="w-full py-3 bg-neon-cyan text-void-black font-label-caps text-label-caps font-extrabold arcade-btn-glow glitch-hover transition-all duration-300 tracking-[0.2em]">
                                 LAUNCH SIMULATION
                             </button>
-<button onclick="window.location.href='/quiz.html'" class="w-full py-3 border border-outline-variant text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-variant transition-all duration-300 tracking-[0.2em] font-bold">
-                                VIEW DETAILS
+</div>
+</div>
+</div>
+
+<!-- Premium Game Card 2: Planet Hopper -->
+<div class="group relative bg-void-black border border-outline-variant/30 rounded-lg overflow-hidden transition-all duration-500 hover:neon-border-cyan hover:-translate-y-1">
+<div class="relative h-48 overflow-hidden">
+<img alt="Planet Hopper" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2000&auto=format&fit=crop">
+<div class="absolute inset-0 bg-gradient-to-t from-void-black via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="px-2 py-0.5 bg-hazard-orange text-void-black font-label-caps text-[9px] font-bold">PILOT</span>
+<span class="px-2 py-0.5 bg-neon-cyan/20 border border-neon-cyan text-neon-cyan font-label-caps text-[9px]">1000 XP</span>
+</div>
+</div>
+<div class="p-5">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white mb-2">Planet Hopper</h3>
+<div class="flex items-center gap-4 text-on-surface-variant font-data-readout text-[12px] mb-6">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">sports_esports</span> 6 Sectors
+                            </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">rocket_launch</span> Gravity Sim
+                            </div>
+</div>
+<div class="space-y-3">
+<button onclick="window.location.href='/planet-hopper.html'" class="w-full py-3 bg-neon-cyan text-void-black font-label-caps text-label-caps font-extrabold arcade-btn-glow glitch-hover transition-all duration-300 tracking-[0.2em]">
+                                LAUNCH SIMULATION
                             </button>
 </div>
 </div>
 </div>
 </section>
 </div>
-<!-- Coming Soon Section -->
+<!-- More Games Section -->
 <section class="mt-20">
 <div class="flex items-center gap-4 mb-8">
-<h2 class="font-headline-lg text-headline-lg text-on-surface-variant/50">COMING SOON</h2>
+<h2 class="font-headline-lg text-headline-lg text-on-surface-variant/50">SIMULATION DATABANKS</h2>
 <div class="h-px flex-1 bg-outline-variant/20"></div>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Unlocked Card: Constellation Hunter -->
+<div onclick="window.location.href='/quiz/quiz.html'" class="cursor-pointer holographic-glass p-6 rounded-lg relative group border-neon-cyan/50 hover:bg-neon-cyan/10 hover:shadow-[0_0_20px_rgba(0,240,255,0.2)] transition-all">
+<div class="h-32 bg-[url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&q=80')] bg-cover bg-center rounded mb-4 border border-outline-variant/30"></div>
+<h4 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white text-neon-cyan">Constellation Hunter</h4>
+<p class="text-on-surface-variant font-data-readout text-sm">Deep space celestial mapping quiz. Test your knowledge of the stars.</p>
+<div class="mt-4 flex gap-2">
+<span class="px-2 py-0.5 bg-hazard-orange text-void-black font-label-caps text-[9px] font-bold">EXPERT</span>
+<span class="px-2 py-0.5 bg-neon-cyan/20 border border-neon-cyan text-neon-cyan font-label-caps text-[9px]">1500 XP</span>
+</div>
+</div>
 <!-- Locked Card 1 -->
 <div onclick="alert('CLASSIFIED - ACCESS DENIED')" class="cursor-pointer holographic-glass p-6 rounded-lg opacity-40 grayscale relative group border-dashed hover:opacity-80 transition-opacity">
 <div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
@@ -379,18 +414,6 @@
 <div class="h-32 bg-surface-variant/20 rounded mb-4"></div>
 <h4 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white">Satellite Defense</h4>
 <p class="text-on-surface-variant font-data-readout text-sm">Orbital debris intercept simulation.</p>
-</div>
-<!-- Locked Card 3 -->
-<div onclick="alert('CLASSIFIED - ACCESS DENIED')" class="cursor-pointer holographic-glass p-6 rounded-lg opacity-40 grayscale relative group border-dashed hover:opacity-80 transition-opacity">
-<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-<div class="flex flex-col items-center bg-void-black/80 p-4 border border-hazard-orange/30">
-<span class="material-symbols-outlined text-hazard-orange text-4xl mb-2">lock</span>
-<span class="font-label-caps text-label-caps text-hazard-orange">CLASSIFIED</span>
-</div>
-</div>
-<div class="h-32 bg-surface-variant/20 rounded mb-4"></div>
-<h4 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white">Constellation Hunter</h4>
-<p class="text-on-surface-variant font-data-readout text-sm">Deep space celestial mapping.</p>
 </div>
 </div>
 </section>

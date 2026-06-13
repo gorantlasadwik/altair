@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#060a12" />
+    <meta name="description" content="Voyager 1: an interactive, scroll-driven journey into interstellar space." />
+    <title>ALTAIR | Voyager 1 Archive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
+    <link rel="stylesheet" href="/voyager/voyager1.css" />
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar but allow scrolling */
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  </head>
+  <body class="bg-[#060a12] text-[#e2ecef] font-['JetBrains_Mono',_monospace] overflow-x-hidden selection:bg-[#00F0FF]/30 selection:text-white">
+    <!-- Starfield Canvas -->
+    <canvas id="stars-canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+    <div class="glow-overlay fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- Universal ALTAIR Header (Nav Links, Profile, Notifications & Logout Removed) -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#05070A]/80 backdrop-blur-md border-b border-[#3b494b]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+    <div class="flex items-center gap-4">
+        <div class="w-10 h-10 flex items-center justify-center" style="text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">
+            <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
+        </div>
+        <span class="text-4xl font-extrabold text-[#00F0FF] tracking-tighter" style="font-family: 'VT323', monospace; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">ALTAIR</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8" style="font-family: 'JetBrains Mono', monospace;">
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/home.html">HOME</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/iss.html">ISS TRACKER</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/sky.html">SKY VIEW</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/game.html">GAMES</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
+    </nav>
+    <div class="flex items-center gap-6" style="font-family: 'JetBrains Mono', monospace;">
+        <button class="material-symbols-outlined text-[#b9cacb] hover:text-[#00F0FF] transition-all active:scale-95">notifications</button>
+        <a href="/profile.html" class="flex items-center gap-3 bg-[#282a2e] px-3 py-1 rounded-full border border-[#3b494b]/30 hover:bg-[#323539] transition-colors cursor-pointer">
+            <span id="user-profile-name" class="font-bold tracking-[0.15em] text-[10px] text-[#00F0FF]"></span>
+            <button class="material-symbols-outlined text-[#00F0FF]" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+        </a>
+        <button id="logout-btn" class="font-bold tracking-[0.15em] text-[10px] text-[#FF8A00] hover:text-white transition-colors border border-[#FF8A00]/30 px-3 py-1 rounded">LOGOUT</button>
+    </div>
+</header>
+
+    <!-- Main Container -->
+    <main class="relative z-10 pt-24 px-4 md:px-8 max-w-7xl mx-auto space-y-24 pb-20">
+        
+        <!-- SECTION 1: TELEMETRY HERO -->
+        <section class="min-h-[85vh] flex flex-col justify-center items-center text-center relative py-10" id="hero-section">
+            <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none z-0">
+                <!-- Deep Space Radar Ring Effect -->
+                <div class="w-[300px] h-[300px] md:w-[600px] md:h-[600px] border border-[#00F0FF] rounded-full animate-ping-slow"></div>
+                <div class="absolute w-[200px] h-[200px] md:w-[400px] md:h-[400px] border border-[#FF8A00]/50 rounded-full animate-pulse-slow"></div>
+            </div>
+
+            <div class="z-10 max-w-4xl space-y-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#00F0FF]/30 bg-[#00F0FF]/5 text-xs text-[#00F0FF] font-semibold tracking-wider uppercase animate-pulse">
+                    <span class="w-2 h-2 rounded-full bg-[#00F0FF] inline-block shadow-[0_0_8px_#00F0FF]"></span>
+                    Live Interstellar Feed
+                </div>
+
+                <h1 class="text-5xl md:text-8xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-[#e2ecef] to-[#b9cacb]">
+                    VOYAGER 1
+                </h1>
+                
+                <p class="text-zinc-400 font-mono text-xs md:text-sm tracking-[0.2em] max-w-xl mx-auto uppercase">
+                    Man's most distant emissary to the stars. Launched September 5, 1977. Now cruising the interstellar void.
+                </p>
+
+                <!-- Dynamic Telemetry Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 max-w-4xl w-full">
+                    <!-- Stat 1: Distance -->
+                    <div class="bg-[#05070a]/70 border border-[#3b494b]/30 p-6 rounded-lg backdrop-blur-md relative overflow-hidden group hover:border-[#00F0FF]/50 transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#00F0FF]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <p class="text-xs text-zinc-500 font-bold tracking-widest uppercase mb-2">Distance from Earth</p>
+                        <div class="space-y-1">
+                            <h3 id="telemetry-distance-au" class="text-3xl font-extrabold text-[#00F0FF] font-['VT323'] tracking-wide">163.48 AU</h3>
+                            <p id="telemetry-distance-km" class="text-sm font-mono text-zinc-400">24,456,120,400 KM</p>
+                            <p id="telemetry-distance-mi" class="text-[10px] font-mono text-zinc-500">15,196,321,500 MILES</p>
+                        </div>
+                        <div class="w-full bg-zinc-850 h-[2px] mt-4 overflow-hidden">
+                            <div class="bg-[#00F0FF] h-full" style="width: 70%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Stat 2: Speed -->
+                    <div class="bg-[#05070a]/70 border border-[#3b494b]/30 p-6 rounded-lg backdrop-blur-md relative overflow-hidden group hover:border-[#FF8A00]/50 transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#FF8A00]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <p class="text-xs text-zinc-500 font-bold tracking-widest uppercase mb-2">Velocity Relative to Sun</p>
+                        <div class="space-y-1">
+                            <h3 id="telemetry-speed-kms" class="text-3xl font-extrabold text-[#FF8A00] font-['VT323'] tracking-wide">16.999 KM/S</h3>
+                            <p id="telemetry-speed-mph" class="text-sm font-mono text-zinc-400">38,020 MPH</p>
+                            <p class="text-[10px] font-mono text-zinc-500">CONSTANT PROGRESSION</p>
+                        </div>
+                        <div class="w-full bg-zinc-855 h-[2px] mt-4 overflow-hidden">
+                            <div class="bg-[#FF8A00] h-full" style="width: 55%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Stat 3: Light Time -->
+                    <div class="bg-[#05070a]/70 border border-[#3b494b]/30 p-6 rounded-lg backdrop-blur-md relative overflow-hidden group hover:border-[#00F0FF]/50 transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#00F0FF]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <p class="text-xs text-zinc-500 font-bold tracking-widest uppercase mb-2">One-Way Signal Delay</p>
+                        <div class="space-y-1">
+                            <h3 id="telemetry-lighttime" class="text-3xl font-extrabold text-[#00F0FF] font-['VT323'] tracking-wide">22:38:15</h3>
+                            <p class="text-sm font-mono text-zinc-400">HOURS : MINS : SECS</p>
+                            <p class="text-[10px] font-mono text-zinc-500">ROUND TRIP: ~45.3 HOURS</p>
+                        </div>
+                        <div class="w-full bg-zinc-850 h-[2px] mt-4 overflow-hidden">
+                            <div class="bg-[#00F0FF] h-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6">
+                    <a href="#anatomy-section" class="inline-flex items-center gap-2 text-xs text-zinc-400 hover:text-[#00F0FF] transition-all font-mono tracking-widest uppercase scroll-smooth group">
+                        Begin System Scan
+                        <span class="material-symbols-outlined text-sm animate-bounce group-hover:text-[#00F0FF]">keyboard_double_arrow_down</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: INTERACTIVE ANATOMY SCANNER -->
+        <section id="anatomy-section" class="scroll-mt-24 space-y-8">
+            <div class="border-l-2 border-[#00F0FF] pl-4">
+                <h2 class="text-xs font-bold tracking-[0.2em] text-[#00F0FF] uppercase">MODULE 01 // SPACECRAFT SCHEMA</h2>
+                <p class="text-xl font-bold tracking-tight text-white uppercase">Systems Diagnostics & Breakdown</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#05070a]/50 border border-[#3b494b]/20 p-6 md:p-8 rounded-xl backdrop-blur-md">
+                
+                <!-- SVG Diagram Column -->
+                <div class="lg:col-span-7 flex justify-center items-center relative min-h-[400px] bg-[#030508]/80 rounded-lg p-6 border border-[#3b494b]/10 overflow-hidden animate-glow-box">
+                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,240,255,0.05)_0%,transparent_70%)]"></div>
+                    
+                    <!-- SVG Interactive Drawing -->
+                    <svg viewBox="0 0 800 600" class="w-full max-w-[650px] h-auto z-10 select-none">
+                        <defs>
+                            <!-- Glow Filter -->
+                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="5" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                            <filter id="glow-orange" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
+
+                        <!-- Voyager 1 Outlines -->
+                        <!-- High Gain Antenna (Large Dish) -->
+                        <path d="M 400 240 Q 250 140 250 130 L 550 130 Q 550 140 400 240 Z" fill="none" stroke="#e2ecef" stroke-width="1.5" stroke-opacity="0.3" />
+                        <ellipse cx="400" cy="130" rx="150" ry="25" fill="none" stroke="#e2ecef" stroke-width="2" stroke-opacity="0.8" />
+                        <ellipse cx="400" cy="130" rx="70" ry="12" fill="none" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.5" />
+                        
+                        <!-- Antenna Subreflector / Feed Horn (Center tip) -->
+                        <line x1="400" y1="130" x2="400" y2="70" stroke="#00F0FF" stroke-width="1.5" />
+                        <polygon points="395,70 405,70 400,60" fill="#00F0FF" />
+
+                        <!-- Spacecraft Bus (Decagonal prism in center) -->
+                        <polygon points="340,240 460,240 480,310 440,360 360,360 320,310" fill="none" stroke="#e2ecef" stroke-width="1.5" stroke-opacity="0.5" />
+                        <line x1="340" y1="240" x2="360" y2="360" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.4" />
+                        <line x1="460" y1="240" x2="440" y2="360" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.4" />
+                        
+                        <!-- Science Instrument Boom (Top right) -->
+                        <line x1="470" y1="260" x2="680" y2="170" stroke="#e2ecef" stroke-width="1.5" stroke-opacity="0.4" />
+                        <line x1="475" y1="275" x2="685" y2="185" stroke="#e2ecef" stroke-width="1.5" stroke-opacity="0.4" />
+                        <!-- Cross struts -->
+                        <line x1="520" y1="240" x2="522" y2="260" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.3" />
+                        <line x1="570" y1="220" x2="572" y2="240" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.3" />
+                        <line x1="620" y1="200" x2="622" y2="220" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.3" />
+                        
+                        <!-- Instruments Box at end of science boom -->
+                        <rect x="670" y="145" width="40" height="50" rx="2" fill="none" stroke="#e2ecef" stroke-width="1.5" stroke-opacity="0.7" />
+                        <circle cx="690" cy="170" r="10" fill="none" stroke="#FF8A00" stroke-width="1" />
+                        
+                        <!-- RTG Power Boom (Bottom Left) -->
+                        <line x1="330" y1="280" x2="160" y2="350" stroke="#e2ecef" stroke-width="1.5" stroke-opacity="0.4" />
+                        <line x1="325" y1="295" x2="155" y2="365" stroke="#e2ecef" stroke-width="1.5" stroke-opacity="0.4" />
+                        <line x1="210" y1="330" x2="205" y2="350" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.3" />
+                        <line x1="260" y1="310" x2="255" y2="330" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.3" />
+                        
+                        <!-- RTG Cylinders -->
+                        <g transform="translate(100, 335) rotate(-22)">
+                            <rect x="0" y="0" width="70" height="25" fill="none" stroke="#e2ecef" stroke-width="1.5" stroke-opacity="0.7" />
+                            <line x1="15" y1="0" x2="15" y2="25" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.5" />
+                            <line x1="35" y1="0" x2="35" y2="25" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.5" />
+                            <line x1="55" y1="0" x2="55" y2="25" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.5" />
+                        </g>
+
+                        <!-- Golden Record Mounted on Bus -->
+                        <circle cx="400" cy="300" r="28" fill="none" stroke="#FF8A00" stroke-width="1.5" stroke-opacity="0.8" />
+                        <circle cx="400" cy="300" r="12" fill="none" stroke="#FF8A00" stroke-width="1" stroke-opacity="0.6" />
+
+                        <!-- Magnetometer Boom (Extends bottom-right downwards) -->
+                        <line x1="430" y1="340" x2="550" y2="520" stroke="#e2ecef" stroke-width="1" stroke-opacity="0.4" />
+                        <!-- Planetary Radio Astronomy Antenna (Thin whips) -->
+                        <line x1="360" y1="360" x2="210" y2="480" stroke="#e2ecef" stroke-width="0.8" stroke-opacity="0.5" />
+                        <line x1="440" y1="360" x2="590" y2="480" stroke="#e2ecef" stroke-width="0.8" stroke-opacity="0.5" />
+
+                        <!-- HOTSPOT NODES -->
+                        <!-- Hotspot 1: High Gain Antenna -->
+                        <g class="hotspot-group cursor-pointer" data-target="antenna">
+                            <circle cx="400" cy="130" r="14" fill="#00F0FF" fill-opacity="0.15" />
+                            <circle cx="400" cy="130" r="6" fill="#00F0FF" class="pulse-ring" filter="url(#glow)" />
+                            <text x="400" y="105" text-anchor="middle" fill="#00F0FF" font-family="'JetBrains Mono'" font-size="11" font-weight="bold" letter-spacing="1">ANTENNA</text>
+                        </g>
+
+                        <!-- Hotspot 2: Golden Record -->
+                        <g class="hotspot-group cursor-pointer" data-target="record">
+                            <circle cx="400" cy="300" r="14" fill="#FF8A00" fill-opacity="0.15" />
+                            <circle cx="400" cy="300" r="6" fill="#FF8A00" class="pulse-ring" filter="url(#glow-orange)" />
+                            <text x="400" y="345" text-anchor="middle" fill="#FF8A00" font-family="'JetBrains Mono'" font-size="11" font-weight="bold" letter-spacing="1">GOLDEN RECORD</text>
+                        </g>
+
+                        <!-- Hotspot 3: Science Boom / Instruments -->
+                        <g class="hotspot-group cursor-pointer" data-target="instruments">
+                            <circle cx="690" cy="170" r="14" fill="#00F0FF" fill-opacity="0.15" />
+                            <circle cx="690" cy="170" r="6" fill="#00F0FF" class="pulse-ring" filter="url(#glow)" />
+                            <text x="690" y="140" text-anchor="middle" fill="#00F0FF" font-family="'JetBrains Mono'" font-size="11" font-weight="bold" letter-spacing="1">SCIENCE DECK</text>
+                        </g>
+
+                        <!-- Hotspot 4: RTG Power Battery -->
+                        <g class="hotspot-group cursor-pointer" data-target="rtg">
+                            <circle cx="130" cy="330" r="14" fill="#00F0FF" fill-opacity="0.15" />
+                            <circle cx="130" cy="330" r="6" fill="#00F0FF" class="pulse-ring" filter="url(#glow)" />
+                            <text x="130" y="300" text-anchor="middle" fill="#00F0FF" font-family="'JetBrains Mono'" font-size="11" font-weight="bold" letter-spacing="1">RTG POWER</text>
+                        </g>
+
+                        <!-- Hotspot 5: Magnetometer Boom -->
+                        <g class="hotspot-group cursor-pointer" data-target="magnetometer">
+                            <circle cx="530" cy="490" r="14" fill="#FF8A00" fill-opacity="0.15" />
+                            <circle cx="530" cy="490" r="6" fill="#FF8A00" class="pulse-ring" filter="url(#glow-orange)" />
+                            <text x="530" y="525" text-anchor="middle" fill="#FF8A00" font-family="'JetBrains Mono'" font-size="11" font-weight="bold" letter-spacing="1">MAGNETOMETER</text>
+                        </g>
+                    </svg>
+
+                    <!-- Scanning Line overlay -->
+                    <div class="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-[#00F0FF]/40 to-transparent shadow-[0_0_12px_#00F0FF] top-0 left-0 animate-scanner pointer-events-none"></div>
+                </div>
+
+                <!-- Diagnostics details side panel -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="bg-[#030508]/85 p-6 rounded-lg border border-[#3b494b]/30 relative overflow-hidden min-h-[360px] flex flex-col justify-between" id="diagnostics-panel">
+                        
+                        <!-- Panel Border Corners for Sci-fi feel -->
+                        <div class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-[#00F0FF]"></div>
+                        <div class="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-[#00F0FF]"></div>
+                        <div class="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-[#00F0FF]"></div>
+                        <div class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-[#00F0FF]"></div>
+
+                        <!-- Top Info -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center border-b border-[#3b494b]/30 pb-3">
+                                <span class="text-[9px] font-bold text-zinc-500 uppercase tracking-widest font-mono">TELEMETRY DIAGNOSTICS</span>
+                                <span id="diag-status" class="px-2 py-0.5 rounded text-[9px] bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 uppercase tracking-widest animate-pulse">ACTIVE FEED</span>
+                            </div>
+                            
+                            <h3 id="diag-title" class="text-xl font-bold tracking-tight text-[#00F0FF] uppercase">HIGH-GAIN ANTENNA</h3>
+                            
+                            <div id="diag-desc" class="text-xs text-zinc-400 leading-relaxed font-mono space-y-2">
+                                <p>Voyager's 3.7-meter diameter parabolic reflector dishes is the primary link back to NASA's Deep Space Network (DSN) on Earth.</p>
+                                <p>It operates continuously in both S-band and X-band frequencies, transmitting planetary science findings and interstellar telemetry across billions of miles.</p>
+                            </div>
+                        </div>
+
+                        <!-- Technical Stats Grid inside Panel -->
+                        <div class="pt-6 border-t border-[#3b494b]/20 mt-4 space-y-3">
+                            <h4 class="text-[9px] font-bold text-zinc-500 tracking-widest uppercase">System Specifications:</h4>
+                            <div class="grid grid-cols-2 gap-3 text-[11px] font-mono" id="diag-stats">
+                                <div class="bg-white/5 p-2 rounded">
+                                    <div class="text-zinc-500 font-bold text-[8px] uppercase tracking-wider">Frequency Band</div>
+                                    <div class="text-[#e2ecef] font-semibold" id="spec-1">X-Band / S-Band</div>
+                                </div>
+                                <div class="bg-white/5 p-2 rounded">
+                                    <div class="text-zinc-500 font-bold text-[8px] uppercase tracking-wider">Output Power</div>
+                                    <div class="text-[#e2ecef] font-semibold" id="spec-2">23 Watts (Transmitter)</div>
+                                </div>
+                                <div class="bg-white/5 p-2 rounded">
+                                    <div class="text-zinc-500 font-bold text-[8px] uppercase tracking-wider">Aperture Size</div>
+                                    <div class="text-[#e2ecef] font-semibold" id="spec-3">3.7 Meters (12 feet)</div>
+                                </div>
+                                <div class="bg-white/5 p-2 rounded">
+                                    <div class="text-zinc-500 font-bold text-[8px] uppercase tracking-wider">Antenna Gain</div>
+                                    <div class="text-[#e2ecef] font-semibold" id="spec-4">~48 dBi (X-band)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+                        * Click hotspots on schema to run deep system scan
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: SCROLL-DRIVEN TIMELINE JOURNEY -->
+        <section id="timeline-section" class="scroll-mt-24 space-y-8 relative">
+            <div class="border-l-2 border-[#FF8A00] pl-4">
+                <h2 class="text-xs font-bold tracking-[0.2em] text-[#FF8A00] uppercase">MODULE 02 // TIMELINE ARCHIVE</h2>
+                <p class="text-xl font-bold tracking-tight text-white uppercase">Scroll-Driven Deep Space Trajectory</p>
+            </div>
+
+            <!-- The Vertical Timeline wrapper -->
+            <div class="relative w-full max-w-4xl mx-auto py-12 px-4">
+                
+                <!-- Center vertical line -->
+                <div class="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#00F0FF]/10 via-[#FF8A00]/50 to-[#00F0FF]/10 z-0"></div>
+                <div id="timeline-scroll-progress" class="absolute left-1/2 -translate-x-1/2 top-0 w-[2px] bg-[#00F0FF] z-10 transition-all duration-300 shadow-[0_0_8px_#00F0FF]" style="height: 0%"></div>
+
+                <!-- Interactive Scrolling Voyager Indicator -->
+                <div id="timeline-probe-indicator" class="fixed left-1/2 -translate-x-1/2 top-[50%] -translate-y-1/2 w-8 h-8 rounded-full border border-[#00F0FF]/50 bg-[#060a12] flex items-center justify-center pointer-events-none z-30 opacity-0 transition-all duration-300 shadow-[0_0_15px_#00F0FF]/40">
+                    <svg viewBox="0 0 24 24" class="w-5 h-5 text-[#00F0FF] fill-none stroke-current" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="9" class="stroke-[#00F0FF]/30" />
+                        <path d="M12 4v2M12 18v2M4 12h2M18 12h2" />
+                        <!-- Futuristic needle shape -->
+                        <polygon points="12,6 15,12 12,18 9,12" class="fill-[#00F0FF]/80 stroke-[#00F0FF]" />
+                    </svg>
+                </div>
+
+                <!-- Timeline Segment 1: Launch -->
+                <div class="timeline-item relative grid grid-cols-1 md:grid-cols-2 gap-8 my-20 opacity-30 transition-all duration-700 select-none pointer-events-none transform translate-y-10" id="item-launch">
+                    <div class="md:col-start-1 md:text-right space-y-3">
+                        <div class="text-xs font-bold tracking-widest text-[#00F0FF] font-mono">SEPTEMBER 5, 1977</div>
+                        <h3 class="text-2xl font-bold text-white tracking-tight uppercase">THE DEPARTURE</h3>
+                        <p class="text-xs text-zinc-400 font-mono leading-relaxed">
+                            Voyager 1 blasts off from Launch Complex 41 at Cape Canaveral, Florida aboard a powerful Titan IIIE-Centaur rocket, beginning a grand tour of the outer solar system.
+                        </p>
+                    </div>
+                    <!-- Right filler dot -->
+                    <div class="absolute left-1/2 -translate-x-1/2 top-2 w-4 h-4 rounded-full border-2 border-[#00F0FF] bg-[#060a12] z-20"></div>
+                </div>
+
+                <!-- Timeline Segment 2: Jupiter Flyby -->
+                <div class="timeline-item relative grid grid-cols-1 md:grid-cols-2 gap-8 my-20 opacity-30 transition-all duration-700 select-none pointer-events-none transform translate-y-10" id="item-jupiter">
+                    <!-- Left filler dot -->
+                    <div class="absolute left-1/2 -translate-x-1/2 top-2 w-4 h-4 rounded-full border-2 border-[#FF8A00] bg-[#060a12] z-20"></div>
+                    <div class="md:col-start-2 space-y-3">
+                        <div class="text-xs font-bold tracking-widest text-[#FF8A00] font-mono">MARCH 5, 1979</div>
+                        <h3 class="text-2xl font-bold text-white tracking-tight uppercase">JUPITER FLYBY</h3>
+                        <p class="text-xs text-zinc-400 font-mono leading-relaxed">
+                            Approaching the massive gas giant, Voyager 1 reveals the volatile volcanic eruptions on Io (the first ever observed on another body), intricate storm bands, and fine dust rings.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timeline Segment 3: Saturn Flyby -->
+                <div class="timeline-item relative grid grid-cols-1 md:grid-cols-2 gap-8 my-20 opacity-30 transition-all duration-700 select-none pointer-events-none transform translate-y-10" id="item-saturn">
+                    <div class="md:col-start-1 md:text-right space-y-3">
+                        <div class="text-xs font-bold tracking-widest text-[#00F0FF] font-mono">NOVEMBER 12, 1980</div>
+                        <h3 class="text-2xl font-bold text-white tracking-tight uppercase">SATURN SLINGSHOT</h3>
+                        <p class="text-xs text-zinc-400 font-mono leading-relaxed">
+                            Sweeping close to Saturn, the probe analyzes its massive icy ring system and performs a hyper-close flyby of Titan to evaluate its thick hydrocarbon atmosphere, slinging itself upward out of the ecliptic plane.
+                        </p>
+                    </div>
+                    <div class="absolute left-1/2 -translate-x-1/2 top-2 w-4 h-4 rounded-full border-2 border-[#00F0FF] bg-[#060a12] z-20"></div>
+                </div>
+
+                <!-- Timeline Segment 4: Pale Blue Dot -->
+                <div class="timeline-item relative grid grid-cols-1 md:grid-cols-2 gap-8 my-20 opacity-30 transition-all duration-700 select-none pointer-events-none transform translate-y-10" id="item-dot">
+                    <div class="absolute left-1/2 -translate-x-1/2 top-2 w-4 h-4 rounded-full border-2 border-[#FF8A00] bg-[#060a12] z-20"></div>
+                    <div class="md:col-start-2 space-y-3">
+                        <div class="text-xs font-bold tracking-widest text-[#FF8A00] font-mono">FEBRUARY 14, 1990</div>
+                        <h3 class="text-2xl font-bold text-white tracking-tight uppercase">THE PALE BLUE DOT</h3>
+                        <p class="text-xs text-zinc-400 font-mono leading-relaxed">
+                            At a distance of 6 billion kilometers, Voyager 1 turns its camera back toward Earth to snap one final image. Our home planet appears as a single tiny pixel, suspended in a sunbeam.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Timeline Segment 5: Heliosheath Boundary -->
+                <div class="timeline-item relative grid grid-cols-1 md:grid-cols-2 gap-8 my-20 opacity-30 transition-all duration-700 select-none pointer-events-none transform translate-y-10" id="item-heliosheath">
+                    <div class="md:col-start-1 md:text-right space-y-3">
+                        <div class="text-xs font-bold tracking-widest text-[#00F0FF] font-mono">DECEMBER 16, 2004</div>
+                        <h3 class="text-2xl font-bold text-white tracking-tight uppercase">HELIOSHEATH ENTRY</h3>
+                        <p class="text-xs text-zinc-400 font-mono leading-relaxed">
+                            Voyager 1 crosses the termination shock—where solar winds slow to subsonic speeds—entering the turbulent magnetic boundary layer known as the heliosheath.
+                        </p>
+                    </div>
+                    <div class="absolute left-1/2 -translate-x-1/2 top-2 w-4 h-4 rounded-full border-2 border-[#00F0FF] bg-[#060a12] z-20"></div>
+                </div>
+
+                <!-- Timeline Segment 6: Interstellar Crossing -->
+                <div class="timeline-item relative grid grid-cols-1 md:grid-cols-2 gap-8 my-20 opacity-30 transition-all duration-700 select-none pointer-events-none transform translate-y-10" id="item-interstellar">
+                    <div class="absolute left-1/2 -translate-x-1/2 top-2 w-4 h-4 rounded-full border-2 border-[#FF8A00] bg-[#060a12] z-20"></div>
+                    <div class="md:col-start-2 space-y-3">
+                        <div class="text-xs font-bold tracking-widest text-[#FF8A00] font-mono">AUGUST 25, 2012</div>
+                        <h3 class="text-2xl font-bold text-white tracking-tight uppercase">INTERSTELLAR SPACE</h3>
+                        <p class="text-xs text-zinc-400 font-mono leading-relaxed">
+                            Crossing the heliopause, Voyager 1 officially leaves the heliosphere and enters interstellar space. It is the first human object to sail in the sea between the stars.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 4: THE GOLDEN RECORD PLAYER -->
+        <section id="record-section" class="scroll-mt-24 space-y-8">
+            <div class="border-l-2 border-[#00F0FF] pl-4">
+                <h2 class="text-xs font-bold tracking-[0.2em] text-[#00F0FF] uppercase">MODULE 03 // AUDIO TRANSMISSIONS</h2>
+                <p class="text-xl font-bold tracking-tight text-white uppercase">Sounds of Earth: The Golden Record</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#05070a]/50 border border-[#3b494b]/20 p-6 md:p-8 rounded-xl backdrop-blur-md">
+                
+                <!-- Interactive Spinning Record Column -->
+                <div class="flex flex-col items-center justify-center p-6 space-y-6 lg:col-span-5">
+                    <div class="relative w-[240px] h-[240px] md:w-[300px] md:h-[300px] rounded-full border-4 border-zinc-800 bg-[#111] shadow-[0_0_30px_rgba(255,138,0,0.25)] flex items-center justify-center group overflow-hidden">
+                        
+                        <!-- Record grooves -->
+                        <div class="absolute inset-4 rounded-full border border-zinc-700/30"></div>
+                        <div class="absolute inset-8 rounded-full border border-zinc-700/30"></div>
+                        <div class="absolute inset-12 rounded-full border border-zinc-700/30"></div>
+                        <div class="absolute inset-16 rounded-full border border-zinc-700/30"></div>
+                        <div class="absolute inset-20 rounded-full border border-zinc-700/20"></div>
+                        <div class="absolute inset-24 rounded-full border border-zinc-700/20"></div>
+                        <div class="absolute inset-28 rounded-full border border-zinc-700/10"></div>
+                        
+                        <!-- Golden LP Disk -->
+                        <div id="golden-record-disc" class="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,#ffd700_0%,#c5a018_50%,#8b6c06_100%)] shadow-inner flex items-center justify-center">
+                            
+                            <!-- Record grooves shine -->
+                            <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent mix-blend-overlay rounded-full"></div>
+                            <div class="absolute inset-0 bg-gradient-to-bl from-transparent via-white/10 to-transparent mix-blend-overlay rounded-full"></div>
+
+                            <!-- Record Center Label -->
+                            <div class="w-24 h-24 rounded-full bg-[#060a12] border border-[#ffd700] flex flex-col items-center justify-center p-2 text-center select-none shadow-[0_0_10px_rgba(0,0,0,0.8)] z-10">
+                                <span class="text-[7px] text-[#ffd700] font-bold tracking-widest uppercase">THE SOUNDS</span>
+                                <span class="text-[9px] text-white font-extrabold tracking-tighter uppercase font-mono">OF EARTH</span>
+                                <span class="text-[5px] text-zinc-500 font-bold mt-1 tracking-widest">UNITED STATES</span>
+                                <span class="text-[5px] text-zinc-500 font-bold">PLANET EARTH</span>
+                            </div>
+                            
+                            <!-- Center spindle hole -->
+                            <div class="w-3 h-3 rounded-full bg-black shadow-inner z-20"></div>
+                        </div>
+
+                        <!-- Stylus / Needle arm (Sci-fi version) -->
+                        <div class="absolute top-2 right-2 w-28 h-32 origin-top-right transform -rotate-12 group-hover:rotate-0 transition-transform duration-500 pointer-events-none z-20">
+                            <!-- Metal arm drawing -->
+                            <svg class="w-full h-full" viewBox="0 0 100 120">
+                                <line x1="90" y1="10" x2="40" y2="90" stroke="#e2ecef" stroke-width="2" />
+                                <line x1="40" y1="90" x2="20" y2="105" stroke="#00F0FF" stroke-width="3" />
+                                <circle cx="90" cy="10" r="6" fill="#3b494b" />
+                                <polygon points="17,102 23,108 15,115 10,110" fill="#00F0FF" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Audio Controls UI -->
+                    <div class="flex items-center gap-4">
+                        <button id="record-play-btn" class="w-12 h-12 flex items-center justify-center rounded-full bg-[#FF8A00] text-black hover:bg-[#ffaa33] transition-all hover:scale-105 active:scale-95 active:bg-[#d97500]">
+                            <span id="play-icon" class="material-symbols-outlined font-bold">play_arrow</span>
+                        </button>
+                        <div class="font-mono text-xs">
+                            <div class="text-white font-bold tracking-wide">STATUS: <span id="playback-status" class="text-zinc-500 font-normal">STANDBY</span></div>
+                            <div class="text-[10px] text-zinc-500">FORMAT: COPPER-GOLD LP 16⅔ RPM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Record Navigation & Info -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <!-- Category 1 -->
+                        <button class="record-tab-btn active px-3 py-2 border border-[#3b494b]/30 bg-[#030508]/40 hover:border-[#00F0FF] rounded font-mono text-xs tracking-wider uppercase text-left transition-all active:scale-95" data-category="greetings">
+                            <span class="block text-[8px] text-zinc-500 font-bold">01 //</span>
+                            <span class="text-white font-bold">Greetings</span>
+                        </button>
+                        <!-- Category 2 -->
+                        <button class="record-tab-btn px-3 py-2 border border-[#3b494b]/30 bg-[#030508]/40 hover:border-[#00F0FF] rounded font-mono text-xs tracking-wider uppercase text-left transition-all active:scale-95" data-category="sounds">
+                            <span class="block text-[8px] text-zinc-500 font-bold">02 //</span>
+                            <span class="text-white font-bold">Nature</span>
+                        </button>
+                        <!-- Category 3 -->
+                        <button class="record-tab-btn px-3 py-2 border border-[#3b494b]/30 bg-[#030508]/40 hover:border-[#00F0FF] rounded font-mono text-xs tracking-wider uppercase text-left transition-all active:scale-95" data-category="music">
+                            <span class="block text-[8px] text-zinc-500 font-bold">03 //</span>
+                            <span class="text-white font-bold">Music</span>
+                        </button>
+                        <!-- Category 4 -->
+                        <button class="record-tab-btn px-3 py-2 border border-[#3b494b]/30 bg-[#030508]/40 hover:border-[#00F0FF] rounded font-mono text-xs tracking-wider uppercase text-left transition-all active:scale-95" data-category="space">
+                            <span class="block text-[8px] text-zinc-500 font-bold">04 //</span>
+                            <span class="text-white font-bold">Cosmos</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-[#030508]/80 border border-[#3b494b]/30 p-6 rounded-lg min-h-[180px] flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <h3 id="record-category-title" class="text-lg font-bold text-[#FF8A00] tracking-tight uppercase">GREETINGS TO THE UNIVERSE</h3>
+                            <p id="record-category-desc" class="text-xs text-zinc-400 font-mono leading-relaxed">
+                                Contains recorded greetings in 55 human languages, starting with Sumerian (the oldest written language) and ending with Wu Chinese. It also features a greeting from the United Nations Secretary-General.
+                            </p>
+                        </div>
+
+                        <!-- Music Visualizer Simulator -->
+                        <div class="pt-4 border-t border-[#3b494b]/20 mt-4 flex items-center justify-between">
+                            <div class="flex gap-1 h-8 items-end" id="audio-visualizer">
+                                <div class="w-1.5 bg-[#00F0FF] h-2 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-1 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-3 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-2 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-4 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-1 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-3 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-5 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-2 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-4 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-2 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-1 rounded-t transition-all duration-300"></div>
+                                <div class="w-1.5 bg-[#00F0FF] h-3 rounded-t transition-all duration-300"></div>
+                            </div>
+                            <span id="visualizer-label" class="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">SIGNAL STRENGTH: 0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: INTERSTELLAR DASHBOARD & TELEMETRY TERMINAL -->
+        <section id="dashboard-section" class="scroll-mt-24 space-y-8">
+            <div class="border-l-2 border-[#FF8A00] pl-4">
+                <h2 class="text-xs font-bold tracking-[0.2em] text-[#FF8A00] uppercase">MODULE 04 // INSTRUMENT STATUS</h2>
+                <p class="text-xl font-bold tracking-tight text-white uppercase">Interstellar Telemetry & Logging Console</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Telemetry Instruments Grid (7 cols) -->
+                <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Cosmic Ray Subsystem -->
+                    <div class="bg-[#05070a]/60 border border-[#3b494b]/20 p-5 rounded-lg backdrop-blur-md flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[8px] font-mono text-zinc-500 uppercase font-bold tracking-wider">CRS // INSTRUMENT ACTIVE</span>
+                                <h4 class="text-sm font-bold text-white uppercase">Cosmic Ray Subsystem</h4>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-505/80 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                        </div>
+                        <div class="my-4 font-mono">
+                            <div class="text-[9px] text-zinc-500 uppercase">Proton/Alpha Count Rate</div>
+                            <div class="text-lg font-bold text-[#00F0FF]" id="telemetry-crs">2.14 particles/s</div>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 font-mono">Measuring energetic outer galaxy particles.</div>
+                    </div>
+
+                    <!-- Low-Energy Charged Particle -->
+                    <div class="bg-[#05070a]/60 border border-[#3b494b]/20 p-5 rounded-lg backdrop-blur-md flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[8px] font-mono text-zinc-500 uppercase font-bold tracking-wider">LECP // INSTRUMENT ACTIVE</span>
+                                <h4 class="text-sm font-bold text-white uppercase">Low-Energy Charged Particle</h4>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-550/80 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                        </div>
+                        <div class="my-4 font-mono">
+                            <div class="text-[9px] text-zinc-500 uppercase">Ion/Electron Intensity</div>
+                            <div class="text-lg font-bold text-[#00F0FF]" id="telemetry-lecp">0.825 particles/s</div>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 font-mono">Measuring plasma speed and temperature.</div>
+                    </div>
+
+                    <!-- Magnetometer -->
+                    <div class="bg-[#05070a]/60 border border-[#3b494b]/20 p-5 rounded-lg backdrop-blur-md flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[8px] font-mono text-zinc-500 uppercase font-bold tracking-wider">MAG // INSTRUMENT ACTIVE</span>
+                                <h4 class="text-sm font-bold text-white uppercase">Triaxial Fluxgate Magnetometer</h4>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-555/80 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                        </div>
+                        <div class="my-4 font-mono">
+                            <div class="text-[9px] text-zinc-500 uppercase">Magnetic Field Strength</div>
+                            <div class="text-lg font-bold text-[#FF8A00]" id="telemetry-mag">0.12 nT</div>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 font-mono">Measuring magnetic field of interstellar space.</div>
+                    </div>
+
+                    <!-- Plasma Wave Subsystem -->
+                    <div class="bg-[#05070a]/60 border border-[#3b494b]/20 p-5 rounded-lg backdrop-blur-md flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[8px] font-mono text-zinc-500 uppercase font-bold tracking-wider">PWS // INSTRUMENT ACTIVE</span>
+                                <h4 class="text-sm font-bold text-white uppercase">Plasma Wave Subsystem</h4>
+                            </div>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-555/80 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                        </div>
+                        <div class="my-4 font-mono">
+                            <div class="text-[9px] text-zinc-500 uppercase">Plasma Wave Frequency</div>
+                            <div class="text-lg font-bold text-[#FF8A00]" id="telemetry-pws">2.2 kHz</div>
+                        </div>
+                        <div class="text-[10px] text-zinc-400 font-mono">Measuring plasma density in space.</div>
+                    </div>
+                </div>
+
+                <!-- Typewriter terminal console (5 cols) -->
+                <div class="lg:col-span-5 flex flex-col h-full min-h-[300px]">
+                    <div class="bg-[#030508]/90 border border-[#3b494b]/30 rounded-lg flex-1 flex flex-col overflow-hidden relative font-['JetBrains_Mono',_monospace]">
+                        
+                        <!-- Terminal Title Bar -->
+                        <div class="bg-zinc-900 px-4 py-2 border-b border-[#3b494b]/20 flex justify-between items-center text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#FF8A00] inline-block"></span>
+                                <span class="text-zinc-400 font-bold">SYS_CONSOLE: /dev/vgr1/telemetry</span>
+                            </div>
+                            <span class="text-[9px] text-zinc-500">VGR1_OS v9.42</span>
+                        </div>
+
+                        <!-- Terminal Body -->
+                        <div id="terminal-output" class="flex-1 p-4 text-[11px] text-emerald-400 leading-normal space-y-2 overflow-y-auto font-mono scrollbar-none max-h-[350px]">
+                            <!-- Logs will be populated here -->
+                            <div class="text-zinc-500 font-bold">// INITIALIZING INTERSTELLAR CONNECTION...</div>
+                            <div class="text-zinc-500">// HANDSHAKE ACQUIRED BY GOLDSTONE DSN (ANTENNA 14)</div>
+                            <div class="text-zinc-500">// DOWNLINK DATA STREAM PARSED SUCCESSFULLY</div>
+                        </div>
+
+                        <!-- Console footer status -->
+                        <div class="p-3 border-t border-[#3b494b]/20 bg-zinc-955 flex justify-between items-center text-[10px] font-mono">
+                            <span class="text-zinc-500">SYS_VOLTAGE: <span class="text-[#00F0FF]">28.6V (RTG)</span></span>
+                            <span class="text-zinc-500">RX_SIGNAL: <span class="text-[#FF8A00]">-158.4 dBm</span></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-8 px-10 flex flex-col md:flex-row justify-between items-center opacity-60 bg-[#05070A] border-t border-[#FF8A00]/20 mt-auto z-50 relative">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="arcade-font text-4xl text-[#00F0FF] mb-2" style="font-family: 'VT323', monospace;">ALTAIR</span>
+<p class="font-label-caps text-[10px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-8 font-label-caps text-[12px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
+</div>
+</footer>
+
+    <!-- Module JS Scripts -->
+    <script type="module" src="/voyager/voyager1.js"></script>
+    <script>
+        // Auth Logic for Navbar
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('altair_username');
+            if (username) {
+                const navName = document.getElementById('user-profile-name');
+                if (navName) navName.textContent = username.toUpperCase();
+            }
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('altair_token');
+                    localStorage.removeItem('altair_username');
+                    window.location.href = '/landing.html';
+                });
+            }
+        });
+    </script>
+  </body>
+</html>

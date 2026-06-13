@@ -35,3 +35,14 @@ test.txt
 sample pages/
 
 .vercel
+.vite/
+__pycache__/
+*.pyc
+*.db
+backend/__pycache__/
+backend/sql_app.db
+apollo 11/
+new/
+scratch/
+message (1).html
+old_knowledge.html
