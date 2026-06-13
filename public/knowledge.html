@@ -163,76 +163,77 @@
         /* Orbit System */
         .solar-system {
             position: relative;
-            width: 800px;
-            height: 800px;
+            width: 900px;
+            height: 900px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transform-style: preserve-3d;
-            perspective: 1000px;
-            transform: rotateX(60deg); /* 2.5D perspective */
-            margin-top: -100px;
         }
 
         .sun {
             position: absolute;
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, #fffdf2 10%, #ffd000 40%, #ff8c00 80%, transparent 100%);
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, #fffdf2 10%, #ffd000 40%, #ff4500 80%, transparent 100%);
             border-radius: 50%;
-            box-shadow: 0 0 100px #ff8c00, 0 0 200px #ffd000;
+            box-shadow: 0 0 40px #ff4500, 0 0 80px #ffd000, 0 0 150px rgba(255,140,0,0.6);
             z-index: 10;
-            transform: rotateX(-60deg); /* Counter rotate to face camera */
         }
 
         .orbit-ring {
             position: absolute;
-            border: 1px dashed rgba(255,255,255,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.08); /* solid thin faint line */
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transform-style: preserve-3d;
         }
 
         .orbit-ring:hover {
-            border-color: rgba(0, 245, 255, 0.5);
+            border-color: rgba(255, 255, 255, 0.3);
             z-index: 20;
         }
 
-        .orbiting-planet {
+        .orbiting-planet-container {
             position: absolute;
             top: 0;
             left: 50%;
             border-radius: 50%;
+            transform-origin: center;
+            cursor: pointer;
+            z-index: 15;
+            /* Animation applied in JS */
+        }
+
+        .orbiting-planet {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
             background-size: cover;
             background-position: center;
-            transform-origin: center;
-            /* Box shadow for mini 3d effect */
-            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.8);
-            cursor: pointer;
-            transition: transform 0.3s;
+            box-shadow: inset -4px -4px 10px rgba(0,0,0,0.8), 0 0 10px rgba(255,255,255,0.2);
+            transition: box-shadow 0.3s, transform 0.3s;
         }
         
         .orbit-ring:hover .orbiting-planet {
-            transform: scale(2) rotateX(-60deg) !important;
-            box-shadow: 0 0 15px rgba(0,245,255,0.8);
+            transform: scale(1.6);
+            box-shadow: 0 0 25px rgba(0,245,255,0.8), inset -4px -4px 10px rgba(0,0,0,0.8);
         }
 
         .planet-name-label {
             position: absolute;
-            top: -25px;
+            top: -30px;
             left: 50%;
             transform: translateX(-50%);
             color: #00f5ff;
             font-family: 'VT323', monospace;
-            font-size: 14px;
+            font-size: 16px;
             letter-spacing: 0.2em;
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
             white-space: nowrap;
-            text-shadow: 0 0 5px black;
+            text-shadow: 0 0 8px rgba(0,245,255,0.8), 0 0 15px black;
         }
 
         .orbit-ring:hover .planet-name-label {
@@ -242,6 +243,11 @@
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+
+        @keyframes reverse-spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(-360deg); }
         }
 
         .neon-glow {
@@ -344,6 +350,12 @@
           },
         }
       </script>
+
+<style>
+  /* Hide scrollbar globally */
+  ::-webkit-scrollbar { display: none; }
+  * { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
 </head>
 <body class="flex flex-col min-h-screen">
 
@@ -708,22 +720,31 @@
             orbitRing.style.animation = `spin ${p.orbitSpeed}s linear infinite -${index * 5}s`;
             
             // Pause animation on hover
-            orbitRing.addEventListener('mouseover', () => orbitRing.style.animationPlayState = 'paused');
-            orbitRing.addEventListener('mouseout', () => orbitRing.style.animationPlayState = 'running');
+            orbitRing.addEventListener('mouseover', () => {
+                orbitRing.style.animationPlayState = 'paused';
+                planetContainer.style.animationPlayState = 'paused';
+            });
+            orbitRing.addEventListener('mouseout', () => {
+                orbitRing.style.animationPlayState = 'running';
+                planetContainer.style.animationPlayState = 'running';
+            });
 
             const planetContainer = document.createElement('div');
-            planetContainer.className = 'orbiting-planet';
+            planetContainer.className = 'orbiting-planet-container';
             planetContainer.style.width = p.planetSize + 'px';
             planetContainer.style.height = p.planetSize + 'px';
-            // Translate Y to place it on the rim, then counter rotate so the texture stays somewhat right
-            planetContainer.style.transform = `translate(-50%, -50%) rotateX(-60deg)`;
-            planetContainer.style.backgroundImage = `url('${p.image}')`;
+            planetContainer.style.animation = `reverse-spin ${p.orbitSpeed}s linear infinite -${index * 5}s`;
             planetContainer.onclick = () => showDetail(p.id);
+
+            const planetVisual = document.createElement('div');
+            planetVisual.className = 'orbiting-planet';
+            planetVisual.style.backgroundImage = `url('${p.image}')`;
 
             const nameLabel = document.createElement('div');
             nameLabel.className = 'planet-name-label';
             nameLabel.textContent = p.name;
 
+            planetContainer.appendChild(planetVisual);
             planetContainer.appendChild(nameLabel);
             orbitRing.appendChild(planetContainer);
             planetGrid.appendChild(orbitRing);
