@@ -359,42 +359,82 @@
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- Navbar -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-edge h-20 bg-void-black/80 backdrop-blur-md border-b border-outline-variant/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-    <div class="flex items-center gap-4">
-    <div class="w-10 h-10 flex items-center justify-center neon-glow">
-    <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
-    </div>
-    <span class="arcade-font text-4xl font-extrabold text-neon-cyan tracking-tighter neon-glow">ALTAIR</span>
-    </div>
-    <nav class="hidden md:flex items-center gap-8">
-    <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/home.html">HOME</a>
-    <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">RADAR</a>
-    <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/sky.html">SKY VIEW</a>
-    <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/game.html">GAMES</a>
-    <a class="font-label-caps text-label-caps text-neon-cyan border-b-2 border-neon-cyan pb-1 transition-all duration-300" href="/knowledge.html">KNOWLEDGE HUB</a>
-    </nav>
-    <div class="flex items-center gap-6">
-    <button class="material-symbols-outlined text-on-surface-variant hover:text-neon-cyan transition-all active:scale-95">notifications</button>
-    <div class="flex items-center gap-3 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/30">
-    <span id="user-profile-name" class="font-label-caps text-[10px] text-neon-cyan"></span>
-    <button class="material-symbols-outlined text-neon-cyan" style="font-variation-settings: &quot;FILL&quot; 1;">account_circle</button>
-    </div>
-    <button id="logout-btn" class="font-label-caps text-[10px] text-hazard-orange hover:text-white transition-colors border border-hazard-orange/30 px-3 py-1 rounded">LOGOUT</button>
-    </div>
+    <!-- NFTMAP Navbar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-16 h-24 bg-transparent">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 50C20 33.4315 33.4315 20 50 20C66.5685 20 80 33.4315 80 50" stroke="#00dbe9" stroke-width="8" stroke-linecap="round"/>
+                <path d="M25 60C25 43.4315 38.4315 30 55 30C71.5685 30 85 43.4315 85 60" stroke="#00dbe9" stroke-width="8" stroke-linecap="round" stroke-opacity="0.5"/>
+                <path d="M15 40C15 23.4315 28.4315 10 45 10C61.5685 10 75 23.4315 75 40" stroke="#00dbe9" stroke-width="8" stroke-linecap="round" stroke-opacity="0.8"/>
+            </svg>
+            <span class="text-white text-2xl font-bold tracking-tight" style="font-family: 'Space Mono', sans-serif;">nftmap</span>
+        </div>
+        
+        <!-- Center Nav -->
+        <nav class="hidden md:flex items-center gap-2 bg-[#1a1c2e] p-1 rounded-full border border-white/10 shadow-[0_0_15px_rgba(0,219,233,0.1)]">
+            <a href="#" class="text-white text-sm px-6 py-2 rounded-full bg-gradient-to-r from-[#19455e] to-[#276e8a] font-medium transition-all shadow-[inset_0_0_10px_rgba(0,219,233,0.3)]">Solar System</a>
+            <a href="#" class="text-zinc-400 hover:text-white text-sm px-6 py-2 rounded-full font-medium transition-colors">About</a>
+        </nav>
+
+        <!-- Sign In -->
+        <button class="flex items-center gap-3 bg-[#151322] border border-white/10 px-5 py-2.5 rounded-lg hover:bg-[#1f1c30] transition-colors shadow-lg">
+            <span class="text-xl">🦊</span>
+            <span class="text-white text-sm font-bold tracking-widest uppercase" style="font-family: 'Space Mono', sans-serif;">SIGN IN</span>
+        </button>
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-1 mt-20 relative flex overflow-hidden">
+    <main class="flex-1 relative flex overflow-hidden bg-[#0d081f]">
         
-        <!-- State 1: Solar System Overview -->
-        <div id="overview-state" class="w-full h-[calc(100vh-80px)] flex flex-col items-center justify-center relative z-10 transition-opacity duration-500 overflow-hidden">
-            <h1 class="absolute top-10 font-display text-4xl tracking-[0.3em] text-white text-center z-20 pointer-events-none">SOLAR SYSTEM <br><span class="text-primary text-xl">ARCHIVES</span></h1>
+        <!-- Stars Background -->
+        <div class="absolute inset-0 pointer-events-none" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 50px 50px; opacity: 0.1;"></div>
+
+        <!-- State 1: NFT Solar System Overview -->
+        <div id="overview-state" class="w-full h-screen flex flex-col items-center justify-center relative z-10 transition-opacity duration-500 overflow-hidden pt-10">
             
-            <div class="solar-system" id="planet-grid">
-                <div class="sun"></div>
+            <!-- Floating Social Icons -->
+            <div class="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40">
+                <a href="#" class="w-12 h-12 bg-[#171424] border border-white/5 rounded-2xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#201d30] transition-all shadow-lg">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                </a>
+                <a href="#" class="w-12 h-12 bg-[#171424] border border-white/5 rounded-2xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#201d30] transition-all shadow-lg">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.68c.223-.198-.054-.316-.346-.116l-6.405 4.032-2.76-.864c-.6-.188-.616-.6.126-.893l10.785-4.155c.498-.184.945.105.78.831z"/></svg>
+                </a>
+                <a href="#" class="w-12 h-12 bg-[#171424] border border-white/5 rounded-2xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-[#201d30] transition-all shadow-lg">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M13.293 7.293a1 1 0 0 0-1.414 1.414l2.586 2.586H3a1 1 0 1 0 0 2h11.465l-2.586 2.586a1 1 0 1 0 1.414 1.414l4.293-4.293-4.293-4.293z"/><path d="M21 3h-6a1 1 0 1 0 0 2h5v14h-5a1 1 0 1 0 0 2h6a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/></svg>
+                </a>
+            </div>
+
+            <!-- Hero Text -->
+            <div class="absolute top-32 w-full text-center z-30 pointer-events-none">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-3" style="font-family: 'Sora', sans-serif; letter-spacing: 0.02em;">Buy yourself a Planet or a Country</h1>
+                <p class="text-[#00dbe9] text-sm md:text-base tracking-[0.3em] font-medium" style="font-family: 'Space Mono', sans-serif;">WITH NFT YOU LITERALLY CAN DO IT!</p>
+            </div>
+            
+            <div class="solar-system mt-12" id="planet-grid">
+                <div class="sun relative flex items-center justify-center">
+                    <!-- Realistic sun texture -->
+                    <div class="absolute inset-0 rounded-full" style="background: url('https://upload.wikimedia.org/wikipedia/commons/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg') center/cover; opacity: 0.9;"></div>
+                </div>
                 <!-- Orbits Injected via JS -->
             </div>
+
+            <!-- Subscribe Box -->
+            <div class="absolute bottom-8 z-30 flex flex-col items-center">
+                <p class="text-zinc-400 text-[10px] tracking-widest uppercase mb-4" style="font-family: 'Space Mono', sans-serif;">SUBSCRIBE TO BE AMONG THE <span class="text-[#00dbe9] font-bold">FIRST BUYERS:</span></p>
+                <div class="bg-[#171424] p-4 rounded-2xl border border-white/5 flex gap-4 w-[380px] shadow-2xl relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent to-[#2ecc71]/5 pointer-events-none"></div>
+                    <div class="flex-1 flex flex-col justify-center">
+                        <label class="text-zinc-500 text-[8px] tracking-[0.2em] font-bold uppercase mb-1">YOUR E-MAIL</label>
+                        <input type="email" placeholder="Enter your e-mail here" class="bg-transparent border-b border-white/20 text-white text-sm pb-1 outline-none focus:border-[#2ecc71] transition-colors w-full placeholder:text-zinc-600">
+                    </div>
+                    <button class="bg-[#2ecc71] hover:bg-[#27ae60] transition-colors text-white text-sm font-bold px-6 py-2 rounded-lg shadow-[0_0_15px_rgba(46,204,113,0.4)]">
+                        Subscribe
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         <!-- State 2: Planet Detail HUD -->
@@ -502,207 +542,78 @@
 
 
     <script>
-        // Planet Data Structure
         const planets = [
             {
-                id: 'mercury',
-                name: 'MERCURY',
+                id: 'mercury', name: 'MERCURY',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Mercury_in_true_color.jpg',
-                orbitSize: 130,
-                planetSize: 12,
-                orbitSpeed: 8,
-                orbitDistance: '57 909 050 KM',
-                axialTilt: '2.04°',
-                orbitalPeriod: '88 DAYS',
-                lengthOfDay: '58.65 DAYS',
-                diameter: '4 879 KM',
-                mass: '3.3011*10^23 KG',
-                surfaceTemp: '-173°C to +427°C',
-                funFact: 'Mercury experiences the most extreme temperature fluctuations in the solar system.',
-                description: 'The smallest and innermost planet in the Solar System. Its surface is heavily cratered and similar in appearance to the Earth\'s Moon, indicating that it has been geologically inactive for billions of years.',
-                composition: [
-                    { label: 'O2', value: '42%' },
-                    { label: 'Na', value: '29%' },
-                    { label: 'H2', value: '22%' },
-                    { label: 'He', value: '6%' },
-                    { label: 'K', value: '0.5%' }
-                ]
+                orbitSize: 200, planetSize: 15, orbitSpeed: 40,
+                orbitDistance: '57 900 000 KM', axialTilt: '0.034°', orbitalPeriod: '88 DAYS',
+                lengthOfDay: '4222.6 HOURS', diameter: '4 879 KM', mass: '3.30*10^23 KG',
+                surfaceTemp: '167°C', funFact: 'Mercury is the fastest planet, zipping around the Sun at 47 km/s.',
+                description: 'The smallest planet in the Solar System and the closest to the Sun.'
             },
             {
-                id: 'venus',
-                name: 'VENUS',
-                image: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg',
-                orbitSize: 190,
-                planetSize: 18,
-                orbitSpeed: 14,
-                orbitDistance: '108 208 000 KM',
-                axialTilt: '177.36°',
-                orbitalPeriod: '224.7 DAYS',
-                lengthOfDay: '116.75 DAYS',
-                diameter: '12 104 KM',
-                mass: '4.8675*10^24 KG',
-                surfaceTemp: '+462°C',
-                funFact: 'Venus rotates backwards compared to most other planets. The Sun rises in the west and sets in the east.',
-                description: 'Often called Earth\'s "sister planet" because of their similar size, mass, proximity to the Sun, and bulk composition. However, it is radically different, enveloped in a dense, toxic atmosphere that traps heat.',
-                composition: [
-                    { label: 'CO2', value: '96.5%' },
-                    { label: 'N2', value: '3.5%' },
-                    { label: 'SO2', value: '0.015%' },
-                    { label: 'Ar', value: '0.007%' },
-                    { label: 'H2O', value: '0.002%' },
-                    { label: 'CO', value: '0.0017%' },
-                    { label: 'He', value: '0.0012%' },
-                    { label: 'Ne', value: '0.0007%' },
-                    { label: 'HCl', value: 'TRACE' },
-                    { label: 'HF', value: 'TRACE' },
-                    { label: 'Kr', value: 'TRACE' },
-                    { label: 'Xe', value: 'TRACE' }
-                ]
-            },
-            {
-                id: 'earth',
-                name: 'EARTH',
+                id: 'earth', name: 'EARTH',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg',
-                orbitSize: 250,
-                planetSize: 20,
-                orbitSpeed: 20,
-                orbitDistance: '149 598 261 KM',
-                axialTilt: '23.26°',
-                orbitalPeriod: '365 DAYS',
-                lengthOfDay: '24 HOURS',
-                diameter: '12 742 KM',
-                mass: '5.97*10^24 KG',
-                surfaceTemp: '-89.2°C to +56.7°C',
-                funFact: 'Earth is the only planet not named after a mythological god or goddess.',
-                description: 'The third planet from the Sun and the only astronomical object known to harbor life. It has a dynamic atmosphere, oceans of liquid water, and a strong magnetic field generated by a molten iron core.',
-                composition: [
-                    { label: 'ATMOSPHERE', isTitle: true },
-                    { label: 'N2', value: '78.8%' },
-                    { label: 'O2', value: '20.95%' },
-                    { label: 'Ar', value: '0.93%' },
-                    { label: 'CO2', value: '0.04%' },
-                    { label: 'HYDROSPHERE', isTitle: true },
-                    { label: 'MASS', value: '1.46*10^21 KG' },
-                    { label: 'EARTH', isTitle: true },
-                    { label: 'Fe', value: '32.1%' },
-                    { label: 'O2', value: '30.1%' },
-                    { label: 'Si', value: '15.1%' },
-                    { label: 'Mg', value: '13.9%' }
-                ]
+                orbitSize: 320, planetSize: 45, orbitSpeed: 60,
+                orbitDistance: '149 600 000 KM', axialTilt: '23.44°', orbitalPeriod: '365.25 DAYS',
+                lengthOfDay: '24 HOURS', diameter: '12 742 KM', mass: '5.97*10^24 KG',
+                surfaceTemp: '15°C', funFact: 'Earth is the only planet known to support life.',
+                description: 'Our home planet, the third from the Sun.'
             },
             {
-                id: 'mars',
-                name: 'MARS',
-                image: 'https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg',
-                orbitSize: 320,
-                planetSize: 15,
-                orbitSpeed: 32,
-                orbitDistance: '227 939 200 KM',
-                axialTilt: '25.19°',
-                orbitalPeriod: '687 DAYS',
-                lengthOfDay: '24.6 HOURS',
-                diameter: '6 779 KM',
-                mass: '6.39*10^23 KG',
-                surfaceTemp: '-153°C to +20°C',
-                funFact: 'Mars is home to Olympus Mons, the highest mountain and largest volcano in the entire solar system.',
-                description: 'The fourth planet from the Sun, often referred to as the "Red Planet" due to the iron oxide prevalent on its surface. It hosts thin atmosphere and surface features reminiscent of impact craters of the Moon.',
-                composition: [
-                    { label: 'CO2', value: '95.32%' },
-                    { label: 'N2', value: '2.7%' },
-                    { label: 'Ar', value: '1.6%' },
-                    { label: 'O2', value: '0.13%' },
-                    { label: 'CO', value: '0.08%' }
-                ]
+                id: 'roadster', name: 'STARMAN',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Elon_Musk%27s_Tesla_Roadster_%2840143096241%29.jpg/1200px-Elon_Musk%27s_Tesla_Roadster_%2840143096241%29.jpg',
+                orbitSize: 440, planetSize: 25, orbitSpeed: 70,
+                orbitDistance: 'VARYING', axialTilt: 'N/A', orbitalPeriod: '557 DAYS',
+                lengthOfDay: 'N/A', diameter: '4.6 METERS', mass: '1300 KG',
+                surfaceTemp: 'N/A', funFact: 'A Tesla Roadster serving as the dummy payload for the Falcon Heavy test flight.',
+                description: 'Starman driving a cherry red Tesla Roadster through space.'
             },
             {
-                id: 'jupiter',
-                name: 'JUPITER',
+                id: 'blue_giant', name: 'GLIESE',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Jupiter_New_Horizons.jpg',
+                orbitSize: 580, planetSize: 35, orbitSpeed: 85,
+                orbitDistance: 'UNKNOWN', axialTilt: 'UNKNOWN', orbitalPeriod: 'UNKNOWN',
+                lengthOfDay: 'UNKNOWN', diameter: 'UNKNOWN', mass: 'UNKNOWN',
+                surfaceTemp: 'UNKNOWN', funFact: 'An exoplanet that emits a striking blue aura.',
+                description: 'A distant exoplanet captured in the system map.'
+            },
+            {
+                id: 'jupiter', name: 'JUPITER',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg',
-                orbitSize: 450,
-                planetSize: 40,
-                orbitSpeed: 60,
-                orbitDistance: '778 500 000 KM',
-                axialTilt: '3.13°',
-                orbitalPeriod: '4333 DAYS',
-                lengthOfDay: '9.93 HOURS',
-                diameter: '139 820 KM',
-                mass: '1.898*10^27 KG',
-                surfaceTemp: '-110°C',
-                funFact: 'Jupiter\'s Great Red Spot is a giant storm that is larger than Earth and has been raging for hundreds of years.',
-                description: 'The largest planet in the Solar System. It is a gas giant with a mass more than two and a half times that of all the other planets in the Solar System combined.',
-                composition: [
-                    { label: 'H2', value: '89.8%' },
-                    { label: 'He', value: '10.2%' },
-                    { label: 'CH4', value: '0.3%' },
-                    { label: 'NH3', value: '0.026%' }
-                ]
+                orbitSize: 580, planetSize: 65, orbitSpeed: 95,
+                orbitDistance: '778 500 000 KM', axialTilt: '3.13°', orbitalPeriod: '4331 DAYS',
+                lengthOfDay: '9.9 HOURS', diameter: '139 820 KM', mass: '1.898*10^27 KG',
+                surfaceTemp: '-110°C', funFact: 'Jupiter has a giant storm called the Great Red Spot that is larger than Earth.',
+                description: 'The largest planet in the Solar System.'
             },
             {
-                id: 'saturn',
-                name: 'SATURN',
+                id: 'mars', name: 'MARS',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg',
+                orbitSize: 700, planetSize: 30, orbitSpeed: 110,
+                orbitDistance: '227 900 000 KM', axialTilt: '25.19°', orbitalPeriod: '687 DAYS',
+                lengthOfDay: '24.6 HOURS', diameter: '6 779 KM', mass: '6.42*10^23 KG',
+                surfaceTemp: '-65°C', funFact: 'Mars is home to Olympus Mons, the tallest mountain in the solar system.',
+                description: 'The Red Planet, fourth from the Sun.'
+            },
+            {
+                id: 'saturn', name: 'SATURN',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg',
-                orbitSize: 560,
-                planetSize: 34,
-                orbitSpeed: 90,
-                orbitDistance: '1 434 000 000 KM',
-                axialTilt: '26.73°',
-                orbitalPeriod: '10759 DAYS',
-                lengthOfDay: '10.7 HOURS',
-                diameter: '116 460 KM',
-                mass: '5.683*10^26 KG',
-                surfaceTemp: '-140°C',
-                funFact: 'Saturn has the most extensive ring system of any planet, made almost entirely of water ice particles.',
-                description: 'The sixth planet from the Sun and the second-largest in the Solar System. It is a gas giant with an average radius of about nine and a half times that of Earth.',
-                composition: [
-                    { label: 'H2', value: '96.3%' },
-                    { label: 'He', value: '3.25%' },
-                    { label: 'CH4', value: '0.45%' },
-                    { label: 'NH3', value: '0.0125%' }
-                ]
+                orbitSize: 850, planetSize: 55, orbitSpeed: 140,
+                orbitDistance: '1 434 000 000 KM', axialTilt: '26.73°', orbitalPeriod: '10747 DAYS',
+                lengthOfDay: '10.7 HOURS', diameter: '116 460 KM', mass: '5.68*10^26 KG',
+                surfaceTemp: '-140°C', funFact: 'Saturn has the most extensive ring system of any planet in our solar system.',
+                description: 'The sixth planet from the Sun and the second-largest in the Solar System.'
             },
             {
-                id: 'uranus',
-                name: 'URANUS',
+                id: 'uranus', name: 'URANUS',
                 image: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg',
-                orbitSize: 660,
-                planetSize: 26,
-                orbitSpeed: 140,
-                orbitDistance: '2 871 000 000 KM',
-                axialTilt: '97.77°',
-                orbitalPeriod: '30688 DAYS',
-                lengthOfDay: '17.2 HOURS',
-                diameter: '50 724 KM',
-                mass: '8.681*10^25 KG',
-                surfaceTemp: '-195°C',
-                funFact: 'Uranus rotates on its side, meaning its axis of spin is nearly parallel to its orbital plane.',
-                description: 'The seventh planet from the Sun. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System. Often classified as an "ice giant".',
-                composition: [
-                    { label: 'H2', value: '83%' },
-                    { label: 'He', value: '15%' },
-                    { label: 'CH4', value: '2.3%' }
-                ]
-            },
-            {
-                id: 'neptune',
-                name: 'NEPTUNE',
-                image: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Neptune_-_Voyager_2_%2829741875326%29.png',
-                orbitSize: 760,
-                planetSize: 26,
-                orbitSpeed: 200,
-                orbitDistance: '4 495 000 000 KM',
-                axialTilt: '28.32°',
-                orbitalPeriod: '60182 DAYS',
-                lengthOfDay: '16.1 HOURS',
-                diameter: '49 244 KM',
-                mass: '1.024*10^26 KG',
-                surfaceTemp: '-200°C',
-                funFact: 'Neptune has the strongest winds in the solar system, which can reach supersonic speeds of 2,100 km/h.',
-                description: 'The eighth and farthest-known Solar planet from the Sun. In the Solar System, it is the fourth-largest planet by diameter, the third-most-massive planet, and the densest giant planet.',
-                composition: [
-                    { label: 'H2', value: '80%' },
-                    { label: 'He', value: '19%' },
-                    { label: 'CH4', value: '1.5%' }
-                ]
+                orbitSize: 850, planetSize: 28, orbitSpeed: 160,
+                orbitDistance: '2 871 000 000 KM', axialTilt: '97.77°', orbitalPeriod: '30688 DAYS',
+                lengthOfDay: '17.2 HOURS', diameter: '50 724 KM', mass: '8.68*10^25 KG',
+                surfaceTemp: '-195°C', funFact: 'Uranus rotates on its side, meaning its axis of spin is nearly parallel to its orbital plane.',
+                description: 'The seventh planet from the Sun, an ice giant.'
             }
         ];
 
@@ -739,6 +650,41 @@
             const planetVisual = document.createElement('div');
             planetVisual.className = 'orbiting-planet';
             planetVisual.style.backgroundImage = `url('${p.image}')`;
+            
+            // Special cases
+            if (p.id === 'earth') {
+                const moon = document.createElement('div');
+                moon.style.position = 'absolute';
+                moon.style.top = '-10px';
+                moon.style.left = '-10px';
+                moon.style.width = '8px';
+                moon.style.height = '8px';
+                moon.style.borderRadius = '50%';
+                moon.style.background = '#ccc';
+                moon.style.boxShadow = '0 0 5px white';
+                moon.style.animation = 'spin 5s linear infinite';
+                moon.style.transformOrigin = '20px 20px';
+                planetVisual.appendChild(moon);
+            } else if (p.id === 'saturn') {
+                const rings = document.createElement('div');
+                rings.style.position = 'absolute';
+                rings.style.top = '50%';
+                rings.style.left = '50%';
+                rings.style.width = '140%';
+                rings.style.height = '140%';
+                rings.style.border = '4px solid rgba(255, 230, 180, 0.4)';
+                rings.style.borderRadius = '50%';
+                rings.style.transform = 'translate(-50%, -50%) rotateX(60deg)';
+                planetVisual.appendChild(rings);
+            } else if (p.id === 'blue_giant') {
+                planetVisual.style.filter = 'hue-rotate(180deg) saturate(3) brightness(1.5)';
+                planetVisual.style.boxShadow = '0 0 30px #00dbe9, inset -4px -4px 10px rgba(0,0,0,0.8)';
+            } else if (p.id === 'roadster') {
+                planetVisual.style.borderRadius = '0';
+                planetVisual.style.boxShadow = 'none';
+                planetVisual.style.backgroundSize = 'contain';
+                planetVisual.style.backgroundRepeat = 'no-repeat';
+            }
 
             const nameLabel = document.createElement('div');
             nameLabel.className = 'planet-name-label';
