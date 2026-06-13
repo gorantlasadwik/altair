@@ -330,16 +330,11 @@
 <footer class="w-full py-8 px-margin-edge flex flex-col md:flex-row justify-between items-center opacity-60 bg-void-black border-t border-hazard-orange/20">
 <div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
 <span class="arcade-font text-4xl text-neon-cyan mb-2">ALTAIR</span>
-
+<p class="font-label-caps text-[10px] text-on-surface-variant">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
 </div>
-<div class="flex gap-8">
-
-
-
-</div>
-<div class="mt-6 md:mt-0 flex gap-4">
-<button onclick="navigator.clipboard.writeText(window.location.href); alert('ALTAIR transmission link copied to clipboard!');" class="material-symbols-outlined text-on-surface-variant hover:text-neon-cyan active:scale-95 transition-all">share</button>
-<button onclick="alert('ALTAIR Support Protocols offline. Please contact your Fleet Commander.')" class="material-symbols-outlined text-on-surface-variant hover:text-neon-cyan active:scale-95 transition-all">help_center</button>
+<div class="flex gap-8 font-label-caps text-label-caps text-on-surface-variant">
+<a class="arcade-nav-link hover:text-hazard-orange transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR Games', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
+<a class="arcade-nav-link hover:text-hazard-orange transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
 </div>
 </footer>
 <script>

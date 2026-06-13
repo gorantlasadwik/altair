@@ -642,11 +642,14 @@ animate();
 <div class="h-2 flex-1 bg-surface-container-highest border border-outline-variant/30 hidden md:block"></div>
 <div class="h-2 flex-1 bg-surface-container-highest border border-outline-variant/30 hidden md:block"></div>
 </div>
-<div class="flex flex-col md:flex-row justify-between items-center opacity-60 font-label-caps text-label-caps text-on-surface-variant border-t border-hazard-orange/20 pt-4">
-<p>© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
-<div class="flex items-center gap-2 mt-2 md:mt-0">
-<span>SYSTEM STATUS:</span>
-<span class="text-neon-cyan border border-neon-cyan/50 px-2 py-0.5 rounded uppercase">Nominal</span>
+<div class="flex flex-col md:flex-row justify-between items-center font-label-caps text-label-caps text-on-surface-variant pt-4 mt-8 opacity-60 border-t border-hazard-orange/20">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="font-headline-lg text-headline-lg text-neon-cyan mb-2">ALTAIR</span>
+<p class="text-[10px]">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-8">
+<a class="arcade-nav-link hover:text-hazard-orange transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR Games', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
+<a class="arcade-nav-link hover:text-hazard-orange transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
 </div>
 </div>
 </footer>
