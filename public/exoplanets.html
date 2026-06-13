@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALTAIR - Knowledge Hub</title>
+    <title>ALTAIR - Exoplanets Archive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
         :root {
-            --primary: #00f5ff;
-            --secondary: #9d00ff;
+            --primary: #9d00ff;
             --bg-dark: #050505;
         }
         
@@ -89,65 +88,74 @@
         </div>
     </header>
 
-    <main class="flex-1 mt-20 flex flex-col items-center justify-center p-8 relative">
-        <div class="absolute inset-0 pointer-events-none" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 50px 50px; opacity: 0.1;"></div>
+    <main class="flex-1 mt-20 flex flex-col items-center pt-12 pb-24 px-8 relative z-10 overflow-y-auto">
+        <a href="/knowledge.html" class="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-mono text-xs tracking-widest uppercase cursor-pointer">
+            <span class="material-symbols-outlined text-sm">arrow_back</span>
+            Return to Hub
+        </a>
+
+        <h1 class="font-display text-4xl tracking-[0.3em] mb-16 text-white text-center">EXOPLANET <br><span class="text-[var(--primary)] text-xl">ARCHIVES</span></h1>
         
-        <h1 class="font-display text-4xl md:text-5xl tracking-[0.3em] mb-16 text-white text-center z-10">KNOWLEDGE <span class="text-[var(--primary)]">HUB</span></h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 w-full max-w-6xl z-10">
-            <!-- Solar System -->
-            <a href="/solar-system.html" class="group relative overflow-hidden rounded-xl border border-[var(--primary)]/30 hover:border-[var(--primary)] bg-black/50 p-8 transition-all duration-500 hover:shadow-[0_0_30px_rgba(0,245,255,0.4)] flex flex-col items-center justify-center min-h-[300px]">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-0"></div>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg" class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500 group-hover:scale-110">
-                <div class="relative z-10 flex flex-col items-center">
-                    <span class="material-symbols-outlined text-[var(--primary)] text-6xl mb-4 group-hover:animate-bounce">public</span>
-                    <h2 class="font-display text-2xl tracking-widest text-center text-white">SOLAR SYSTEM</h2>
-                    <p class="font-arcade text-gray-400 mt-4 text-center tracking-widest">ARCHIVES OF OUR LOCAL WORLDS</p>
-                </div>
-            </a>
-            
-            <!-- Exoplanets -->
-            <a href="/exoplanets.html" class="group relative overflow-hidden rounded-xl border border-[var(--secondary)]/30 hover:border-[var(--secondary)] bg-black/50 p-8 transition-all duration-500 hover:shadow-[0_0_30px_rgba(157,0,255,0.4)] flex flex-col items-center justify-center min-h-[300px]">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-0"></div>
-                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRwF31D05uBqsqJyGXeXJLuMia3xF0pZkg7yNtDGNNH8yFLzAIxSYbQfywA6GbEe1iC-HGopURf1tqTbn41rpzTD27scdtwe5RLgU2KHtYAM5jmfOzatSYSwWTHyP7P9f_7mSU1-CDoH1JEmfE0GFkhoXP-oC621xsnPKmRxfK7URNOLKzW7ETE6zodwWdZcKE_mzztV3qlaGvcEW5YfLLvZs7AOnt8QeCmB_mU8njd2gqg6l9tSKFdt6cKwiGPcq_FtrAAwY7lQU2" class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500 group-hover:scale-110">
-                <div class="relative z-10 flex flex-col items-center">
-                    <span class="material-symbols-outlined text-[var(--secondary)] text-6xl mb-4 group-hover:animate-pulse">rocket_launch</span>
-                    <h2 class="font-display text-2xl tracking-widest text-center text-white">OTHER PLANETS</h2>
-                    <p class="font-arcade text-gray-400 mt-4 text-center tracking-widest">EXOPLANETS & DISTANT WORLDS</p>
-                </div>
-            </a>
-            
-            <!-- Black Holes -->
-            <a href="/blackholes.html" class="group relative overflow-hidden rounded-xl border border-[#ff0055]/30 hover:border-[#ff0055] bg-black/50 p-8 transition-all duration-500 hover:shadow-[0_0_30px_rgba(255,0,85,0.4)] flex flex-col items-center justify-center min-h-[300px]">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-0"></div>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Black_hole_-_Messier_87_crop_max_res.jpg" class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500 group-hover:scale-110" style="filter: hue-rotate(-30deg);">
-                <div class="relative z-10 flex flex-col items-center">
-                    <span class="material-symbols-outlined text-[#ff0055] text-6xl mb-4 group-hover:rotate-180 transition-transform duration-1000">all_out</span>
-                    <h2 class="font-display text-2xl tracking-widest text-center text-white">BLACK HOLES</h2>
-                    <p class="font-arcade text-gray-400 mt-4 text-center tracking-widest">COSMIC ANOMALIES</p>
-                </div>
-            </a>
+        <div class="flex flex-wrap justify-center gap-8 max-w-7xl" id="grid">
+            <!-- Thumbnails Injected via JS -->
+            <div class="text-center w-full text-zinc-500 font-arcade text-2xl tracking-widest animate-pulse" id="loading">DECRYPTING ARCHIVES...</div>
         </div>
     </main>
 
     <script>
-        // Auth Logic
-        const username = localStorage.getItem('altair_username');
-        if (username) {
-            const profileName = document.getElementById('user-profile-name');
-            if (profileName) {
-                profileName.textContent = username.toUpperCase();
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Auth Logic
+            const username = localStorage.getItem('altair_username');
+            if (username) {
+                const profileName = document.getElementById('user-profile-name');
+                if (profileName) {
+                    profileName.textContent = username.toUpperCase();
+                }
             }
-        }
-        
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                localStorage.removeItem('altair_token');
-                localStorage.removeItem('altair_username');
-                window.location.href = '/landing.html';
-            });
-        }
+            
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('altair_token');
+                    localStorage.removeItem('altair_username');
+                    window.location.href = '/landing.html';
+                });
+            }
+
+            // Fetch and render data
+            const grid = document.getElementById('grid');
+            const loading = document.getElementById('loading');
+
+            try {
+                const response = await fetch('/data/knowledge.json');
+                const data = await response.json();
+                
+                const exoplanets = data.filter(item => item.type === 'exoplanet');
+                
+                loading.style.display = 'none';
+
+                exoplanets.forEach(p => {
+                    const card = document.createElement('a');
+                    card.href = `/celestial-detail.html?id=${p.id}`;
+                    card.className = 'flex flex-col items-center gap-4 cursor-pointer group transition-transform hover:-translate-y-2';
+                    
+                    const imageUrl = p.image || 'https://via.placeholder.com/300x300?text=No+Image';
+                    
+                    card.innerHTML = `
+                        <div class="w-48 h-48 rounded-full overflow-hidden border border-white/10 group-hover:border-[var(--primary)] transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(157,0,255,0.6)]">
+                            <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('${imageUrl}')"></div>
+                        </div>
+                        <span class="font-arcade text-xl tracking-widest text-zinc-400 group-hover:text-white transition-colors max-w-[200px] text-center">${p.name}</span>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                loading.textContent = 'ERROR: UNABLE TO DECRYPT ARCHIVES';
+                loading.classList.remove('animate-pulse');
+                loading.classList.add('text-hazard-orange');
+                console.error(err);
+            }
+        });
     </script>
 </body>
 </html>

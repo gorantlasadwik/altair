@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALTAIR - Knowledge Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        :root {
+            --primary: #00f5ff;
+            --secondary: #9d00ff;
+            --accent: #ff0055;
+            --hazard: #ff3300;
+            --bg-dark: #050505;
+        }
+        
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            /* Starry background */
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+        }
+
+        .font-display { font-family: 'Syncopate', sans-serif; }
+        .font-arcade { font-family: 'VT323', monospace; }
+        
+        .neon-text {
+            text-shadow: 0 0 10px rgba(0,245,255,0.7), 0 0 20px rgba(0,245,255,0.5);
+        }
+
+        /* Planet UI Styles */
+        .hud-line {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .planet-sphere {
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            /* Extremely realistic lighting shadow from left to right */
+            box-shadow: 
+                inset 500px 0 300px -50px rgba(0,0,0,1), 
+                inset 200px 0 150px rgba(0,0,0,0.8),
+                inset -20px 0 50px rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        /* Central Crosshair */
+        .crosshair-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            height: 350px;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .crosshair-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .crosshair-circle::before, .crosshair-circle::after {
+            content: '';
+            position: absolute;
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .crosshair-circle::before {
+            top: -10px; bottom: -10px; left: 50%; width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.3) 10%, rgba(255,255,255,0.3) 90%, transparent);
+        }
+
+        .crosshair-circle::after {
+            left: -10px; right: -10px; top: 50%; height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3) 10%, rgba(255,255,255,0.3) 90%, transparent);
+        }
+
+        /* Small precise ticks on crosshair */
+        .tick {
+            position: absolute;
+            background: rgba(255,255,255,0.6);
+        }
+        .tick.top { top: 0; left: 50%; width: 2px; height: 6px; transform: translateX(-50%); }
+        .tick.bottom { bottom: 0; left: 50%; width: 2px; height: 6px; transform: translateX(-50%); }
+        .tick.left { left: 0; top: 50%; width: 6px; height: 2px; transform: translateY(-50%); }
+        .tick.right { right: 0; top: 50%; width: 6px; height: 2px; transform: translateY(-50%); }
+        
+        /* 45 degree ticks */
+        .tick.d1 { top: 14.6%; left: 14.6%; width: 4px; height: 4px; border-radius: 50%; transform: translate(-50%, -50%); }
+        .tick.d2 { top: 14.6%; right: 14.6%; width: 4px; height: 4px; border-radius: 50%; transform: translate(50%, -50%); }
+        .tick.d3 { bottom: 14.6%; left: 14.6%; width: 4px; height: 4px; border-radius: 50%; transform: translate(-50%, 50%); }
+        .tick.d4 { bottom: 14.6%; right: 14.6%; width: 4px; height: 4px; border-radius: 50%; transform: translate(50%, 50%); }
+
+        .crosshair-text {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 3rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            color: white;
+            z-index: 10;
+        }
+
+        .data-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 0.1em;
+            margin-bottom: 4px;
+        }
+
+        .data-value {
+            font-size: 12px;
+            color: rgba(255,255,255,0.9);
+            letter-spacing: 0.05em;
+        }
+        
+        .composition-box {
+            position: absolute;
+            font-size: 8px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .composition-line {
+            position: absolute;
+            height: 1px;
+            background: rgba(255,255,255,0.4);
+            transform-origin: left center;
+        }
+
+        .dot {
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+        
+        .arcade-font {
+            font-family: 'VT323', monospace;
+        }
+
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+        
+        .arcade-font {
+            font-family: 'VT323', monospace;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface": "#e1e2e7",
+                      "on-secondary-container": "#002661",
+                      "inverse-surface": "#e1e2e7",
+                      "tertiary-container": "#f4ccff",
+                      "error-container": "#93000a",
+                      "surface-container-highest": "#323539",
+                      "tertiary-fixed": "#f8d8ff",
+                      "on-primary-container": "#006970",
+                      "tertiary": "#fff2fd",
+                      "secondary": "#b0c6ff",
+                      "on-surface-variant": "#b9cacb",
+                      "surface-dim": "#111417",
+                      "surface-bright": "#37393d",
+                      "primary": "#dbfcff",
+                      "on-tertiary": "#520071",
+                      "void-black": "#05070A",
+                      "tertiary-fixed-dim": "#ebb2ff",
+                      "primary-container": "#00f0ff",
+                      "surface-container": "#1d2023",
+                      "starlight-white": "#E1F5FE",
+                      "primary-fixed": "#7df4ff",
+                      "inverse-primary": "#006970",
+                      "secondary-container": "#568dff",
+                      "on-primary": "#00363a",
+                      "secondary-fixed": "#d9e2ff",
+                      "primary-fixed-dim": "#00dbe9",
+                      "on-primary-fixed-variant": "#004f54",
+                      "on-tertiary-container": "#9900d0",
+                      "on-error-container": "#ffdad6",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#2e3134",
+                      "surface-container-low": "#191c1f",
+                      "on-primary-fixed": "#002022",
+                      "on-secondary-fixed": "#001945",
+                      "on-error": "#690005",
+                      "surface-container-lowest": "#0c0e12",
+                      "surface-tint": "#00dbe9",
+                      "outline": "#849495",
+                      "electric-blue": "#0070FF",
+                      "surface": "#111417",
+                      "on-tertiary-fixed-variant": "#74009f",
+                      "on-tertiary-fixed": "#320047",
+                      "on-background": "#e1e2e7",
+                      "surface-container-high": "#282a2e",
+                      "neon-cyan": "#00F0FF",
+                      "background": "#111417",
+                      "secondary-fixed-dim": "#b0c6ff",
+                      "on-secondary-fixed-variant": "#00429c",
+                      "surface-variant": "#323539",
+                      "on-secondary": "#002d6f",
+                      "cyber-purple": "#BC00FF",
+                      "outline-variant": "#3b494b",
+                      "hazard-orange": "#FF8A00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "panel-padding": "20px",
+                      "margin-edge": "40px",
+                      "gutter": "24px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "body-md": ["hankenGrotesk"],
+                      "headline-lg": ["VT323", "monospace"],
+                      "data-readout": ["jetbrainsMono"],
+                      "headline-xl": ["VT323", "monospace"],
+                      "headline-lg-mobile": ["VT323", "monospace"],
+                      "label-caps": ["jetbrainsMono"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["40px", {"lineHeight": "1.1", "fontWeight": "700"}],
+                      "data-readout": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "headline-xl": ["64px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "800"}],
+                      "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+
+<style>
+  /* Hide scrollbar globally */
+  ::-webkit-scrollbar { display: none; }
+  * { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-edge h-20 bg-void-black/80 backdrop-blur-md border-b border-outline-variant/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 flex items-center justify-center neon-glow">
+                <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
+            </div>
+            <span class="arcade-font text-4xl font-extrabold text-neon-cyan tracking-tighter neon-glow">ALTAIR</span>
+        </div>
+        <nav class="hidden md:flex items-center gap-8">
+            <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/home.html">HOME</a>
+            <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">RADAR</a>
+            <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/sky.html">SKY VIEW</a>
+            <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-neon-cyan transition-colors" href="/game.html">GAMES</a>
+            <a class="font-label-caps text-label-caps text-neon-cyan border-b-2 border-neon-cyan pb-1 transition-all duration-300" href="/knowledge.html">KNOWLEDGE HUB</a>
+        </nav>
+        <div class="flex items-center gap-6">
+            <button class="material-symbols-outlined text-on-surface-variant hover:text-neon-cyan transition-all active:scale-95">notifications</button>
+            <div class="flex items-center gap-3 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/30">
+                <span id="user-profile-name" class="font-label-caps text-[10px] text-neon-cyan"></span>
+                <button class="material-symbols-outlined text-neon-cyan" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+            </div>
+            <button id="logout-btn" class="font-label-caps text-[10px] text-hazard-orange hover:text-white transition-colors border border-hazard-orange/30 px-3 py-1 rounded">LOGOUT</button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 mt-20 relative flex overflow-hidden bg-[var(--bg-dark)]">
+        
+        <!-- Stars Background (Reverting specific changes) -->
+        <div class="absolute inset-0 pointer-events-none" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 50px 50px; opacity: 0.1;"></div>
+
+        <!-- State 1: Simple Planet Grid Overview -->
+        <div id="overview-state" class="w-full h-[calc(100vh-80px)] flex flex-col items-center justify-center relative z-10 transition-opacity duration-500 overflow-y-auto pt-10">
+            <h1 class="font-display text-4xl tracking-[0.3em] mb-16 text-white text-center">SOLAR SYSTEM <br><span class="text-primary text-xl">ARCHIVES</span></h1>
+            
+            <div class="flex flex-wrap justify-center gap-8 max-w-5xl px-8" id="planet-grid">
+                <!-- Planet Thumbnails Injected via JS -->
+            </div>
+        </div>
+
+        <!-- State 2: Planet Detail HUD -->
+        <div id="detail-state" class="absolute inset-0 w-full h-[calc(100vh-80px)] hidden opacity-0 transition-opacity duration-1000 bg-black z-20 overflow-y-auto">
+            
+            <!-- First Fold: HUD -->
+            <div class="relative w-full h-[calc(100vh-80px)] flex-shrink-0">
+                <button onclick="showOverview()" class="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-mono text-xs tracking-widest uppercase cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">arrow_back</span>
+                    Return to Overview
+                </button>
+
+                <!-- Planet Container (Positioned center) -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] planet-sphere" id="hud-planet">
+                    <!-- Crosshair -->
+                    <div class="crosshair-container">
+                        <div class="crosshair-circle">
+                            <div class="tick top"></div>
+                            <div class="tick bottom"></div>
+                            <div class="tick left"></div>
+                            <div class="tick right"></div>
+                            <div class="tick d1 bg-white/30"></div>
+                            <div class="tick d2 bg-white/30"></div>
+                            <div class="tick d3 bg-white/30"></div>
+                            <div class="tick d4 bg-white/30"></div>
+                        </div>
+                        <div class="crosshair-text" id="hud-title">EARTH</div>
+                    </div>
+
+                    <!-- Composition Lines & Callouts -->
+                    <div id="hud-composition" class="absolute inset-0 pointer-events-none"></div>
+                </div>
+
+                <!-- HUD Data Bottom Layer -->
+                <div class="absolute bottom-32 left-16 flex flex-col gap-2">
+                    <div class="absolute -top-4 -left-4 w-12 h-12 border-t border-l border-white/10 opacity-50"></div>
+                    <div class="absolute -bottom-4 -left-4 w-12 h-12 border-b border-l border-white/10 opacity-50"></div>
+                    <div class="flex gap-4 items-baseline justify-between w-48">
+                        <span class="data-label">ORBIT DISTANCE:</span>
+                        <span class="data-value" id="hud-orbit-dist"></span>
+                    </div>
+                    <div class="flex gap-4 items-baseline justify-between w-48">
+                        <span class="data-label">AXIAL TILT:</span>
+                        <span class="data-value" id="hud-axial-tilt"></span>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-32 left-1/2 -translate-x-1/2 flex flex-col gap-2 items-center">
+                    <div class="flex gap-4 items-baseline justify-between w-48">
+                        <span class="data-label">ORBITAL PERIOD:</span>
+                        <span class="data-value" id="hud-orbital-period"></span>
+                    </div>
+                    <div class="flex gap-4 items-baseline justify-between w-48">
+                        <span class="data-label">LENGHT OF DAY:</span>
+                        <span class="data-value" id="hud-length-day"></span>
+                    </div>
+                </div>
+
+                <div class="absolute bottom-32 right-16 flex flex-col gap-2 items-end">
+                    <div class="absolute -top-4 -right-4 w-12 h-12 border-t border-r border-white/10 opacity-50"></div>
+                    <div class="absolute -bottom-4 -right-4 w-12 h-12 border-b border-r border-white/10 opacity-50"></div>
+                    <div class="flex gap-4 items-baseline justify-between w-64">
+                        <span class="data-label">DIAMETER:</span>
+                        <span class="data-value" id="hud-diameter"></span>
+                    </div>
+                    <div class="flex gap-4 items-baseline justify-between w-64">
+                        <span class="data-label">MASS:</span>
+                        <span class="data-value" id="hud-mass"></span>
+                    </div>
+                    <div class="flex gap-4 items-baseline justify-between w-64">
+                        <span class="data-label">SURFACE TEMPERATURE:</span>
+                        <span class="data-value" id="hud-surface-temp"></span>
+                    </div>
+                </div>
+
+                <!-- Scroll Indicator -->
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-60 hover:opacity-100 transition-opacity cursor-pointer animate-bounce" onclick="document.getElementById('planet-details-section').scrollIntoView({behavior: 'smooth'})">
+                    <span class="font-label-caps text-[10px] tracking-widest text-neon-cyan uppercase">Scroll for Archives</span>
+                    <span class="material-symbols-outlined text-neon-cyan text-xl">keyboard_arrow_down</span>
+                </div>
+            </div>
+
+            <!-- Second Fold: Details -->
+            <div id="planet-details-section" class="w-full min-h-[50vh] bg-surface flex flex-col items-center justify-center p-16 border-t border-outline-variant/30 z-30 relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#00f0ff 1px, transparent 1px); background-size: 40px 40px;"></div>
+                <div class="w-full max-w-5xl bg-surface-container-high/80 border border-outline-variant/50 p-10 rounded-lg flex flex-col md:flex-row gap-12 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md relative z-10">
+                    <div class="flex-1 md:border-r border-outline-variant/50 md:pr-12">
+                        <div class="text-sm text-neon-cyan font-arcade tracking-widest mb-6 uppercase flex items-center gap-3">
+                            <span class="material-symbols-outlined">library_books</span> ARCHIVE DESCRIPTION
+                        </div>
+                        <div class="font-body-md text-[16px] text-on-surface-variant leading-relaxed tracking-wide" id="hud-description"></div>
+                    </div>
+                    <div class="flex-1 md:pl-4">
+                        <div class="text-sm text-hazard-orange font-arcade tracking-widest mb-6 uppercase flex items-center gap-3">
+                            <span class="material-symbols-outlined">lightbulb</span> NOTABLE FACT
+                        </div>
+                        <div class="font-body-md text-[16px] text-on-surface leading-relaxed italic border-l-4 border-hazard-orange/50 pl-4 py-2" id="hud-fun-fact"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script>
+        const planets = [
+            {
+                id: 'mercury', name: 'MERCURY',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Mercury_in_true_color.jpg',
+                orbitDistance: '57 909 050 KM', axialTilt: '2.04°', orbitalPeriod: '88 DAYS',
+                lengthOfDay: '58.65 DAYS', diameter: '4 879 KM', mass: '3.3011*10^23 KG',
+                surfaceTemp: '-173°C to +427°C',
+                funFact: 'Mercury experiences the most extreme temperature fluctuations in the solar system.',
+                description: 'The smallest and innermost planet in the Solar System. Its surface is heavily cratered and similar in appearance to the Earth\'s Moon, indicating that it has been geologically inactive for billions of years.',
+                composition: [
+                    { label: 'O2', value: '42%' }, { label: 'Na', value: '29%' }, { label: 'H2', value: '22%' }, { label: 'He', value: '6%' }, { label: 'K', value: '0.5%' }
+                ]
+            },
+            {
+                id: 'venus', name: 'VENUS',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg',
+                orbitDistance: '108 208 000 KM', axialTilt: '177.36°', orbitalPeriod: '224.7 DAYS',
+                lengthOfDay: '116.75 DAYS', diameter: '12 104 KM', mass: '4.8675*10^24 KG',
+                surfaceTemp: '+462°C',
+                funFact: 'Venus rotates backwards compared to most other planets. The Sun rises in the west and sets in the east.',
+                description: 'Often called Earth\'s "sister planet" because of their similar size, mass, proximity to the Sun, and bulk composition. However, it is radically different, enveloped in a dense, toxic atmosphere that traps heat.',
+                composition: [
+                    { label: 'CO2', value: '96.5%' }, { label: 'N2', value: '3.5%' }, { label: 'SO2', value: '0.015%' }
+                ]
+            },
+            {
+                id: 'earth', name: 'EARTH',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg',
+                orbitDistance: '149 598 261 KM', axialTilt: '23.26°', orbitalPeriod: '365 DAYS',
+                lengthOfDay: '24 HOURS', diameter: '12 742 KM', mass: '5.97*10^24 KG',
+                surfaceTemp: '-89.2°C to +56.7°C',
+                funFact: 'Earth is the only planet not named after a mythological god or goddess.',
+                description: 'The third planet from the Sun and the only astronomical object known to harbor life. It has a dynamic atmosphere, oceans of liquid water, and a strong magnetic field generated by a molten iron core.',
+                composition: [
+                    { label: 'N2', value: '78.8%' }, { label: 'O2', value: '20.95%' }, { label: 'Ar', value: '0.93%' }
+                ]
+            },
+            {
+                id: 'mars', name: 'MARS',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg',
+                orbitDistance: '227 939 200 KM', axialTilt: '25.19°', orbitalPeriod: '687 DAYS',
+                lengthOfDay: '24.6 HOURS', diameter: '6 779 KM', mass: '6.39*10^23 KG',
+                surfaceTemp: '-153°C to +20°C',
+                funFact: 'Mars is home to Olympus Mons, the highest mountain and largest volcano in the entire solar system.',
+                description: 'The fourth planet from the Sun, often referred to as the "Red Planet" due to the iron oxide prevalent on its surface. It hosts thin atmosphere and surface features reminiscent of impact craters of the Moon.',
+                composition: [
+                    { label: 'CO2', value: '95.32%' }, { label: 'N2', value: '2.7%' }
+                ]
+            },
+            {
+                id: 'jupiter', name: 'JUPITER',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg',
+                orbitDistance: '778 500 000 KM', axialTilt: '3.13°', orbitalPeriod: '4333 DAYS',
+                lengthOfDay: '9.93 HOURS', diameter: '139 820 KM', mass: '1.898*10^27 KG',
+                surfaceTemp: '-110°C',
+                funFact: 'Jupiter\'s Great Red Spot is a giant storm that is larger than Earth and has been raging for hundreds of years.',
+                description: 'The largest planet in the Solar System. It is a gas giant with a mass more than two and a half times that of all the other planets in the Solar System combined.',
+                composition: [
+                    { label: 'H2', value: '89.8%' }, { label: 'He', value: '10.2%' }
+                ]
+            },
+            {
+                id: 'saturn', name: 'SATURN',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg',
+                orbitDistance: '1 434 000 000 KM', axialTilt: '26.73°', orbitalPeriod: '10759 DAYS',
+                lengthOfDay: '10.7 HOURS', diameter: '116 460 KM', mass: '5.683*10^26 KG',
+                surfaceTemp: '-140°C',
+                funFact: 'Saturn has the most extensive ring system of any planet, made almost entirely of water ice particles.',
+                description: 'The sixth planet from the Sun and the second-largest in the Solar System. It is a gas giant with an average radius of about nine and a half times that of Earth.',
+                composition: [
+                    { label: 'H2', value: '96.3%' }, { label: 'He', value: '3.25%' }
+                ]
+            },
+            {
+                id: 'uranus', name: 'URANUS',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg',
+                orbitDistance: '2 871 000 000 KM', axialTilt: '97.77°', orbitalPeriod: '30688 DAYS',
+                lengthOfDay: '17.2 HOURS', diameter: '50 724 KM', mass: '8.681*10^25 KG',
+                surfaceTemp: '-195°C',
+                funFact: 'Uranus rotates on its side, meaning its axis of spin is nearly parallel to its orbital plane.',
+                description: 'The seventh planet from the Sun. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System. Often classified as an "ice giant".',
+                composition: [
+                    { label: 'H2', value: '83%' }, { label: 'He', value: '15%' }
+                ]
+            },
+            {
+                id: 'neptune', name: 'NEPTUNE',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Neptune_-_Voyager_2_%2829741875326%29.png',
+                orbitDistance: '4 495 000 000 KM', axialTilt: '28.32°', orbitalPeriod: '60182 DAYS',
+                lengthOfDay: '16.1 HOURS', diameter: '49 244 KM', mass: '1.024*10^26 KG',
+                surfaceTemp: '-200°C',
+                funFact: 'Neptune has the strongest winds in the solar system, which can reach supersonic speeds of 2,100 km/h.',
+                description: 'The eighth and farthest-known Solar planet from the Sun. In the Solar System, it is the fourth-largest planet by diameter, the third-most-massive planet, and the densest giant planet.',
+                composition: [
+                    { label: 'H2', value: '80%' }, { label: 'He', value: '19%' }
+                ]
+            }
+        ];
+
+        const overviewState = document.getElementById('overview-state');
+        const detailState = document.getElementById('detail-state');
+        const planetGrid = document.getElementById('planet-grid');
+
+        // Populate Overview Grid
+        planets.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'flex flex-col items-center gap-4 cursor-pointer group';
+            card.onclick = () => showDetail(p.id);
+            
+            card.innerHTML = `
+                <div class="w-32 h-32 rounded-full overflow-hidden border border-white/10 group-hover:border-primary transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('${p.image}')"></div>
+                </div>
+                <span class="font-arcade text-xl tracking-widest text-zinc-400 group-hover:text-white transition-colors">${p.name}</span>
+            `;
+            planetGrid.appendChild(card);
+        });
+
+        function showDetail(planetId) {
+            const data = planets.find(p => p.id === planetId);
+            if (!data) return;
+
+            // Populate HUD
+            document.getElementById('hud-title').textContent = data.name;
+            document.getElementById('hud-planet').style.backgroundImage = `url('${data.image}')`;
+            
+            document.getElementById('hud-orbit-dist').textContent = data.orbitDistance;
+            document.getElementById('hud-axial-tilt').textContent = data.axialTilt;
+            document.getElementById('hud-orbital-period').textContent = data.orbitalPeriod;
+            document.getElementById('hud-length-day').textContent = data.lengthOfDay;
+            document.getElementById('hud-diameter').textContent = data.diameter;
+            document.getElementById('hud-mass').textContent = data.mass;
+            document.getElementById('hud-surface-temp').textContent = data.surfaceTemp;
+            
+            const descEl = document.getElementById('hud-description');
+            if(descEl) descEl.textContent = data.description;
+            const factEl = document.getElementById('hud-fun-fact');
+            if(factEl) factEl.textContent = data.funFact;
+            
+            document.getElementById('hud-description').textContent = data.description;
+            document.getElementById('hud-fun-fact').textContent = data.funFact;
+
+            // Build composition callouts
+            const compContainer = document.getElementById('hud-composition');
+            compContainer.innerHTML = '';
+            
+            if(data.composition && data.composition.length > 0) {
+                // To match screenshots, line goes right
+                const compHtml = `
+                    <div class="composition-line" style="top: 25%; left: 85%; width: 60px;"></div>
+                    <div class="dot" style="top: 25%; left: 85%; transform: translate(-50%, -50%);"></div>
+                    <div class="dot" style="top: 25%; left: calc(85% + 60px); transform: translate(-50%, -50%);"></div>
+                    <div class="composition-box" style="top: 25%; left: calc(85% + 70px); transform: translateY(-30%);">
+                        ${data.composition.map(c => {
+                            if (c.isTitle) return `<div class="mt-2 mb-1 text-white opacity-90">${c.label}</div>`;
+                            return `<div>${c.label} = ${c.value}</div>`;
+                        }).join('')}
+                    </div>
+                `;
+                compContainer.innerHTML = compHtml;
+            }
+
+            // Transition
+            overviewState.classList.add('opacity-0');
+            setTimeout(() => {
+                overviewState.classList.add('hidden');
+                detailState.classList.remove('hidden');
+                // reflow
+                void detailState.offsetWidth;
+                detailState.scrollTop = 0;
+                detailState.classList.remove('opacity-0');
+            }, 500);
+        }
+
+        function showOverview() {
+            detailState.classList.remove('opacity-100');
+            detailState.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                detailState.classList.add('hidden');
+                overviewState.classList.remove('hidden');
+                
+                // Small delay to ensure display:block applies before opacity transition
+                requestAnimationFrame(() => {
+                    overviewState.classList.remove('opacity-0');
+                    overviewState.classList.add('opacity-100');
+                });
+            }, 500); // Wait for fade out
+        }
+
+        // Auth Logic
+        const username = localStorage.getItem('altair_username');
+        if (username) {
+            const profileName = document.getElementById('user-profile-name');
+            if (profileName) {
+                profileName.textContent = username.toUpperCase();
+            }
+        }
+        
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('altair_token');
+                localStorage.removeItem('altair_username');
+                window.location.href = '/landing.html';
+            });
+        }
+    </script>
+</body>
+</html>
