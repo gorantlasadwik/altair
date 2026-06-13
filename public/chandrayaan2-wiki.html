@@ -3,46 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALTAIR - Missions Archive</title>
+    <title>ALTAIR - Chandrayaan-2 Wikipedia Dossier</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <style>
-        :root {
-            --primary: #FF8A00;
-            --bg-dark: #050505;
-        }
-        
         body {
-            font-family: 'Space Mono', monospace;
-            background-color: var(--bg-dark);
+            background-color: #05070A;
             color: #ffffff;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
-                radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
-            background-repeat: repeat;
-            background-size: 200px 200px;
+            overflow: hidden; /* Prevent double scrollbars with iframe */
         }
-
-        .font-display { font-family: 'Syncopate', sans-serif; }
-        .font-arcade { font-family: 'VT323', monospace; }
-        
-        .neon-glow {
-            text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);
-        }
-        
         ::-webkit-scrollbar { display: none; }
         * { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col h-screen">
 
     <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#05070A]/80 backdrop-blur-md border-b border-[#3b494b]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
     <div class="flex items-center gap-4">
@@ -68,38 +46,26 @@
     </div>
 </header>
 
-    <main class="flex-1 mt-20 flex flex-col items-center pt-12 pb-24 px-8 relative z-10 overflow-y-auto">
-        <a href="/knowledge.html" class="absolute top-8 left-8 flex items-center gap-2 text-zinc-400 hover:text-white transition-colors z-50 font-mono text-xs tracking-widest uppercase cursor-pointer">
-            <span class="material-symbols-outlined text-sm">arrow_back</span>
-            Return to Hub
-        </a>
+    <main class="flex-1 mt-20 flex flex-col relative z-10 w-full h-[calc(100vh-80px)]">
+        <!-- Back Bar -->
+        <div class="w-full bg-[#111417] border-b border-[#3b494b] flex items-center px-8 py-3">
+            <a href="/chandrayaan2.html" class="flex items-center gap-2 text-[#00F0FF] hover:text-white transition-colors font-mono text-xs tracking-widest uppercase cursor-pointer">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                RETURN TO MISSION ARCHIVE
+            </a>
+            <div class="ml-auto font-mono text-xs text-zinc-500 tracking-widest uppercase">
+                EXTERNAL DATABASE CONNECTION ESTABLISHED
+            </div>
+        </div>
 
-        <h1 class="font-display text-4xl tracking-[0.3em] mb-16 text-white text-center">HISTORICAL <br><span class="text-[var(--primary)] text-xl">MISSIONS</span></h1>
-        
-        <div class="flex flex-wrap justify-center gap-12 max-w-7xl" id="grid">
-            <!-- Apollo 11 -->
-            <a href="/apollo11.html" class="flex flex-col items-center gap-4 cursor-pointer group transition-transform hover:-translate-y-2">
-                <div class="w-64 h-64 rounded-xl overflow-hidden border border-white/10 group-hover:border-[var(--primary)] transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(255,138,0,0.6)] relative">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-10"></div>
-                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('/apollo-hero.png')"></div>
-                    <div class="absolute bottom-4 left-0 right-0 z-20 flex justify-center">
-                        <span class="material-symbols-outlined text-[#FF8A00] text-3xl">rocket_launch</span>
-                    </div>
-                </div>
-                <span class="font-arcade text-2xl tracking-widest text-zinc-400 group-hover:text-white transition-colors max-w-[250px] text-center">APOLLO 11</span>
-            </a>
-            
-            <!-- Chandrayaan 2 -->
-            <a href="/chandrayaan2.html" class="flex flex-col items-center gap-4 cursor-pointer group transition-transform hover:-translate-y-2">
-                <div class="w-64 h-64 rounded-xl overflow-hidden border border-white/10 group-hover:border-[var(--primary)] transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(255,138,0,0.6)] relative">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-10"></div>
-                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Chandrayaan-2_Orbiter_in_clean_room.jpg/1200px-Chandrayaan-2_Orbiter_in_clean_room.jpg')"></div>
-                    <div class="absolute bottom-4 left-0 right-0 z-20 flex justify-center">
-                        <span class="material-symbols-outlined text-[#FF8A00] text-3xl">satellite_alt</span>
-                    </div>
-                </div>
-                <span class="font-arcade text-2xl tracking-widest text-zinc-400 group-hover:text-white transition-colors max-w-[250px] text-center">CHANDRAYAAN-2</span>
-            </a>
+        <!-- IFrame -->
+        <div class="flex-1 w-full h-full bg-white relative">
+            <iframe src="https://en.wikipedia.org/wiki/Chandrayaan-2" class="w-full h-full border-none" title="Wikipedia - Chandrayaan-2"></iframe>
+            <!-- In case Wikipedia blocks the iframe, provide a fallback overlay -->
+            <div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-black hidden" id="iframe-fallback">
+                <p class="font-mono mb-4 text-center">If Wikipedia refuses to connect due to security policies, you can view the article directly.</p>
+                <a href="https://en.wikipedia.org/wiki/Chandrayaan-2" target="_blank" class="pointer-events-auto bg-[#00F0FF] text-black px-4 py-2 font-mono font-bold tracking-widest uppercase hover:bg-black hover:text-[#00F0FF] border border-[#00F0FF] transition-colors">OPEN WIKIPEDIA IN NEW TAB</a>
+            </div>
         </div>
     </main>
 
@@ -122,6 +88,15 @@
                     window.location.href = '/landing.html';
                 });
             }
+
+            // Detect iframe failure (rudimentary due to CORS, but we can set a timeout just in case it doesn't load)
+            setTimeout(() => {
+                const iframe = document.querySelector('iframe');
+                try {
+                    // This will throw a CORS error if it loaded successfully but is cross-origin
+                    // If it's blocked by X-Frame-Options, it might not throw on access, or might be empty
+                } catch(e) {}
+            }, 3000);
         });
     </script>
 </body>

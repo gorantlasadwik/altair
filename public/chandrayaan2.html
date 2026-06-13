@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#060a12" />
+    <meta name="description" content="Chandrayaan-2: an immersive, scroll-driven journey to the Moon." />
+    <title>ALTAIR | Chandrayaan-2 Archive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
+    <link rel="stylesheet" href="/chandrayaan2.css" />
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for the body but allow scrolling */
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  </head>
+  <body class="apollo-body bg-[#060a12] text-white">
+    <!-- Universal ALTAIR Header -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#05070A]/80 backdrop-blur-md border-b border-[#3b494b]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+    <div class="flex items-center gap-4">
+        <div class="w-10 h-10 flex items-center justify-center" style="text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">
+            <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
+        </div>
+        <span class="text-4xl font-extrabold text-[#00F0FF] tracking-tighter" style="font-family: 'VT323', monospace; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">ALTAIR</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8" style="font-family: 'JetBrains Mono', monospace;">
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/home.html">HOME</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="#">RADAR</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/sky.html">SKY VIEW</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/game.html">GAMES</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
+    </nav>
+    <div class="flex items-center gap-6" style="font-family: 'JetBrains Mono', monospace;">
+        <button class="material-symbols-outlined text-[#b9cacb] hover:text-[#00F0FF] transition-all active:scale-95">notifications</button>
+        <a href="/profile.html" class="flex items-center gap-3 bg-[#282a2e] px-3 py-1 rounded-full border border-[#3b494b]/30 hover:bg-[#323539] transition-colors cursor-pointer">
+            <span id="user-profile-name" class="font-bold tracking-[0.15em] text-[10px] text-[#00F0FF]"></span>
+            <button class="material-symbols-outlined text-[#00F0FF]" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+        </a>
+        <button id="logout-btn" class="font-bold tracking-[0.15em] text-[10px] text-[#FF8A00] hover:text-white transition-colors border border-[#FF8A00]/30 px-3 py-1 rounded">LOGOUT</button>
+    </div>
+</header>
+
+    <div id="root"></div>
+    <script type="module" src="/chandrayaan2.js"></script>
+    <script>
+        // Auth Logic for Navbar
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('altair_username');
+            if (username) {
+                const navName = document.getElementById('user-profile-name');
+                if (navName) navName.textContent = username.toUpperCase();
+            }
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('altair_token');
+                    localStorage.removeItem('altair_username');
+                    window.location.href = '/landing.html';
+                });
+            }
+        });
+    </script>
+  </body>
+</html>
