@@ -411,7 +411,7 @@ void main() {
 </div>
 <div class="holo-panel px-4 py-2 flex items-center gap-2 border-hazard-orange/50">
 <span class="material-symbols-outlined text-hazard-orange" style="font-variation-settings: 'FILL' 1;">warning</span>
-<span class="text-hazard-orange font-bold">DIFFICULTY: ELITE</span>
+<span id="hud-difficulty-top" class="text-hazard-orange font-bold uppercase">DIFFICULTY: ELITE</span>
 </div>
 </div>
 </header>
@@ -428,18 +428,18 @@ void main() {
 </li>
 <li class="flex justify-between items-center">
 <span class="text-on-surface-variant">DIFFICULTY:</span>
-<span class="text-hazard-orange bg-surface-variant/50 px-2 py-1 rounded">ELITE</span>
+<span id="hud-difficulty-side" class="text-hazard-orange bg-surface-variant/50 px-2 py-1 rounded uppercase">ELITE</span>
 </li>
 </ul>
 </div>
 <div class="mt-8 flex flex-col items-center">
 <span class="font-label-caps text-label-caps text-on-surface-variant mb-2">PROGRESS ALIGNMENT</span>
 <div class="w-12 h-48 bg-surface-container-highest border border-outline-variant/50 relative overflow-hidden rounded-t-sm rounded-b-sm">
-<div class="absolute bottom-0 left-0 w-full bg-electric-blue/80 h-1/4 transition-all duration-1000 shadow-[0_0_10px_rgba(0,112,255,0.8)]"></div>
+<div id="hud-progress-bar" class="absolute bottom-0 left-0 w-full bg-electric-blue/80 transition-all duration-1000 shadow-[0_0_10px_rgba(0,112,255,0.8)]" style="height: 0%"></div>
 <!-- Decorative grid lines inside progress bar -->
 <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:100%_20%]"></div>
 </div>
-<span class="font-data-readout text-data-readout text-electric-blue mt-2">25% COMPLETE</span>
+<span id="hud-progress-text" class="font-data-readout text-data-readout text-electric-blue mt-2">0% COMPLETE</span>
 </div>
 </aside>
 <!-- CENTER PIECE: Question Area -->
@@ -556,8 +556,9 @@ animate();
                         "Which celestial phenomenon occurs when a star exhausts its fuel and collapses, potentially forming a singularity?"
                     </h3>
 </div>
+<div id="quiz-result-message" class="text-center font-headline-lg-mobile text-headline-lg-mobile mt-4 mb-2 hidden uppercase tracking-widest"></div>
 <!-- Answer Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-8 z-10" id="quiz-answers-container">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-4 z-10" id="quiz-answers-container">
 <button id="btn-A" onclick="handleAnswer('A')" class="arcade-btn p-6 rounded-md text-left font-data-readout text-data-readout text-on-surface uppercase group flex items-center justify-between">
 <span id="text-A">A. Supernova</span>
 <span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
@@ -792,6 +793,9 @@ animate();
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('game-hud').style.display = 'flex';
 
+            document.getElementById('hud-difficulty-top').innerText = "DIFFICULTY: " + configDifficulty;
+            document.getElementById('hud-difficulty-side').innerText = configDifficulty;
+
             loadQuestion();
 
         } catch (e) {
@@ -857,6 +861,13 @@ animate();
 
         document.getElementById('quiz-progress-text').innerText = `${String(currentQuestionIndex + 1).padStart(2, '0')} / ${configQuestions}`;
         
+        const pct = Math.floor((currentQuestionIndex / configQuestions) * 100);
+        document.getElementById('hud-progress-bar').style.height = `${pct}%`;
+        document.getElementById('hud-progress-text').innerText = `${pct}% COMPLETE`;
+
+        const resultMsg = document.getElementById('quiz-result-message');
+        if(resultMsg) resultMsg.classList.add('hidden');
+        
         ['A', 'B', 'C', 'D'].forEach(letter => {
             const btn = document.getElementById('btn-' + letter);
             btn.className = "arcade-btn p-6 rounded-md text-left font-data-readout text-data-readout text-on-surface uppercase group flex items-center justify-between";
@@ -874,12 +885,19 @@ animate();
         const selectedBtn = document.getElementById('btn-' + selectedLetter);
         const correctBtn = document.getElementById('btn-' + correctLetter);
 
+        const resultMsg = document.getElementById('quiz-result-message');
+        if(resultMsg) resultMsg.classList.remove('hidden');
+
         if (selectedLetter === correctLetter) {
             score += 100;
             correctCount++;
             selectedBtn.classList.add('bg-neon-cyan', 'text-void-black', 'border-neon-cyan');
             selectedBtn.classList.remove('text-on-surface');
             playSound('correct');
+            if(resultMsg) {
+                resultMsg.innerText = "CORRECT";
+                resultMsg.className = "text-center font-headline-lg-mobile text-headline-lg-mobile mt-4 mb-2 uppercase tracking-widest text-neon-cyan drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]";
+            }
         } else {
             selectedBtn.classList.add('bg-error', 'text-void-black', 'border-error');
             selectedBtn.classList.remove('text-on-surface');
@@ -887,6 +905,10 @@ animate();
                 correctBtn.classList.add('border-neon-cyan', 'shadow-[0_0_15px_rgba(0,240,255,0.5)]');
             }
             playSound('incorrect');
+            if(resultMsg) {
+                resultMsg.innerText = "INCORRECT";
+                resultMsg.className = "text-center font-headline-lg-mobile text-headline-lg-mobile mt-4 mb-2 uppercase tracking-widest text-error drop-shadow-[0_0_10px_rgba(255,180,171,0.8)]";
+            }
         }
 
         document.getElementById('quiz-score').innerText = `${score} PTS`;
@@ -915,6 +937,12 @@ animate();
 
     async function endQuiz() {
         if(timerInterval) clearInterval(timerInterval);
+        
+        document.getElementById('hud-progress-bar').style.height = `100%`;
+        document.getElementById('hud-progress-text').innerText = `100% COMPLETE`;
+        const resultMsg = document.getElementById('quiz-result-message');
+        if(resultMsg) resultMsg.classList.add('hidden');
+
         document.getElementById('quiz-question-text').innerText = "SIMULATION COMPLETE";
         document.getElementById('quiz-answers-container').innerHTML = `
             <div class="col-span-1 md:col-span-2 text-center text-neon-cyan font-headline-lg mt-8">
