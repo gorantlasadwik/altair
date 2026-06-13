@@ -9,6 +9,10 @@ load_dotenv()
 # We will use SQLite by default if DATABASE_URL is not set
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
 
+# Vercel's filesystem is read-only except for /tmp
+if os.getenv("VERCEL") == "1" and "sqlite:///./sql_app.db" in SQLALCHEMY_DATABASE_URL:
+    SQLALCHEMY_DATABASE_URL = "sqlite:////tmp/sql_app.db"
+
 if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
