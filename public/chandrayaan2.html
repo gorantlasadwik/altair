@@ -89,16 +89,25 @@
                     <p class="text-lg text-zinc-400 max-w-2xl mx-auto">The Vikram Lander detaches from the Orbiter, beginning its historic autonomous descent towards the lunar surface.</p>
                 </div>
                 
-                <div class="flex items-center justify-center w-full relative h-[400px] mt-20">
-                    <div class="w-64 h-64 bg-zinc-900 rounded-2xl border border-[#00F0FF] flex flex-col items-center justify-center orbiter-box shadow-[0_0_50px_rgba(0,240,255,0.15)] z-20 backdrop-blur-md">
-                        <span class="material-symbols-outlined text-[#00F0FF] text-5xl mb-4">satellite_alt</span>
-                        <span class="font-mono text-[#00F0FF] tracking-widest font-bold">ORBITER</span>
-                        <span class="text-xs text-zinc-500 mt-2 font-mono">STAYS IN ORBIT</span>
+                <div class="flex items-center justify-center w-full relative h-[500px] mt-20">
+                    <!-- Orbiter Render -->
+                    <div class="w-80 h-80 flex flex-col items-center justify-center orbiter-box z-20 transition-transform">
+                        <div class="w-full h-full relative">
+                            <img src="/orbiter.png" class="w-full h-full object-cover rounded-full mix-blend-screen shadow-[0_0_50px_rgba(0,240,255,0.2)] border border-white/5" alt="Orbiter Render">
+                            <div class="absolute inset-0 rounded-full border-2 border-[#00F0FF]/30 blur-[2px]"></div>
+                        </div>
+                        <span class="font-mono text-[#00F0FF] tracking-widest font-bold mt-6 text-xl">ORBITER</span>
+                        <span class="text-xs text-zinc-500 mt-1 font-mono">STAYS IN ORBIT</span>
                     </div>
-                    <div class="w-56 h-56 bg-zinc-900 rounded-2xl border border-[#FF8A00] flex flex-col items-center justify-center absolute vikram-box shadow-[0_0_50px_rgba(255,138,0,0.15)] z-10">
-                        <span class="material-symbols-outlined text-[#FF8A00] text-5xl mb-4">rocket_launch</span>
-                        <span class="font-mono text-[#FF8A00] tracking-widest font-bold">VIKRAM</span>
-                        <span class="text-xs text-zinc-500 mt-2 font-mono">HEADS TO SURFACE</span>
+                    
+                    <!-- Vikram Render -->
+                    <div class="w-64 h-64 flex flex-col items-center justify-center absolute vikram-box z-10 transition-transform">
+                        <div class="w-full h-full relative">
+                            <img src="/lander.png" class="w-full h-full object-cover rounded-full mix-blend-screen shadow-[0_0_50px_rgba(255,138,0,0.2)] border border-white/5" alt="Vikram Lander Render">
+                            <div class="absolute inset-0 rounded-full border-2 border-[#FF8A00]/30 blur-[2px]"></div>
+                        </div>
+                        <span class="font-mono text-[#FF8A00] tracking-widest font-bold mt-6 text-xl">VIKRAM</span>
+                        <span class="text-xs text-zinc-500 mt-1 font-mono">HEADS TO SURFACE</span>
                     </div>
                 </div>
             </div>
