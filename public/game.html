@@ -1,0 +1,435 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ALTAIR ARCADE | Galactic Training Grounds</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Hanken+Grotesk:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface": "#111417",
+                "tertiary-fixed-dim": "#ebb2ff",
+                "on-error": "#690005",
+                "void-black": "#05070A",
+                "starlight-white": "#E1F5FE",
+                "surface-variant": "#323539",
+                "surface-dim": "#111417",
+                "primary-fixed": "#7df4ff",
+                "surface-container": "#1d2023",
+                "on-primary-fixed": "#002022",
+                "secondary-fixed": "#d9e2ff",
+                "on-tertiary-fixed": "#320047",
+                "surface-container-low": "#191c1f",
+                "on-secondary-fixed": "#001945",
+                "secondary-fixed-dim": "#b0c6ff",
+                "inverse-surface": "#e1e2e7",
+                "on-tertiary-container": "#9900d0",
+                "on-tertiary": "#520071",
+                "on-tertiary-fixed-variant": "#74009f",
+                "tertiary-container": "#f4ccff",
+                "tertiary-fixed": "#f8d8ff",
+                "error-container": "#93000a",
+                "inverse-on-surface": "#2e3134",
+                "on-secondary-fixed-variant": "#00429c",
+                "outline-variant": "#3b494b",
+                "tertiary": "#fff2fd",
+                "primary-container": "#00f0ff",
+                "neon-cyan": "#00F0FF",
+                "error": "#ffb4ab",
+                "background": "#111417",
+                "surface-tint": "#00dbe9",
+                "on-primary-container": "#006970",
+                "inverse-primary": "#006970",
+                "on-secondary": "#002d6f",
+                "on-surface-variant": "#b9cacb",
+                "on-error-container": "#ffdad6",
+                "primary-fixed-dim": "#00dbe9",
+                "on-primary": "#00363a",
+                "on-background": "#e1e2e7",
+                "primary": "#dbfcff",
+                "electric-blue": "#0070FF",
+                "surface-container-highest": "#323539",
+                "surface-container-high": "#282a2e",
+                "cyber-purple": "#BC00FF",
+                "secondary-container": "#568dff",
+                "on-secondary-container": "#002661",
+                "hazard-orange": "#FF8A00",
+                "secondary": "#b0c6ff",
+                "on-surface": "#e1e2e7",
+                "on-primary-fixed-variant": "#004f54",
+                "surface-container-lowest": "#0c0e12",
+                "surface-bright": "#37393d",
+                "outline": "#849495"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "unit": "4px",
+                "gutter": "24px",
+                "panel-padding": "20px",
+                "margin-edge": "40px"
+            },
+            "fontFamily": {
+                "headline-lg": ["sora"],
+                "body-md": ["hankenGrotesk"],
+                "label-caps": ["jetbrainsMono"],
+                "headline-lg-mobile": ["sora"],
+                "data-readout": ["jetbrainsMono"],
+                "headline-xl": ["sora"]
+            },
+            "fontSize": {
+                "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "data-readout": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                "headline-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "0.05em", "fontWeight": "800"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #05070A;
+            overflow-x: hidden;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 240, 255, 0.1);
+            position: absolute;
+            animation: scan 8s linear infinite;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .holographic-glass {
+            background: rgba(5, 7, 10, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+
+        .neon-glow-cyan {
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.8), 0 0 30px rgba(0, 240, 255, 0.4);
+        }
+
+        .neon-border-cyan {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .glitch-hover:hover {
+            animation: glitch 0.3s cubic-bezier(.25,.46,.45,.94) both infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .mechanical-frame {
+            position: relative;
+            border: 2px solid #3b494b;
+        }
+
+        .mechanical-frame::before, .mechanical-frame::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #3b494b;
+            border-radius: 50%;
+        }
+
+        .frame-top-left::before { top: -5px; left: -5px; }
+        .frame-top-right::after { top: -5px; right: -5px; }
+
+        .flicker-pulse {
+            animation: flicker 4s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+            52% { opacity: 1; }
+            54% { opacity: 0.8; }
+        }
+
+        .arcade-nav-link {
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-weight: 700;
+        }
+
+        .arcade-btn-glow {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+            text-shadow: 0 0 8px rgba(5, 7, 10, 0.4);
+        }
+
+        .singularity-glow {
+            box-shadow: 0 0 60px 20px rgba(188, 0, 255, 0.3), 0 0 100px 40px rgba(0, 240, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-background selection:bg-neon-cyan/30">
+<!-- Global Scanline -->
+<div class="scanline"></div>
+<!-- Cinematic Deep Space Background -->
+<div class="fixed inset-0 z-0">
+<!-- Upgraded Cinematic Shader -->
+</div>
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-edge h-20 bg-void-black/80 backdrop-blur-md border-b border-outline-variant/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+<div class="flex items-center gap-4"><div class="w-16 h-16 flex items-center justify-center overflow-hidden"><img alt="Altair Logo" class="w-16 h-16 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZm9uZ1Wbc4Nm1JWLQpKlvrMnf-Y-45T-af0zmK4DOhfsF8zgtApYMPZJmDp0IEiy6t-PsxllqTOHJCV7M1Xm8a6trnjh2dBkZqawtaZz45UhOxbrhH927YRUOBFUh1FgeVNH-SkJlacy7AXxtYkh1oNUPYV1rTe_RskQDZ9argfwkVRSdeuGUJhMfj49o3WJIighkwSg2WJmw1PfZ7dHfDBV4epu4GFsn2I4yTz51NpUbruvrsU1gTRsKOpdtiQCBxB0LGVvNUXA"></div><span class="text-2xl font-black tracking-tighter text-neon-cyan neon-glow-cyan font-headline-lg">ALTAIR</span></div>
+<nav class="hidden md:flex items-center gap-8 font-label-caps text-label-caps">
+    <a class="font-label-caps text-[12px] text-on-surface-variant hover:text-neon-cyan transition-colors" href="/home.html">HOME</a>
+    <a class="font-label-caps text-[12px] text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">RADAR</a>
+    <a class="font-label-caps text-[12px] text-on-surface-variant hover:text-neon-cyan transition-colors" href="/sky.html">SKY VIEW</a>
+    <a class="font-label-caps text-[12px] text-neon-cyan border-b-2 border-neon-cyan pb-1 transition-all duration-300" href="/game.html">GAMES</a>
+    <a class="font-label-caps text-[12px] text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">KNOWLEDGE HUB</a>
+</nav>
+<div class="flex items-center gap-6">
+    <button class="material-symbols-outlined text-on-surface-variant hover:text-neon-cyan transition-all active:scale-95">notifications</button>
+    <div class="flex items-center gap-3 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/30">
+        <span id="user-profile-name" class="font-label-caps text-[10px] text-neon-cyan">COMMANDER</span>
+        <button class="material-symbols-outlined text-neon-cyan" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+    </div>
+    <button id="logout-btn" class="font-label-caps text-[10px] text-hazard-orange hover:text-white transition-colors border border-hazard-orange/30 px-3 py-1 rounded">LOGOUT</button>
+</div>
+</header>
+<main class="relative z-10 pt-28 pb-20 px-margin-edge max-w-screen-2xl mx-auto">
+<!-- Hero Header -->
+<div class="text-center mb-16 relative">
+<div class="inline-block px-4 py-1 mb-4 border border-hazard-orange/40 bg-hazard-orange/10 font-label-caps text-label-caps text-hazard-orange">
+                LIVE TERMINAL CONNECTION ESTABLISHED
+            </div>
+<h1 class="font-headline-xl text-headline-xl text-starlight-white mb-2 tracking-widest neon-glow-cyan">
+                ALTAIR ARCADE
+            </h1>
+<p class="text-on-surface-variant font-data-readout tracking-widest opacity-80 uppercase">
+                Train. Explore. Learn. Conquer the Cosmos.
+            </p>
+</div>
+<!-- Layout Grid -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Panel: Commander Stats -->
+<aside class="col-span-12 lg:col-span-3">
+<div class="holographic-glass p-panel-padding rounded-lg mechanical-frame border-l-4 border-l-cyber-purple">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-16 h-16 rounded-full border-2 border-neon-cyan p-1 bg-void-black">
+<img alt="Commander Avatar" class="w-full h-full rounded-full bg-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBGhGiW8TRLRjYNWaHQKIOodbB3EoFpxY-g0h4dQWb7_PNO9aKNXu-uG5DhN5hi2-pNZ6lvr_TjqC7BAbVW_7YPObpVn6bmNDr3MkIN8UdBIqxyQzMnIe37XjS3kvKx2DJsEh7TViRRHPpC1ADTZQQ2hDMnnlj1bj7rM7wBZ4rJck3qdAVLGch5erxUJ9wDHrJJRu91nzNpFJhowxtD7ac1I4oIc7hF2lHD0rnecyloOcIL8G_d3JAD29HnKb3Y8v7XfeQxIECtRs">
+</div>
+<div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white">Commander</h3>
+<p class="font-label-caps text-[10px] text-cyber-purple">RANK: ELITE PILOT</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-end mb-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">LEVEL 12</span>
+<span class="font-data-readout text-data-readout text-neon-cyan">2,450 / 3,000 XP</span>
+</div>
+<div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-neon-cyan shadow-[0_0_10px_rgba(0,240,255,0.8)]" style="width: 82%"></div>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-outline-variant/30">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">ACHIEVEMENTS</p>
+<p class="font-headline-lg text-headline-lg text-hazard-orange">08</p>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant">GLOBAL RANK</p>
+<p class="font-headline-lg text-headline-lg text-neon-cyan">98%</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Centerpiece: High-Complexity 3D Core -->
+<section class="col-span-12 lg:col-span-6 flex flex-col items-center justify-center relative min-h-[600px]">
+<!-- Decorative HUD Overlays -->
+<div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+<!-- Multiple Layered Rotating Rings -->
+<div class="w-[500px] h-[500px] border-[1px] border-neon-cyan/30 rounded-full animate-[spin_25s_linear_infinite]"></div>
+<div class="absolute w-[530px] h-[530px] border-[0.5px] border-dashed border-cyber-purple/20 rounded-full animate-[spin_40s_linear_infinite_reverse]"></div>
+<div class="absolute w-[460px] h-[460px] border-[2px] border-t-neon-cyan/40 border-b-hazard-orange/40 border-l-transparent border-r-transparent rounded-full animate-[spin_15s_linear_infinite]"></div>
+<!-- Corner Brackets -->
+<div class="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-neon-cyan/60"></div>
+<div class="absolute top-0 right-0 w-24 h-24 border-t-2 border-r-2 border-neon-cyan/60"></div>
+<div class="absolute bottom-0 left-0 w-24 h-24 border-b-2 border-l-2 border-neon-cyan/60"></div>
+<div class="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-neon-cyan/60"></div>
+<!-- Enhanced Technical Readouts -->
+<div class="absolute top-8 left-8 font-data-readout text-[11px] text-neon-cyan tracking-[0.2em] opacity-70 flex flex-col gap-1">
+<span class="">VECTOR_SYNC: CALIBRATED</span>
+<span class="">CORE_TEMP: 322.4 K</span>
+<span id="coord-readout" class="">X: 801.83 | Y: 468.80 | Z: -18.93</span>
+</div>
+<div class="absolute bottom-8 right-8 font-data-readout text-[11px] text-cyber-purple tracking-[0.2em] opacity-70 text-right flex flex-col gap-1">
+<span class="">SINGULARITY_STABILITY: 99.8%</span>
+<span class="">ORBITAL_PHASE: THETA-IX</span>
+<span class="animate-pulse">SCANNING SECTOR DELTA-9...</span>
+</div>
+</div>
+<!-- 3D Interactive Core with Singularity -->
+<div class="w-full h-full flex items-center justify-center relative z-20">
+<div class="absolute w-32 h-32 rounded-full bg-cyber-purple/20 singularity-glow animate-pulse"></div>
+<!-- complex 3D Three.js visualization with rings, shards, and pulse -->
+</div>
+</section>
+<!-- Main Section: Available Games -->
+<section class="col-span-12 lg:col-span-3 flex flex-col space-y-gutter">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-hazard-orange">joystick</span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white">AVAILABLE GAMES</h2>
+</div>
+<!-- Premium Game Card -->
+<div class="group relative bg-void-black border border-outline-variant/30 rounded-lg overflow-hidden transition-all duration-500 hover:neon-border-cyan hover:-translate-y-1">
+<div class="relative h-48 overflow-hidden">
+<img alt="Space Quiz Simulator" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCF8gLX18Tsgm4E6dVrF-KQF6Zy_e7YZxkO6PUIvpSUyBTfeTdx15odImCAUR7RCyvV1o7M2G7DazhVIEmfrZL792AVTiWVSsjOcNRSn04uaFsMcigAzIqOvmrmxARB8JcQuoYuRZzUQM26Q2YVXWPq3fH46C-nzIkz6MC9zxq8q212qQRZDU23hwyDv1q5zuzqsh_nzmqX0zcF_rVn-FJNKj_TvN7f02HXkP8E3MBcG3iCR7TD5ZogVFZ8zTyJ6i9QlFF7pZ0s5-8">
+<div class="absolute inset-0 bg-gradient-to-t from-void-black via-transparent to-transparent"></div>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="px-2 py-0.5 bg-hazard-orange text-void-black font-label-caps text-[9px] font-bold">NOVICE</span>
+<span class="px-2 py-0.5 bg-neon-cyan/20 border border-neon-cyan text-neon-cyan font-label-caps text-[9px]">500 XP</span>
+</div>
+</div>
+<div class="p-5">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white mb-2">Space Quiz Simulator</h3>
+<div class="flex items-center gap-4 text-on-surface-variant font-data-readout text-[12px] mb-6">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">quiz</span> 20 Q's
+                            </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">timer</span> 5 Min
+                            </div>
+</div>
+<div class="space-y-3">
+<button class="w-full py-3 bg-neon-cyan text-void-black font-label-caps text-label-caps font-extrabold arcade-btn-glow glitch-hover transition-all duration-300 tracking-[0.2em]">
+                                LAUNCH SIMULATION
+                            </button>
+<button class="w-full py-3 border border-outline-variant text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-variant transition-all duration-300 tracking-[0.2em] font-bold">
+                                VIEW DETAILS
+                            </button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Coming Soon Section -->
+<section class="mt-20">
+<div class="flex items-center gap-4 mb-8">
+<h2 class="font-headline-lg text-headline-lg text-on-surface-variant/50">COMING SOON</h2>
+<div class="h-px flex-1 bg-outline-variant/20"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Locked Card 1 -->
+<div class="holographic-glass p-6 rounded-lg opacity-40 grayscale relative group border-dashed">
+<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+<div class="flex flex-col items-center bg-void-black/80 p-4 border border-hazard-orange/30">
+<span class="material-symbols-outlined text-hazard-orange text-4xl mb-2">lock</span>
+<span class="font-label-caps text-label-caps text-hazard-orange">CLASSIFIED</span>
+</div>
+</div>
+<div class="h-32 bg-surface-variant/20 rounded mb-4"></div>
+<h4 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white">Mission Commander</h4>
+<p class="text-on-surface-variant font-data-readout text-sm">Strategic fleet deployment training.</p>
+</div>
+<!-- Locked Card 2 -->
+<div class="holographic-glass p-6 rounded-lg opacity-40 grayscale relative group border-dashed">
+<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+<div class="flex flex-col items-center bg-void-black/80 p-4 border border-hazard-orange/30">
+<span class="material-symbols-outlined text-hazard-orange text-4xl mb-2">lock</span>
+<span class="font-label-caps text-label-caps text-hazard-orange">CLASSIFIED</span>
+</div>
+</div>
+<div class="h-32 bg-surface-variant/20 rounded mb-4"></div>
+<h4 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white">Satellite Defense</h4>
+<p class="text-on-surface-variant font-data-readout text-sm">Orbital debris intercept simulation.</p>
+</div>
+<!-- Locked Card 3 -->
+<div class="holographic-glass p-6 rounded-lg opacity-40 grayscale relative group border-dashed">
+<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+<div class="flex flex-col items-center bg-void-black/80 p-4 border border-hazard-orange/30">
+<span class="material-symbols-outlined text-hazard-orange text-4xl mb-2">lock</span>
+<span class="font-label-caps text-label-caps text-hazard-orange">CLASSIFIED</span>
+</div>
+</div>
+<div class="h-32 bg-surface-variant/20 rounded mb-4"></div>
+<h4 class="font-headline-lg-mobile text-headline-lg-mobile text-starlight-white">Constellation Hunter</h4>
+<p class="text-on-surface-variant font-data-readout text-sm">Deep space celestial mapping.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-8 px-margin-edge flex flex-col md:flex-row justify-between items-center bg-void-black border-t border-hazard-orange/20 opacity-60">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="font-headline-lg text-headline-lg text-neon-cyan mb-2">ALTAIR</span>
+<p class="font-label-caps text-[10px] text-on-surface-variant">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-8 font-label-caps text-label-caps text-on-surface-variant">
+<a class="arcade-nav-link hover:text-hazard-orange transition-colors" href="#">Privacy Protocol</a>
+<a class="arcade-nav-link hover:text-hazard-orange transition-colors" href="#">Security Logs</a>
+<a class="arcade-nav-link hover:text-hazard-orange transition-colors" href="#">Terms of Service</a>
+</div>
+</footer>
+<script>
+        // Dynamic coordinate update simulator
+        const coordDisplay = document.getElementById('coord-readout');
+        if (coordDisplay) {
+            setInterval(() => {
+                const x = (Math.random() * 1000).toFixed(2);
+                const y = (Math.random() * 1000).toFixed(2);
+                const z = (Math.random() * 100 - 50).toFixed(2);
+                coordDisplay.innerText = `X: ${x} | Y: ${y} | Z: ${z}`;
+            }, 3000);
+        }
+    </script>
+
+    <script>
+        // Authentication Check
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('altair_token');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+
+            const username = localStorage.getItem('altair_username');
+            if (username) {
+                const profileName = document.getElementById('user-profile-name');
+                if (profileName) {
+                    profileName.textContent = username.toUpperCase();
+                }
+            }
+
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('altair_token');
+                    localStorage.removeItem('altair_username');
+                    window.location.href = '/';
+                });
+            }
+        });
+    </script>
+</body></html>
