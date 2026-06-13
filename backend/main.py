@@ -10,6 +10,12 @@ import json
 import time
 from datetime import datetime
 
+import sys
+import os
+
+# Add the backend directory to sys.path to allow imports in Vercel's environment
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 import models
 import auth
 from database import engine, get_db
