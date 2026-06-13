@@ -93,7 +93,7 @@
             <a href="/chandrayaan3.html" class="flex flex-col items-center gap-4 cursor-pointer group transition-transform hover:-translate-y-2">
                 <div class="w-64 h-64 rounded-xl overflow-hidden border border-white/10 group-hover:border-[var(--primary)] transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(255,138,0,0.6)] relative">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-10"></div>
-                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Chandrayaan-3_spacecraft.jpg/1200px-Chandrayaan-3_spacecraft.jpg')"></div>
+                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('/img/chandrayaan3.jpg')"></div>
                     <div class="absolute bottom-4 left-0 right-0 z-20 flex justify-center">
                         <span class="material-symbols-outlined text-[#FF8A00] text-3xl">satellite_alt</span>
                     </div>
@@ -104,7 +104,7 @@
             <a href="/jameswebb.html" class="flex flex-col items-center gap-4 cursor-pointer group transition-transform hover:-translate-y-2">
                 <div class="w-64 h-64 rounded-xl overflow-hidden border border-white/10 group-hover:border-[#BC00FF] transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(188,0,255,0.6)] relative">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-10"></div>
-                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/James_Webb_Space_Telescope_illuminated_%281%29.jpg/1200px-James_Webb_Space_Telescope_illuminated_%281%29.jpg')"></div>
+                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('/img/jameswebb.jpg')"></div>
                     <div class="absolute bottom-4 left-0 right-0 z-20 flex justify-center">
                         <span class="material-symbols-outlined text-[#BC00FF] text-3xl">center_focus_strong</span>
                     </div>
@@ -112,6 +112,18 @@
                 <span class="font-arcade text-2xl tracking-widest text-zinc-400 group-hover:text-white transition-colors max-w-[250px] text-center">JAMES WEBB</span>
             </a>
             
+            <!-- Curiosity Rover -->
+            <a href="/curiosity/index.html" class="flex flex-col items-center gap-4 cursor-pointer group transition-transform hover:-translate-y-2">
+                <div class="w-64 h-64 rounded-xl overflow-hidden border border-white/10 group-hover:border-[var(--primary)] transition-colors shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_25px_rgba(255,138,0,0.6)] relative">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 z-10"></div>
+                    <div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style="background-image: url('/img/curiosity.jpg')"></div>
+                    <div class="absolute bottom-4 left-0 right-0 z-20 flex justify-center">
+                        <span class="material-symbols-outlined text-[#ff3300] text-3xl">explore</span>
+                    </div>
+                </div>
+                <span class="font-arcade text-2xl tracking-widest text-zinc-400 group-hover:text-white transition-colors max-w-[250px] text-center">CURIOSITY</span>
+            </a>
+
             <!-- Future Placeholder -->
             <a class="flex flex-col items-center gap-4 cursor-default group opacity-50">
                 <div class="w-64 h-64 rounded-xl overflow-hidden border border-white/10 bg-black/50 flex flex-col items-center justify-center relative">
@@ -151,7 +163,7 @@
 </div>
 <div class="flex gap-8 font-label-caps text-[12px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">
 <a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
-<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert(\'ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.\'); return false;">ABOUT</a>
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command\nVersion: 1.0.0\nBuilt for deep space simulation and training.'); return false;">ABOUT</a>
 </div>
 </footer>
 </body>
