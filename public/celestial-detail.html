@@ -140,29 +140,29 @@
     <div class="fixed inset-0 scanline z-50 pointer-events-none opacity-20"></div>
     
     <!-- TopNavBar -->
-    <header class="fixed top-0 left-0 w-full z-40 bg-void-black/80 backdrop-blur-xl border-b border-neon-cyan/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-        <div class="flex justify-between items-center w-full px-margin-edge py-4 h-20 max-w-[1440px] mx-auto">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 flex items-center justify-center glow-sm">
-                    <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
-                </div>
-                <span class="font-arcade text-4xl font-extrabold text-neon-cyan tracking-tighter glow-sm">ALTAIR</span>
-            </div>
-            <nav class="hidden md:flex items-center gap-8">
-                <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-neon-cyan hover:glow-sm transition-all" href="/home.html">HOME</a>
-                <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-neon-cyan hover:glow-sm transition-all" href="#">RADAR</a>
-                <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-neon-cyan hover:glow-sm transition-all" href="/sky.html">SKY VIEW</a>
-                <a class="text-on-surface-variant font-label-caps text-label-caps hover:text-neon-cyan hover:glow-sm transition-all" href="/game.html">GAMES</a>
-                <a class="text-neon-cyan font-label-caps text-label-caps border-b-2 border-neon-cyan pb-1" href="/knowledge.html">KNOWLEDGE HUB</a>
-            </nav>
-            <div class="flex items-center gap-6">
-                <a href="/profile.html" class="flex items-center gap-3 bg-surface-container-high px-3 py-1 rounded-full border border-outline-variant/30 hover:bg-surface-variant transition-colors cursor-pointer">
-                <span id="user-profile-name" class="font-label-caps font-bold tracking-[0.15em] text-[10px] text-neon-cyan"></span>
-                <button class="material-symbols-outlined text-neon-cyan" style="font-variation-settings: 'FILL' 1;">account_circle</button>
-            </a>
-            </div>
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#05070A]/80 backdrop-blur-md border-b border-[#3b494b]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+    <div class="flex items-center gap-4">
+        <div class="w-10 h-10 flex items-center justify-center" style="text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">
+            <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
         </div>
-    </header>
+        <span class="text-4xl font-extrabold text-[#00F0FF] tracking-tighter" style="font-family: 'VT323', monospace; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">ALTAIR</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8" style="font-family: 'JetBrains Mono', monospace;">
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/home.html">HOME</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="#">RADAR</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/sky.html">SKY VIEW</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/game.html">GAMES</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#00F0FF] border-b-2 border-[#00F0FF] pb-1 transition-all duration-300" href="/knowledge.html">KNOWLEDGE HUB</a>
+    </nav>
+    <div class="flex items-center gap-6" style="font-family: 'JetBrains Mono', monospace;">
+        <button class="material-symbols-outlined text-[#b9cacb] hover:text-[#00F0FF] transition-all active:scale-95">notifications</button>
+        <a href="/profile.html" class="flex items-center gap-3 bg-[#282a2e] px-3 py-1 rounded-full border border-[#3b494b]/30 hover:bg-[#323539] transition-colors cursor-pointer">
+            <span id="user-profile-name" class="font-bold tracking-[0.15em] text-[10px] text-[#00F0FF]"></span>
+            <button class="material-symbols-outlined text-[#00F0FF]" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+        </a>
+        <button id="logout-btn" class="font-bold tracking-[0.15em] text-[10px] text-[#FF8A00] hover:text-white transition-colors border border-[#FF8A00]/30 px-3 py-1 rounded">LOGOUT</button>
+    </div>
+</header>
 
     <div id="loading-screen" class="fixed inset-0 z-[100] bg-void-black flex items-center justify-center">
         <div class="text-neon-cyan font-arcade text-3xl animate-pulse tracking-widest">ESTABLISHING LINK...</div>
