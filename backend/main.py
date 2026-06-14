@@ -179,6 +179,19 @@ def get_nasa_apod():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+@app.get("/api/nasa/astros")
+def get_astros():
+    current_time = time.time()
+    # No cache needed for now, but we can reuse the pattern
+    try:
+        req = urllib.request.Request("http://api.open-notify.org/astros.json")
+        with urllib.request.urlopen(req) as response:
+            data = json.loads(response.read().decode())
+            return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ==========================================
 # SERVE STATIC FILES (FRONTEND)
 # ==========================================

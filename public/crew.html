@@ -115,7 +115,7 @@
 
         async function fetchCrewDetails() {
             try {
-                const res = await fetch('http://api.open-notify.org/astros.json');
+                const res = await fetch('/api/nasa/astros');
                 const data = await res.json();
                 
                 const issCrew = data.people.filter(p => p.craft === 'ISS');
