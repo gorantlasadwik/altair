@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>ALTAIR ARCADE | Galactic Space Dodger</title>
+
+  <!-- Tailwind CDN & Custom Fonts -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=JetBrains+Mono:wght@400;500;700&family=Hanken+Grotesk:wght@400;500&family=Press+Start+2P&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet">
+
+  <!-- Custom Cabinet Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Theme Configuration -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface": "#111417",
+            "tertiary-fixed-dim": "#ebb2ff",
+            "on-error": "#690005",
+            "void-black": "#05070A",
+            "starlight-white": "#E1F5FE",
+            "surface-variant": "#323539",
+            "surface-dim": "#111417",
+            "primary-fixed": "#7df4ff",
+            "surface-container": "#1d2023",
+            "on-primary-fixed": "#002022",
+            "secondary-fixed": "#d9e2ff",
+            "on-tertiary-fixed": "#320047",
+            "surface-container-low": "#191c1f",
+            "on-secondary-fixed": "#001945",
+            "secondary-fixed-dim": "#b0c6ff",
+            "inverse-surface": "#e1e2e7",
+            "on-tertiary-container": "#9900d0",
+            "on-tertiary": "#520071",
+            "on-tertiary-fixed-variant": "#74009f",
+            "tertiary-container": "#f4ccff",
+            "tertiary-fixed": "#f8d8ff",
+            "error-container": "#93000a",
+            "inverse-on-surface": "#2e3134",
+            "on-secondary-fixed-variant": "#00429c",
+            "outline-variant": "#3b494b",
+            "tertiary": "#fff2fd",
+            "primary-container": "#00f0ff",
+            "neon-cyan": "#00F0FF",
+            "error": "#ffb4ab",
+            "background": "#111417",
+            "surface-tint": "#00dbe9",
+            "on-primary-container": "#006970",
+            "inverse-primary": "#006970",
+            "on-secondary": "#002d6f",
+            "on-surface-variant": "#b9cacb",
+            "on-error-container": "#ffdad6",
+            "primary-fixed-dim": "#00dbe9",
+            "on-primary": "#00363a",
+            "on-background": "#e1e2e7",
+            "primary": "#dbfcff",
+            "electric-blue": "#0070FF",
+            "surface-container-highest": "#323539",
+            "surface-container-high": "#282a2e",
+            "cyber-purple": "#BC00FF",
+            "secondary-container": "#568dff",
+            "on-secondary-container": "#002661",
+            "hazard-orange": "#FF8A00",
+            "secondary": "#b0c6ff",
+            "on-surface": "#e1e2e7",
+            "on-primary-fixed-variant": "#004f54",
+            "surface-container-lowest": "#0c0e12",
+            "surface-bright": "#37393d",
+            "outline": "#849495"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "unit": "4px",
+            "gutter": "24px",
+            "panel-padding": "20px",
+            "margin-edge": "40px"
+          },
+          "fontFamily": {
+            "headline-lg": ["sora"],
+            "body-md": ["hankenGrotesk"],
+            "label-caps": ["jetbrainsMono"],
+            "headline-lg-mobile": ["sora"],
+            "data-readout": ["jetbrainsMono"],
+            "headline-xl": ["sora"]
+          },
+          "fontSize": {
+            "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+            "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "700" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+            "data-readout": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "0.05em", "fontWeight": "800" }]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+
+<body class="font-body-md text-on-background selection:bg-neon-cyan/30">
+
+  <!-- Cinematic Background & Star Particle Field -->
+  <div class="space-background-scene" id="space-scene">
+    <div class="nebula-glow-left"></div>
+    <div class="nebula-glow-right"></div>
+  </div>
+
+  <!-- Global Scanline (Subtle scan line running down screen/body) -->
+  <div class="scanline"></div>
+
+  <!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-10 h-20 bg-[#05070A]/80 backdrop-blur-md border-b border-[#3b494b]/30 shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+    <div class="flex items-center gap-4">
+        <div class="w-10 h-10 flex items-center justify-center" style="text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">
+            <img alt="ALTAIR Logo" class="w-full h-full object-cover mix-blend-screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7l_shqM87xJTobUlAICGaKuFvdZLTlX1zCtxtb3lakYkVrZIpEibM6kkXx6NCq_KfNVBh6lwzYqhB-00cwDee8LSo3Hv9txqv-P1IySKAdQ4E9YxCnMN3HLvVnY9IqaXafjH74eOiX-iVhFo4p3Gk-RJHy_otUPUizAbhqH6ylW25-8VoeUe2DH1XnnJVLc5g3g0FFgxTpqDO80RVQUOCpmtwFt5UjusWubjk1yhd5pLSbenMTGahEEtJ7xRcdx9owceM_2-WTBmC">
+        </div>
+        <span class="text-4xl font-extrabold text-[#00F0FF] tracking-tighter" style="font-family: 'VT323', monospace; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4);">ALTAIR</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8" style="font-family: 'JetBrains Mono', monospace;">
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/home.html">HOME</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/iss.html">ISS TRACKER</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/sky.html">SKY VIEW</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#00F0FF] border-b-2 border-[#00F0FF] pb-1 transition-all duration-300" href="/game.html">GAMES</a>
+        <a class="text-[12px] tracking-[0.15em] font-bold text-[#b9cacb] hover:text-[#00F0FF] transition-colors" href="/knowledge.html">KNOWLEDGE HUB</a>
+    </nav>
+    <div class="flex items-center gap-6" style="font-family: 'JetBrains Mono', monospace;">
+        <button class="material-symbols-outlined text-[#b9cacb] hover:text-[#00F0FF] transition-all active:scale-95">notifications</button>
+        <a href="/profile.html" class="flex items-center gap-3 bg-[#282a2e] px-3 py-1 rounded-full border border-[#3b494b]/30 hover:bg-[#323539] transition-colors cursor-pointer">
+            <span id="user-profile-name" class="font-bold tracking-[0.15em] text-[10px] text-[#00F0FF]"></span>
+            <button class="material-symbols-outlined text-[#00F0FF]" style="font-variation-settings: 'FILL' 1;">account_circle</button>
+        </a>
+        <button id="logout-btn" class="font-bold tracking-[0.15em] text-[10px] text-[#FF8A00] hover:text-white transition-colors border border-[#FF8A00]/30 px-3 py-1 rounded">LOGOUT</button>
+    </div>
+</header>
+
+  <!-- Main Grid Area -->
+  <main class="relative z-10 pt-28 pb-20 px-10 max-w-screen-2xl mx-auto">
+    <!-- Hero Title -->
+    <div class="text-center mb-10 relative">
+      <div
+        class="inline-block px-4 py-1 mb-4 border border-hazard-orange/40 bg-hazard-orange/10 font-label-caps text-label-caps text-hazard-orange text-[10px] uppercase font-bold tracking-widest">
+        SYSTEM ESTABLISHED: PILOT SIMULATION CONNECTED
+      </div>
+      <h1
+        class="font-headline-xl text-headline-xl text-starlight-white mb-2 tracking-widest neon-glow-cyan text-4xl md:text-5xl uppercase">
+        ALTAIR ARCADE
+      </h1>
+      <p class="text-on-surface-variant font-data-readout tracking-widest opacity-80 uppercase text-xs">
+        TEST YOUR REFLEXES. SHIELD THE GALAXY FROM THE ASTEROID BARRAGE.
+      </p>
+    </div>
+
+    <!-- Layout Grid -->
+    <div class="grid grid-cols-12 gap-6 items-start">
+
+      <!-- Left HUD Sidebar: Pilot Stats -->
+      <aside class="col-span-12 lg:col-span-3 space-y-6">
+        <div
+          class="holographic-glass p-5 rounded-lg mechanical-frame border-l-4 border-l-cyber-purple frame-top-left frame-top-right">
+          <!-- Profile Badge -->
+          <div class="flex items-center gap-4 mb-6">
+            <div
+              class="w-14 h-14 rounded-full border-2 border-neon-cyan p-1 bg-void-black flex items-center justify-center">
+              <span class="material-symbols-outlined text-3xl text-cyber-purple">person_filled</span>
+            </div>
+            <div>
+              <h3 class="font-headline-lg-mobile text-lg text-starlight-white font-bold">Commander</h3>
+              <p class="font-label-caps text-[9px] text-cyber-purple font-bold tracking-wider">RANK: ELITE PILOT</p>
+            </div>
+          </div>
+
+          <!-- Experience & Stats -->
+          <div class="space-y-4">
+            <div class="flex justify-between items-end mb-1">
+              <span class="font-label-caps text-[10px] text-on-surface-variant font-bold">FLIGHT LEVEL 15</span>
+              <span class="font-data-readout text-[11px] text-neon-cyan" id="hud-xp-display">2,850 / 3,000 XP</span>
+            </div>
+            <div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+              <div class="h-full bg-neon-cyan shadow-[0_0_8px_rgba(0,240,255,0.8)] transition-all duration-300"
+                style="width: 95%"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-outline-variant/30">
+              <div>
+                <p class="font-label-caps text-[9px] text-on-surface-variant font-bold uppercase">HI-SCORE RECORD</p>
+                <p class="font-headline-lg text-xl text-hazard-orange font-bold font-mono" id="hud-hi-score">00000</p>
+              </div>
+              <div>
+                <p class="font-label-caps text-[9px] text-on-surface-variant font-bold uppercase">TARGETS HIT</p>
+                <p class="font-headline-lg text-xl text-neon-cyan font-bold font-mono" id="hud-total-hits">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Readouts -->
+        <div class="holographic-glass p-5 rounded-lg mechanical-frame border-l-4 border-l-neon-cyan">
+          <h4
+            class="text-xs text-starlight-white font-bold font-headline mb-4 uppercase tracking-widest flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px] text-neon-cyan animate-pulse">lens_blur</span>
+            SYSTEM DIAGNOSTICS
+          </h4>
+          <div class="font-data-readout text-[11px] space-y-2.5 text-on-surface-variant font-mono">
+            <div class="flex justify-between">
+              <span>REACTOR TEMP</span>
+              <span class="text-neon-cyan animate-pulse" id="hud-temp">301.4 K</span>
+            </div>
+            <div class="flex justify-between">
+              <span>SHIELD STABILITY</span>
+              <span class="text-neon-cyan">100%</span>
+            </div>
+            <div class="flex justify-between">
+              <span>GRID ALIGNMENT</span>
+              <span class="text-cyber-purple">CALIBRATED</span>
+            </div>
+            <div class="flex justify-between">
+              <span>COORDINATES</span>
+              <span class="text-on-surface-variant" id="coord-readout-hud">X: 521.14 | Y: 184.22</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Centerpiece: Cabinet Console Centered -->
+      <section class="col-span-12 lg:col-span-6 flex flex-col items-center justify-center relative min-h-[600px]">
+
+        <!-- THE ARCADE CABINET -->
+        <div class="arcade-cabinet relative z-20">
+          <!-- Speakers Grid -->
+          <div class="marquee-speakers">
+            <div class="speaker"></div>
+            <div class="speaker"></div>
+          </div>
+
+          <!-- 2. CRT Screen containing the Game -->
+          <div class="cabinet-screen-bezel">
+            <!-- Screw visual details -->
+            <div class="bezel-screw screw-tl"></div>
+            <div class="bezel-screw screw-tr"></div>
+            <div class="bezel-screw screw-bl"></div>
+            <div class="bezel-screw screw-br"></div>
+
+            <!-- CRT wrapper -->
+            <div class="crt-screen-wrapper" id="crt-wrapper">
+              <!-- Scanlines -->
+              <div class="crt-scanlines"></div>
+              <div class="crt-vignette"></div>
+              <div class="crt-glare"></div>
+
+              <!-- Canvas element -->
+              <canvas id="game-canvas" width="400" height="500"></canvas>
+
+              <!-- UI Overlay: START SCREEN -->
+              <div id="start-overlay" class="game-overlay">
+                <div class="material-symbols-outlined text-5xl text-neon-cyan neon-glow-cyan mb-4 animate-bounce">
+                  joystick</div>
+                <h2 class="overlay-title">SPACE DODGER</h2>
+                <p class="overlay-subtitle">
+                  Steer your ship, dodge asteroids, and blow them to stardust! Score multiplier increases over
+                  time.<br><br>
+                  <span class="text-neon-cyan font-bold">CONTROLS:</span><br>
+                  ← / A : Move Left &nbsp;&nbsp;&nbsp; → / D : Move Right<br>
+                  Space / Up : Shoot Lasers
+                </p>
+                <div class="score-board">
+                  <div class="score-row">
+                    <span>SECTOR RECORD:</span>
+                    <span class="score-val" id="high-score-val">0000</span>
+                  </div>
+                </div>
+                <button id="start-game-btn" class="start-btn">INSERT COIN</button>
+              </div>
+
+              <!-- UI Overlay: GAME OVER SCREEN -->
+              <div id="gameover-overlay" class="game-overlay hidden">
+                <div class="material-symbols-outlined text-5xl text-error mb-4">brightness_alert</div>
+                <h2 class="overlay-title text-error">SHIP DESTROYED</h2>
+                <p class="overlay-subtitle">
+                  Your hull integrity breached. Sector defense failed.
+                </p>
+                <div class="score-board">
+                  <div class="score-row">
+                    <span>FINAL SCORE:</span>
+                    <span class="score-val text-hazard-orange" id="final-score-val">0</span>
+                  </div>
+                  <div class="score-row">
+                    <span>SECTOR RECORD:</span>
+                    <span class="score-val" id="record-score-val">0</span>
+                  </div>
+                </div>
+                <button id="restart-game-btn" class="start-btn">PLAY AGAIN</button>
+              </div>
+
+              <!-- UI Overlay: PAUSED SCREEN -->
+              <div id="pause-overlay" class="game-overlay hidden">
+                <div class="material-symbols-outlined text-5xl text-tertiary-fixed-dim mb-4">pause_circle</div>
+                <h2 class="overlay-title text-tertiary-fixed-dim">SYSTEM PAUSED</h2>
+                <p class="overlay-subtitle">
+                  Simulation frozen. Press Start or Menu on the cabinet to resume.
+                </p>
+                <button id="resume-game-btn" class="start-btn">RESUME</button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 3. Cabinet Control Panel -->
+          <div class="cabinet-control-panel">
+
+            <!-- Joystick Container -->
+            <div class="joystick-area">
+              <div class="joystick-base" id="cabinet-joystick">
+                <div class="joystick-washer"></div>
+                <div class="joystick-shaft">
+                  <div class="joystick-knob"></div>
+                </div>
+              </div>
+              <div class="joystick-label">Steering</div>
+            </div>
+
+            <!-- Arcade Buttons Visual Grid -->
+            <div class="buttons-area">
+              <div class="buttons-grid">
+
+                <!-- Menu / Pause Button -->
+                <div class="arcade-btn-container">
+                  <div class="btn-rim"></div>
+                  <button id="btn-menu-hw" class="arcade-btn btn-menu" title="Menu / Pause">
+                    <div class="arcade-btn-inner"></div>
+                  </button>
+                  <span class="btn-label">Menu</span>
+                </div>
+
+                <!-- Start Button -->
+                <div class="arcade-btn-container">
+                  <div class="btn-rim"></div>
+                  <button id="btn-start-hw" class="arcade-btn btn-start" title="Start Game">
+                    <div class="arcade-btn-inner"></div>
+                  </button>
+                  <span class="btn-label">Start</span>
+                </div>
+
+                <!-- Shoot Button (Cyan) -->
+                <div class="arcade-btn-container">
+                  <div class="btn-rim"></div>
+                  <button id="btn-shoot-hw" class="arcade-btn btn-shoot" title="Shoot Lasers">
+                    <div class="arcade-btn-inner"></div>
+                  </button>
+                  <span class="btn-label">Shoot</span>
+                </div>
+
+                <!-- Audio Toggle (Green) -->
+                <div class="arcade-btn-container">
+                  <div class="btn-rim"></div>
+                  <button id="btn-audio-hw" class="arcade-btn btn-sound" title="Toggle Sound">
+                    <div class="arcade-btn-inner"></div>
+                  </button>
+                  <span class="btn-label">Audio</span>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 4. Lower Cabinet Slot / Coin Door -->
+          <div class="cabinet-lower">
+            <div class="coin-door-frame">
+              <div class="coin-slot-wrapper">
+                <div class="coin-slot" id="coin-slot-trigger" title="Click to Insert Coin (Play sound)"></div>
+                <div class="coin-label">25¢ PLAY</div>
+              </div>
+              <div class="coin-return"></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Right HUD Sidebar: Simulation Instructions -->
+      <aside class="col-span-12 lg:col-span-3 space-y-6">
+
+        <!-- How To Play Card -->
+        <div class="holographic-glass p-5 rounded-lg mechanical-frame border-l-4 border-l-hazard-orange">
+          <h4
+            class="text-xs text-starlight-white font-bold font-headline mb-4 uppercase tracking-widest flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px] text-hazard-orange">sports_esports</span>
+            SIMULATION PROTOCOL
+          </h4>
+          <ul class="space-y-3 font-mono text-[11px] text-on-surface-variant list-none">
+            <li class="flex items-start gap-2">
+              <span class="text-hazard-orange font-bold">•</span>
+              <span><strong>Dodge & Destroy</strong>: Avoid colliding with incoming asteroids. Blast them with your
+                laser cannons to clear path and gain score.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-hazard-orange font-bold">•</span>
+              <span><strong>Ramping Difficulty</strong>: As score increases, asteroid velocity surges, spawn thresholds
+                reduce, and thicker hazards appear.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-hazard-orange font-bold">•</span>
+              <span><strong>Multiplier Bonus</strong>: Destroying asteroids consecutively and staying alive builds up
+                your pilot multiplier.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- High Score Rankings Leaderboard -->
+        <div class="holographic-glass p-5 rounded-lg mechanical-frame border-l-4 border-l-tertiary-fixed-dim">
+          <h4
+            class="text-xs text-starlight-white font-bold font-headline mb-4 uppercase tracking-widest flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim">trophy</span>
+            GALACTIC LEADERBOARD
+          </h4>
+          <div class="space-y-3 font-mono text-[11px]">
+            <div
+              class="flex justify-between items-center text-starlight-white border-b border-outline-variant/20 pb-1.5">
+              <span class="flex items-center gap-1.5">
+                <span class="text-yellow-400 text-[12px] font-bold">1ST</span>
+                <span>CMD. ALTAIR</span>
+              </span>
+              <span class="text-hazard-orange font-bold">25,000</span>
+            </div>
+            <div
+              class="flex justify-between items-center text-on-surface-variant border-b border-outline-variant/20 pb-1.5">
+              <span class="flex items-center gap-1.5">
+                <span class="text-slate-300 text-[12px] font-bold">2ND</span>
+                <span>PILOT. VEGA</span>
+              </span>
+              <span class="text-neon-cyan">18,400</span>
+            </div>
+            <div
+              class="flex justify-between items-center text-on-surface-variant border-b border-outline-variant/20 pb-1.5">
+              <span class="flex items-center gap-1.5">
+                <span class="text-amber-600 text-[12px] font-bold">3RD</span>
+                <span>PILOT. DEB</span>
+              </span>
+              <span class="text-neon-cyan">12,150</span>
+            </div>
+            <div class="flex justify-between items-center text-on-surface-variant">
+              <span class="flex items-center gap-1.5">
+                <span class="text-zinc-500 text-[12px] font-bold">YOU</span>
+                <span id="local-rank-name">PILOT. RECRUIT</span>
+              </span>
+              <span class="text-neon-cyan" id="local-rank-score">0000</span>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+<footer class="w-full py-8 px-10 flex flex-col md:flex-row justify-between items-center opacity-60 bg-[#05070A] border-t border-[#FF8A00]/20 mt-auto z-50 relative">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="arcade-font text-4xl text-[#00F0FF] mb-2" style="font-family: 'VT323', monospace;">ALTAIR</span>
+<p class="font-label-caps text-[10px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">© 2024 ALTAIR GALACTIC COMMAND. ALL RIGHTS RESERVED.</p>
+</div>
+<div class="flex gap-8 font-label-caps text-[12px] text-[#b9cacb]" style="font-family: 'JetBrains Mono', monospace;">
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="if(navigator.share){navigator.share({title:'ALTAIR', url: window.location.href})} else {navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')}; return false;">SHARE</a>
+<a class="hover:text-[#FF8A00] transition-colors cursor-pointer" onclick="alert('ALTAIR Galactic Command
+Version: 1.0.0
+Built for deep space simulation and training.'); return false;">ABOUT</a>
+</div>
+</footer>
+
+  <!-- Floating Mute Button -->
+  <button id="global-mute-btn" class="fixed bottom-6 right-6 z-50 bg-surface-variant/30 border border-outline-variant/40 hover:border-neon-cyan text-on-surface-variant hover:text-neon-cyan p-3 rounded-full transition-all flex items-center justify-center shadow-lg">
+    <span id="mute-icon" class="material-symbols-outlined text-[24px]">volume_up</span>
+  </button>
+
+  <!-- Include Audio & Game Logic Scripts -->
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+
+</html>

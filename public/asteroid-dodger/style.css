@@ -1,0 +1,986 @@
+/* ==========================================================================
+   ALTAIR ARCADE - Style System & Cabinet Rendering
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=JetBrains+Mono:wght@400;500;700&family=Hanken+Grotesk:wght@400;500&display=swap');
+
+:root {
+  /* Altair Theme Color Palette */
+  --surface: #111417;
+  --tertiary-fixed-dim: #ebb2ff;
+  --on-error: #690005;
+  --void-black: #05070A;
+  --starlight-white: #E1F5FE;
+  --surface-variant: #323539;
+  --surface-dim: #111417;
+  --primary-fixed: #7df4ff;
+  --surface-container: #1d2023;
+  --on-primary-fixed: #002022;
+  --secondary-fixed: #d9e2ff;
+  --on-tertiary-fixed: #320047;
+  --surface-container-low: #191c1f;
+  --on-secondary-fixed: #001945;
+  --secondary-fixed-dim: #b0c6ff;
+  --inverse-surface: #e1e2e7;
+  --on-tertiary-container: #9900d0;
+  --on-tertiary: #520071;
+  --on-tertiary-fixed-variant: #74009f;
+  --tertiary-container: #f4ccff;
+  --tertiary-fixed: #f8d8ff;
+  --error-container: #93000a;
+  --inverse-on-surface: #2e3134;
+  --on-secondary-fixed-variant: #00429c;
+  --outline-variant: #3b494b;
+  --tertiary: #fff2fd;
+  --primary-container: #00f0ff;
+  --neon-cyan: #00F0FF;
+  --error: #ffb4ab;
+  --background: #111417;
+  --surface-tint: #00dbe9;
+  --on-primary-container: #006970;
+  --inverse-primary: #006970;
+  --on-secondary: #002d6f;
+  --on-surface-variant: #b9cacb;
+  --on-error-container: #ffdad6;
+  --primary-fixed-dim: #00dbe9;
+  --on-primary: #00363a;
+  --on-background: #e1e2e7;
+  --primary: #dbfcff;
+  --electric-blue: #0070FF;
+  --surface-container-highest: #323539;
+  --surface-container-high: #282a2e;
+  --cyber-purple: #BC00FF;
+  --secondary-container: #568dff;
+  --on-secondary-container: #002661;
+  --hazard-orange: #FF8A00;
+  --secondary: #b0c6ff;
+  --on-surface: #e1e2e7;
+  --on-primary-fixed-variant: #004f54;
+  --surface-container-lowest: #0c0e12;
+  --surface-bright: #37393d;
+  --outline: #849495;
+
+  /* Fonts mapping */
+  --font-headline: 'Sora', sans-serif;
+  --font-body: 'Hanken Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', sans-serif;
+}
+
+/* ==========================================================================
+   Global Reset & Base
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  background-color: var(--void-black);
+  color: var(--on-background);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--void-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--outline-variant);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-cyan);
+}
+
+/* ==========================================================================
+   General Utilities & Custom styles from mockup
+   ========================================================================== */
+
+.neon-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.6), 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.neon-glow-purple {
+  text-shadow: 0 0 10px rgba(188, 0, 255, 0.6), 0 0 20px rgba(188, 0, 255, 0.3);
+}
+
+.neon-border-cyan {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+}
+
+.holographic-glass {
+  background: rgba(17, 20, 23, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.05);
+}
+
+.mechanical-frame {
+  position: relative;
+  border: 2px solid var(--outline-variant);
+}
+
+.mechanical-frame::before,
+.mechanical-frame::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--outline-variant);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+.frame-top-left::before {
+  top: 4px;
+  left: 4px;
+}
+
+.frame-top-right::after {
+  top: 4px;
+  right: 4px;
+}
+
+.flicker-pulse {
+  animation: flicker 4s infinite;
+}
+
+@keyframes flicker {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
+
+  52% {
+    opacity: 1;
+  }
+
+  54% {
+    opacity: 0.9;
+  }
+
+  56% {
+    opacity: 1;
+  }
+}
+
+.singularity-glow {
+  box-shadow: 0 0 40px 10px rgba(188, 0, 255, 0.2), 0 0 80px 20px rgba(0, 240, 255, 0.08);
+}
+
+/* ==========================================================================
+   Header & Navigation
+   ========================================================================== */
+
+header {
+  height: 80px;
+  border-bottom: 1px solid rgba(59, 73, 75, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   Arcade Cabinet Layout & Rendering
+   ========================================================================== */
+
+.arcade-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  perspective: 1000px;
+  z-index: 10;
+}
+
+/* Outer frame of the cabinet */
+.arcade-cabinet {
+  width: 100%;
+  max-width: 580px;
+  background: linear-gradient(135deg, #1c1326 0%, #0d0614 100%);
+  border: 6px solid #281938;
+  border-radius: 20px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.8),
+    0 0 30px rgba(188, 0, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Outer cabinet glowing side wings (decorations) */
+.arcade-cabinet::before,
+.arcade-cabinet::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  height: 80%;
+  width: 8px;
+  background: var(--cyber-purple);
+  box-shadow: 0 0 15px var(--cyber-purple);
+  border-radius: 4px;
+}
+
+.arcade-cabinet::before {
+  left: 4px;
+}
+
+.arcade-cabinet::after {
+  right: 4px;
+}
+
+/* Marquee Speaker Grills */
+.marquee-speakers {
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 40px;
+  background: #150f1d;
+  border-bottom: 3px solid #1a0f26;
+}
+
+.speaker {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #000 30%, #221d2a 70%, #443c51 100%);
+  border: 3px solid #332b3d;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8), 0 1px 2px rgba(255, 255, 255, 0.1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speaker::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #111;
+  border: 2px solid var(--outline-variant);
+}
+
+/* 2. CRT Screen Section */
+.cabinet-screen-bezel {
+  background: linear-gradient(180deg, #1d1726 0%, #150e1d 100%);
+  padding: 24px;
+  border-bottom: 6px solid #281938;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Screws in the bezel corners */
+.bezel-screw {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3a3245;
+  box-shadow: inset 0 1px 2px #000, 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.screw-tl {
+  top: 12px;
+  left: 12px;
+}
+
+.screw-tr {
+  top: 12px;
+  right: 12px;
+}
+
+.screw-bl {
+  bottom: 12px;
+  left: 12px;
+}
+
+.screw-br {
+  bottom: 12px;
+  right: 12px;
+}
+
+/* The curved screen shell representing CRT monitor */
+.crt-screen-wrapper {
+  width: 100%;
+  aspect-ratio: 4/5;
+  border-radius: 20px;
+  background: #05070a;
+  border: 8px solid #2e2838;
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 1),
+    0 4px 10px rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* CRT Curve / Bulb effect */
+.crt-screen-wrapper::after {
+  content: ' ';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0.45) 100%);
+  pointer-events: none;
+  z-index: 15;
+}
+
+/* Animated CRT Scanline overlay */
+.crt-scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.35) 50%), linear-gradient(90deg,
+      rgba(255, 0, 0, 0.05),
+      rgba(0, 255, 0, 0.02),
+      rgba(0, 0, 255, 0.05));
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+  z-index: 12;
+}
+
+/* Glare highlight */
+.crt-glare {
+  position: absolute;
+  top: -150px;
+  left: -150px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+  transform: rotate(-30deg);
+  pointer-events: none;
+  z-index: 13;
+}
+
+/* Actual Game Canvas */
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: #030406;
+  z-index: 5;
+}
+
+/* Screen shake effect on taking damage */
+.screen-shake {
+  animation: shake 0.35s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes shake {
+
+  10%,
+  90% {
+    transform: translate3d(-2px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(3px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-5px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(5px, 0, 0);
+  }
+}
+
+/* Screen Vignette Overlay */
+.crt-vignette {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  z-index: 11;
+}
+
+/* 3. Control Panel Section */
+.cabinet-control-panel {
+  background: linear-gradient(180deg, #180f24 0%, #0c0714 100%);
+  border-bottom: 6px solid #281938;
+  padding: 24px 20px;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  gap: 15px;
+  box-shadow:
+    inset 0 10px 15px rgba(0, 0, 0, 0.6),
+    0 5px 15px rgba(0, 0, 0, 0.9);
+}
+
+/* Joystick visual structure */
+.joystick-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.joystick-base {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #151518 40%, #2d2e33 70%, #111 100%);
+  border: 4px solid #000;
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 0.8),
+    0 2px 4px rgba(255, 255, 255, 0.05);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.joystick-washer {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #09090b;
+  border: 2px solid #1c1d22;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  position: relative;
+  z-index: 2;
+  transition: transform 0.1s ease-out;
+}
+
+.joystick-shaft {
+  width: 10px;
+  height: 46px;
+  background: linear-gradient(90deg, #8b929a 0%, #cfd7de 50%, #61666d 100%);
+  position: absolute;
+  bottom: 30px;
+  left: calc(50% - 5px);
+  z-index: 3;
+  border-radius: 4px;
+  transform-origin: bottom center;
+  transition: transform 0.1s ease-out;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.joystick-knob {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 10px 10px, #ff3333 0%, #b30000 60%, #660000 100%);
+  border: 2px solid #5a0000;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.5),
+    inset 0 -4px 6px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: -20px;
+  left: calc(50% - 17px);
+  z-index: 4;
+  transition: transform 0.1s ease-out;
+}
+
+.joystick-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--on-surface-variant);
+  margin-top: 8px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Joystick tilt states */
+.joystick-base.tilt-left .joystick-shaft {
+  transform: rotate(-16deg);
+}
+
+.joystick-base.tilt-left .joystick-knob {
+  transform: translate(-10px, 1px);
+}
+
+.joystick-base.tilt-left .joystick-washer {
+  transform: translate(-4px, 0);
+}
+
+.joystick-base.tilt-right .joystick-shaft {
+  transform: rotate(16deg);
+}
+
+.joystick-base.tilt-right .joystick-knob {
+  transform: translate(10px, 1px);
+}
+
+.joystick-base.tilt-right .joystick-washer {
+  transform: translate(4px, 0);
+}
+
+/* Cabinet Buttons Visual Grid */
+.buttons-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.arcade-btn-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.arcade-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+
+.btn-rim {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: #09090b;
+  border: 1px solid #282a30;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.arcade-btn-inner {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow:
+    inset 0 3px 5px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.4);
+}
+
+/* Individual button themes */
+/* 1. Menu (Yellow) */
+.btn-menu {
+  background: radial-gradient(circle, #ffd000 0%, #c49600 100%);
+}
+
+/* 2. Start (White) */
+.btn-start {
+  background: radial-gradient(circle, #ffffff 0%, #cccccc 100%);
+}
+
+/* 3. Shoot (Cyan) */
+.btn-shoot {
+  background: radial-gradient(circle, #00f0ff 0%, #00a4b0 100%);
+}
+
+/* 4. Bomb/Special (Orange) */
+.btn-special {
+  background: radial-gradient(circle, #ff8a00 0%, #ba6100 100%);
+}
+
+/* 5. Sound (Green) */
+.btn-sound {
+  background: radial-gradient(circle, #00ff66 0%, #009c3e 100%);
+}
+
+/* 6. Action (Purple) */
+.btn-purple {
+  background: radial-gradient(circle, #bc00ff 0%, #7d00aa 100%);
+}
+
+/* Active pressed button state */
+.arcade-btn:active,
+.arcade-btn.pressed {
+  transform: scale(0.92) translateY(1px);
+}
+
+.arcade-btn:active .arcade-btn-inner,
+.arcade-btn.pressed .arcade-btn-inner {
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.6),
+    inset 0 -1px 3px rgba(255, 255, 255, 0.1);
+  filter: brightness(1.2);
+}
+
+.arcade-btn.pressed.btn-shoot {
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.8);
+}
+
+.arcade-btn.pressed.btn-special {
+  box-shadow: 0 0 12px rgba(255, 138, 0, 0.8);
+}
+
+.arcade-btn.pressed.btn-sound {
+  box-shadow: 0 0 12px rgba(0, 255, 102, 0.8);
+}
+
+.arcade-btn.pressed.btn-menu {
+  box-shadow: 0 0 12px rgba(255, 208, 0, 0.8);
+}
+
+.arcade-btn.pressed.btn-start {
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+}
+
+.arcade-btn.pressed.btn-purple {
+  box-shadow: 0 0 12px rgba(188, 0, 255, 0.8);
+}
+
+.btn-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  color: var(--on-surface-variant);
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* 4. Lower Cabinet and Coin Door Section */
+.cabinet-lower {
+  background: linear-gradient(180deg, #0d0614 0%, #040107 100%);
+  padding: 24px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border-top: 3px solid #1c1326;
+  min-height: 120px;
+}
+
+.coin-door-frame {
+  width: 140px;
+  height: 80px;
+  background: #111215;
+  border: 4px solid #282a2f;
+  box-shadow:
+    inset 0 0 8px #000,
+    0 4px 6px rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.coin-slot-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.coin-slot {
+  width: 14px;
+  height: 32px;
+  background: #000;
+  border-radius: 3px;
+  border: 2px solid #3c3f46;
+  position: relative;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9);
+  cursor: pointer;
+}
+
+.coin-slot::after {
+  content: '';
+  width: 3px;
+  height: 18px;
+  background: var(--hazard-orange);
+  box-shadow: 0 0 8px var(--hazard-orange);
+  position: absolute;
+  top: 5px;
+  left: calc(50% - 1.5px);
+  border-radius: 1px;
+}
+
+.coin-return {
+  width: 28px;
+  height: 28px;
+  background: #181a1e;
+  border: 2px solid #3c3f46;
+  border-radius: 4px;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+.coin-return::after {
+  content: '';
+  width: 16px;
+  height: 8px;
+  background: #101113;
+  border-bottom: 2px solid #2d2f35;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+}
+
+.coin-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 5px;
+  color: var(--hazard-orange);
+  letter-spacing: 0.05em;
+  font-weight: bold;
+}
+
+/* ==========================================================================
+   Overlay UI Modals inside CRT Screen
+   ========================================================================== */
+
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  background: rgba(5, 7, 10, 0.9);
+  backdrop-filter: blur(3px);
+  padding: 20px;
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  transition: opacity 0.3s ease;
+}
+
+.game-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.overlay-title {
+  font-size: 12px;
+  color: var(--starlight-white);
+  margin-bottom: 15px;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  text-shadow: 0 0 6px rgba(0, 240, 255, 0.6);
+}
+
+.overlay-subtitle {
+  font-size: 7px;
+  color: var(--on-surface-variant);
+  margin-bottom: 25px;
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+}
+
+.pulse-yellow {
+  color: var(--hazard-orange);
+  animation: pulse-glow 1.5s infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 138, 0, 0.4);
+  }
+
+  100% {
+    text-shadow: 0 0 15px rgba(255, 138, 0, 0.9), 0 0 25px rgba(255, 138, 0, 0.4);
+  }
+}
+
+.score-board {
+  width: 100%;
+  max-width: 220px;
+  background: rgba(17, 20, 23, 0.95);
+  border: 2px solid rgba(0, 240, 255, 0.25);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 7px;
+  color: var(--on-surface);
+  margin-bottom: 4px;
+}
+
+.score-row:last-child {
+  margin-bottom: 0;
+}
+
+.score-row .score-val {
+  color: var(--neon-cyan);
+  font-weight: bold;
+}
+
+.start-btn {
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--electric-blue) 100%);
+  color: var(--void-black);
+  border: none;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  transition: all 0.2s ease;
+}
+
+.start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.9);
+}
+
+.start-btn:active {
+  transform: translateY(1px);
+}
+
+/* ==========================================================================
+   Space Starfield Background for Arcade Scene
+   ========================================================================== */
+
+.space-background-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle at center, #0e1218 0%, #05070a 100%);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 50%;
+  animation: twinkle 3s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.nebula-glow-left {
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(188, 0, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(40px);
+}
+
+.nebula-glow-right {
+  position: absolute;
+  bottom: -20%;
+  right: -20%;
+  width: 60%;
+  height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(40px);
+}
+
+/* ==========================================================================
+   Responsive adjustments
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .arcade-container {
+    padding: 10px 5px;
+  }
+
+  .arcade-cabinet {
+    max-width: 100%;
+    border-width: 4px;
+    border-radius: 12px;
+  }
+
+  .crt-screen-wrapper {
+    border-width: 4px;
+  }
+
+  .cabinet-control-panel {
+    padding: 15px 10px;
+    gap: 8px;
+    grid-template-columns: 1fr 1.8fr;
+  }
+
+  .joystick-base {
+    width: 64px;
+    height: 64px;
+  }
+
+  .joystick-shaft {
+    height: 38px;
+    bottom: 24px;
+  }
+
+  .joystick-knob {
+    width: 28px;
+    height: 28px;
+    top: -16px;
+    left: calc(50% - 14px);
+  }
+
+  .buttons-grid {
+    gap: 6px;
+  }
+
+  .arcade-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .btn-label {
+    font-size: 8px;
+  }
+
+  .cabinet-lower {
+    min-height: 80px;
+    padding: 12px;
+  }
+
+  .coin-door-frame {
+    transform: scale(0.85);
+  }
+}
