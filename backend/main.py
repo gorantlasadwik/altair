@@ -217,7 +217,7 @@ def chat_with_bot(req: ChatRequest):
                     "content": req.message
                 }
             ],
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             max_tokens=1500
         )
         return {"response": chat_completion.choices[0].message.content}
