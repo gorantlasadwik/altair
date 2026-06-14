@@ -134,8 +134,8 @@ class SpaceDodgerGame {
     this.ctx = this.canvas.getContext('2d');
 
     // Virtual resolution (game coordinates)
-    this.width = 400;
-    this.height = 500;
+    this.width = 800;
+    this.height = 1000;
 
     // Entities
     this.player = null;
@@ -204,9 +204,9 @@ class SpaceDodgerGame {
   initStars() {
     this.stars = [];
     const layers = [
-      { count: 25, speed: 0.4, size: 1, color: '#4c556b' },
-      { count: 15, speed: 0.8, size: 1.5, color: '#a0aecd' },
-      { count: 8, speed: 1.5, size: 2, color: '#00F0FF' }
+      { count: 50, speed: 0.4, size: 1, color: '#4c556b' },
+      { count: 30, speed: 0.8, size: 1.5, color: '#a0aecd' },
+      { count: 16, speed: 1.5, size: 2, color: '#00F0FF' }
     ];
     layers.forEach(layer => {
       for (let i = 0; i < layer.count; i++) {
@@ -451,7 +451,7 @@ class SpaceDodgerGame {
     this.particles = [];
 
     // Initialize pilot ship
-    this.player = new Spaceship(this.width / 2, this.height - 50);
+    this.player = new Spaceship(this.width / 2, this.height - 80);
 
     // Hide all panels/overlays
     document.getElementById('start-overlay').classList.add('hidden');
@@ -487,8 +487,8 @@ class SpaceDodgerGame {
     const now = performance.now();
     if (now - this.player.lastShootTime > this.player.shootCooldown) {
       // Fire single center laser, or dual lasers
-      const l1 = new Laser(this.player.x - 8, this.player.y - 12);
-      const l2 = new Laser(this.player.x + 8, this.player.y - 12);
+      const l1 = new Laser(this.player.x - 12, this.player.y - 18);
+      const l2 = new Laser(this.player.x + 12, this.player.y - 18);
 
       this.lasers.push(l1, l2);
       this.player.lastShootTime = now;
@@ -570,9 +570,9 @@ class SpaceDodgerGame {
     if (Math.random() < 0.35) {
       this.particles.push(new Particle(
         this.player.x,
-        this.player.y + 12,
-        (Math.random() - 0.5) * 15,
-        50 + Math.random() * 50,
+        this.player.y + 18,
+        (Math.random() - 0.5) * 22,
+        75 + Math.random() * 75,
         '#00F0FF',
         0.35
       ));
@@ -616,16 +616,16 @@ class SpaceDodgerGame {
   spawnAsteroid() {
     const sizeRoll = Math.random();
     let sizeClass = 'large';
-    let size = 26;
+    let size = 39;
     let hp = 3;
 
     if (sizeRoll > 0.7) {
       sizeClass = 'small';
-      size = 13;
+      size = 19;
       hp = 1;
     } else if (sizeRoll > 0.45) {
       sizeClass = 'medium';
-      size = 18;
+      size = 27;
       hp = 2;
     }
 
@@ -639,7 +639,7 @@ class SpaceDodgerGame {
     const y = -size - 10;
 
     // Speeds scale with size (smaller is faster)
-    const baseSpeed = sizeClass === 'small' ? 140 : (sizeClass === 'medium' ? 95 : 65);
+    const baseSpeed = sizeClass === 'small' ? 210 : (sizeClass === 'medium' ? 142 : 97);
     const speed = baseSpeed * this.asteroidSpeedMult * (0.85 + Math.random() * 0.3);
 
     const ast = new Asteroid(x, y, size, hp, speed, sizeClass, type);
@@ -678,33 +678,33 @@ class SpaceDodgerGame {
 
   drawCanvasHUD() {
     this.ctx.save();
-    this.ctx.font = "8px 'Press Start 2P', cursive";
+    this.ctx.font = "16px 'Press Start 2P', cursive";
     
     // 1. Render Score
     this.ctx.fillStyle = "#E1F5FE";
     this.ctx.textAlign = "left";
-    this.ctx.fillText(`SCORE:${String(this.score).padStart(5, '0')}`, 12, 22);
+    this.ctx.fillText(`SCORE:${String(this.score).padStart(5, '0')}`, 24, 44);
 
     // 2. Combo & Multiplier
     if (this.combo > 0) {
       this.ctx.fillStyle = "#00F0FF";
-      this.ctx.fillText(`MULT:x${this.multiplier.toFixed(1)}`, 12, 36);
+      this.ctx.fillText(`MULT:x${this.multiplier.toFixed(1)}`, 24, 72);
     }
 
     // 3. Level Banner
     this.ctx.textAlign = "right";
     this.ctx.fillStyle = "#FF8A00";
-    this.ctx.fillText(`L:${this.level}`, this.width - 12, 22);
+    this.ctx.fillText(`L:${this.level}`, this.width - 24, 44);
 
     // 4. Lives / Shields visual dots
     this.ctx.fillStyle = "#E1F5FE";
-    this.ctx.fillText("SHIELD:", this.width - 66, 36);
+    this.ctx.fillText("SHIELD:", this.width - 132, 72);
 
     const shieldColors = ["#ffb4ab", "#FF8A00", "#00F0FF"];
     const shieldColor = shieldColors[this.player.lives - 1] || "#00F0FF";
     this.ctx.fillStyle = shieldColor;
     for (let i = 0; i < this.player.lives; i++) {
-      this.ctx.fillRect(this.width - 55 + (i * 12), 29, 8, 8);
+      this.ctx.fillRect(this.width - 110 + (i * 24), 58, 16, 16);
     }
     this.ctx.restore();
   }
@@ -722,7 +722,7 @@ class SpaceDodgerGame {
         const dy = laser.y - asteroid.y;
         const dist = Math.hypot(dx, dy);
 
-        if (dist < asteroid.size + 4) {
+        if (dist < asteroid.size + 6) {
           // Collision confirmed!
           this.lasers.splice(l, 1);
 
@@ -754,7 +754,7 @@ class SpaceDodgerGame {
       const dy = this.player.y - asteroid.y;
       const dist = Math.hypot(dx, dy);
 
-      if (dist < asteroid.size + 14) {
+      if (dist < asteroid.size + 21) {
         // Impact!
         this.asteroids.splice(a, 1);
         this.playerHit();
@@ -815,25 +815,25 @@ class SpaceDodgerGame {
 
     // Splitting logic for large/medium asteroids
     if (asteroid.sizeClass === 'large') {
-      const leftAst = new Asteroid(asteroid.x - 10, asteroid.y, 18, 2, asteroid.speed * 1.15, 'medium', 'normal');
-      const rightAst = new Asteroid(asteroid.x + 10, asteroid.y, 18, 2, asteroid.speed * 1.15, 'medium', 'normal');
+      const leftAst = new Asteroid(asteroid.x - 10, asteroid.y, 27, 2, asteroid.speed * 1.15, 'medium', 'normal');
+      const rightAst = new Asteroid(asteroid.x + 10, asteroid.y, 27, 2, asteroid.speed * 1.15, 'medium', 'normal');
       // Set slight diagonal velocities
-      leftAst.vx = -25;
-      rightAst.vx = 25;
+      leftAst.vx = -37;
+      rightAst.vx = 37;
       this.asteroids.push(leftAst, rightAst);
     } else if (asteroid.sizeClass === 'medium') {
-      const leftAst = new Asteroid(asteroid.x - 6, asteroid.y, 13, 1, asteroid.speed * 1.25, 'small', 'normal');
-      const rightAst = new Asteroid(asteroid.x + 6, asteroid.y, 13, 1, asteroid.speed * 1.25, 'small', 'normal');
-      leftAst.vx = -40;
-      rightAst.vx = 40;
+      const leftAst = new Asteroid(asteroid.x - 6, asteroid.y, 19, 1, asteroid.speed * 1.25, 'small', 'normal');
+      const rightAst = new Asteroid(asteroid.x + 6, asteroid.y, 19, 1, asteroid.speed * 1.25, 'small', 'normal');
+      leftAst.vx = -60;
+      rightAst.vx = 60;
       this.asteroids.push(leftAst, rightAst);
     }
   }
 
   spawnSparks(x, y, color, count) {
     for (let i = 0; i < count; i++) {
-      const vx = (Math.random() - 0.5) * 140;
-      const vy = (Math.random() - 0.5) * 140;
+      const vx = (Math.random() - 0.5) * 210;
+      const vy = (Math.random() - 0.5) * 210;
       const lifetime = 0.4 + Math.random() * 0.4;
       this.particles.push(new Particle(x, y, vx, vy, color, lifetime));
     }
@@ -848,13 +848,13 @@ class Spaceship {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.size = 28; // Draw diameter
+    this.size = 42; // Draw diameter
 
     this.vx = 0;
-    this.maxSpeed = 260; // Smooth pixel speed per sec
-    this.accel = 1600;
+    this.maxSpeed = 390; // Smooth pixel speed per sec
+    this.accel = 2400;
     this.friction = 0.92;
-    this.radius = 12; // Circle impact hit radius
+    this.radius = 18; // Circle impact hit radius
 
     this.lives = 3;
     this.isDestroyed = false;
@@ -914,13 +914,13 @@ class Spaceship {
 
     // Draw active engine fire thruster matrix
     if (this.flameToggle) {
-      drawPixelSprite(ctx, THRUST_FLAME_1, this.x, this.y + 11, 28, colors, 0);
+      drawPixelSprite(ctx, THRUST_FLAME_1, this.x, this.y + 16, 42, colors, 0);
     } else {
-      drawPixelSprite(ctx, THRUST_FLAME_2, this.x, this.y + 11, 28, colors, 0);
+      drawPixelSprite(ctx, THRUST_FLAME_2, this.x, this.y + 16, 42, colors, 0);
     }
 
     // Draw ship pixel art sprite matrix
-    drawPixelSprite(ctx, SHIP_SPRITE, this.x, this.y, 28, colors, 0);
+    drawPixelSprite(ctx, SHIP_SPRITE, this.x, this.y, 42, colors, 0);
   }
 }
 
@@ -932,7 +932,7 @@ class Laser {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.speed = 480; // pixels per sec
+    this.speed = 720; // pixels per sec
   }
 
   update(dt) {
@@ -947,9 +947,9 @@ class Laser {
     ctx.save();
     // Retro blocky dual colored beam
     ctx.fillStyle = '#00F0FF';
-    ctx.fillRect(Math.floor(this.x - 2), Math.floor(this.y - 6), 4, 12);
+    ctx.fillRect(Math.floor(this.x - 3), Math.floor(this.y - 9), 6, 18);
     ctx.fillStyle = '#E1F5FE';
-    ctx.fillRect(Math.floor(this.x - 1), Math.floor(this.y - 4), 2, 8);
+    ctx.fillRect(Math.floor(this.x - 1.5), Math.floor(this.y - 6), 3, 12);
     ctx.restore();
   }
 }
@@ -1019,7 +1019,7 @@ class Particle {
 
     this.initialLife = lifetime;
     this.life = lifetime;
-    this.size = 2 + Math.floor(Math.random() * 2); // Blocky particle sizes
+    this.size = 3 + Math.floor(Math.random() * 3); // Blocky particle sizes
   }
 
   update(dt) {

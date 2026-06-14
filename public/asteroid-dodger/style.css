@@ -785,7 +785,7 @@ header {
 }
 
 .overlay-title {
-  font-size: 12px;
+  font-size: 24px;
   color: var(--starlight-white);
   margin-bottom: 15px;
   letter-spacing: 0.05em;
@@ -794,11 +794,10 @@ header {
 }
 
 .overlay-subtitle {
-  font-size: 7px;
+  font-size: 12px;
   color: var(--on-surface-variant);
   margin-bottom: 25px;
   line-height: 1.6;
-  letter-spacing: 0.05em;
 }
 
 .pulse-yellow {
@@ -827,11 +826,12 @@ header {
 }
 
 .score-row {
+  font-size: 14px;
   display: flex;
   justify-content: space-between;
-  font-size: 7px;
-  color: var(--on-surface);
-  margin-bottom: 4px;
+  width: 100%;
+  margin-bottom: 12px;
+  color: var(--starlight-white);
 }
 
 .score-row:last-child {
@@ -844,17 +844,16 @@ header {
 }
 
 .start-btn {
-  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--electric-blue) 100%);
-  color: var(--void-black);
-  border: none;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  letter-spacing: 0.05em;
-  padding: 10px 20px;
-  border-radius: 4px;
+  margin-top: 20px;
+  padding: 14px 24px;
+  font-size: 14px;
+  background: var(--void-black);
+  color: var(--neon-cyan);
+  border: 2px solid var(--neon-cyan);
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
   transition: all 0.2s ease;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
 }
 
 .start-btn:hover {
