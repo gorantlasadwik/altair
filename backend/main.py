@@ -180,12 +180,14 @@ def get_nasa_apod():
 
 
 
+
 @app.get("/api/nasa/astros")
 def get_astros():
-    current_time = time.time()
-    # No cache needed for now, but we can reuse the pattern
     try:
-        req = urllib.request.Request("http://api.open-notify.org/astros.json")
+        req = urllib.request.Request(
+            "https://lldev.thespacedevs.com/2.2.0/astronaut/?in_space=true",
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode())
             return data

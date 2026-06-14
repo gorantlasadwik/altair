@@ -306,7 +306,8 @@
                 const res = await fetch('/api/nasa/astros');
                 const data = await res.json();
                 
-                const issCrew = data.people.filter(p => p.craft === 'ISS');
+                // Spacedevs API: results is the array. Filter out CNSA (Tiangong) to get ISS crew
+                const issCrew = data.results ? data.results.filter(p => p.agency && p.agency.abbrev !== 'CNSA') : [];
                 document.getElementById('crew-count').textContent = issCrew.length;
                 
                 const list = document.getElementById('crew-list');

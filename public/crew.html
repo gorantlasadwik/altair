@@ -118,51 +118,37 @@
                 const res = await fetch('/api/nasa/astros');
                 const data = await res.json();
                 
-                const issCrew = data.people.filter(p => p.craft === 'ISS');
+                const issCrew = data.results ? data.results.filter(p => p.agency && p.agency.abbrev !== 'CNSA') : [];
                 document.getElementById('crew-count-header').textContent = `TOTAL PERSONNEL ONBOARD: ${issCrew.length}`;
                 
                 const grid = document.getElementById('crew-grid');
                 grid.innerHTML = '';
 
-                // Fetch details from Wikipedia for each
                 for(const person of issCrew) {
                     const card = document.createElement('div');
                     card.className = 'panel-border rounded-xl p-6 flex flex-col gap-4 hover:border-[#00F0FF] transition-colors group cursor-pointer';
                     
-                    // Default layout while loading wiki
+                    const agency = person.agency ? person.agency.abbrev : "UNK";
+                    const bio = person.bio ? person.bio : "Dossier unavailable.";
+                    const imgHtml = person.profile_image 
+                        ? `<img src="${person.profile_image}" alt="${person.name}" class="w-full h-full object-cover">`
+                        : `<span class="material-symbols-outlined text-3xl text-zinc-500">person</span>`;
+
                     card.innerHTML = `
                         <div class="flex items-center gap-4 border-b border-white/10 pb-4">
-                            <div class="w-16 h-16 rounded-full bg-zinc-800 border-2 border-[#00F0FF] flex items-center justify-center overflow-hidden" id="img-${person.name.replace(/\s+/g, '')}">
-                                <span class="material-symbols-outlined text-3xl text-zinc-500">person</span>
+                            <div class="w-16 h-16 rounded-full bg-zinc-800 border-2 border-[#00F0FF] flex items-center justify-center overflow-hidden">
+                                ${imgHtml}
                             </div>
                             <div>
                                 <h2 class="text-xl font-bold text-white font-display uppercase truncate w-full" title="${person.name}">${person.name}</h2>
-                                <span class="px-2 py-1 bg-[#00F0FF]/10 text-[#00F0FF] text-[10px] font-arcade tracking-widest mt-1 inline-block border border-[#00F0FF]/30">ACTIVE // ${person.craft}</span>
+                                <span class="px-2 py-1 bg-[#00F0FF]/10 text-[#00F0FF] text-[10px] font-arcade tracking-widest mt-1 inline-block border border-[#00F0FF]/30">ACTIVE // ${agency}</span>
                             </div>
                         </div>
-                        <div class="text-xs text-zinc-400 font-mono leading-relaxed flex-1 h-32 overflow-y-auto" id="desc-${person.name.replace(/\s+/g, '')}">
-                            Retrieving personnel dossier...
+                        <div class="text-xs text-zinc-400 font-mono leading-relaxed flex-1 h-32 overflow-y-auto">
+                            ${bio}
                         </div>
                     `;
                     grid.appendChild(card);
-
-                    // Fetch Wikipedia summary
-                    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(person.name)}`)
-                        .then(res => res.json())
-                        .then(wiki => {
-                            if(wiki.extract) {
-                                document.getElementById(`desc-${person.name.replace(/\s+/g, '')}`).textContent = wiki.extract;
-                            } else {
-                                document.getElementById(`desc-${person.name.replace(/\s+/g, '')}`).textContent = "Dossier classified or unavailable in database.";
-                            }
-
-                            if(wiki.thumbnail && wiki.thumbnail.source) {
-                                document.getElementById(`img-${person.name.replace(/\s+/g, '')}`).innerHTML = `<img src="${wiki.thumbnail.source}" alt="${person.name}" class="w-full h-full object-cover">`;
-                            }
-                        })
-                        .catch(err => {
-                            document.getElementById(`desc-${person.name.replace(/\s+/g, '')}`).textContent = "Dossier unavailable (Connection Error).";
-                        });
                 }
 
                 document.getElementById('loading').classList.add('hidden');
@@ -173,7 +159,6 @@
                 document.getElementById('loading').innerHTML = '<span class="material-symbols-outlined text-6xl text-red-500">error</span><p class="mt-4 font-mono text-red-500">UPLINK FAILED. UNABLE TO RETRIEVE MANIFEST.</p>';
             }
         }
-
         fetchCrewDetails();
     </script>
 </body>
