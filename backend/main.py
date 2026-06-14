@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from groq import Groq
 
 import os
 import urllib.request
@@ -191,6 +192,35 @@ def get_astros():
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode())
             return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class ChatRequest(BaseModel):
+    message: str
+
+@app.post("/api/chat")
+def chat_with_bot(req: ChatRequest):
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="GROQ_API_KEY is missing in environment variables.")
+    try:
+        client = Groq(api_key=api_key)
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are ALTAIR's advanced research AI assistant. You provide highly accurate, concise information about space, astronomy, physics, and aerospace engineering. Format your response beautifully using Markdown with clear paragraphs or lists."
+                },
+                {
+                    "role": "user",
+                    "content": req.message
+                }
+            ],
+            model="llama3-8b-8192",
+            max_tokens=1500
+        )
+        return {"response": chat_completion.choices[0].message.content}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
