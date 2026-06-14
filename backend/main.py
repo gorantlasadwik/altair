@@ -1,3 +1,6 @@
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi import Request
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -174,3 +177,26 @@ def get_nasa_apod():
             return data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==========================================
+# SERVE STATIC FILES (FRONTEND)
+# ==========================================
+dist_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dist")
+
+if os.path.exists(dist_dir):
+    curiosity_next_dir = os.path.join(dist_dir, "curiosity", "_next")
+    if os.path.exists(curiosity_next_dir):
+        # Route /_next to the same folder for NextJS static assets
+        app.mount("/_next", StaticFiles(directory=curiosity_next_dir), name="next_assets")
+
+    # Serve all other static files
+    app.mount("/", StaticFiles(directory=dist_dir, html=True), name="static")
+
+    @app.exception_handler(404)
+    async def not_found_handler(request: Request, exc: HTTPException):
+        # Fallback to index.html for SPA routing
+        index_path = os.path.join(dist_dir, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+        return {"detail": "Not Found"}

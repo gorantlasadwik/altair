@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { SpiralAnimation } from '@/components/ui/spiral-animation'
+import { SpiralAnimation } from '../components/ui/spiral-animation'
 
 const INTRO_DURATION_MS = 8000
 
